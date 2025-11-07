@@ -1,0 +1,40 @@
+---
+title: "Proposal"
+output: github_document
+---
+
+### Group Members 
+
+Kennedy Wade (kjw2175), Tejashree Prakash (tp2806), Yasmine Evang (yme2112), Jaia Wingard (jw3638)
+
+### Tentative Project Title 
+
+*Not All Trains Are Created Equal*
+
+### Motivation 
+
+New York City has a well-known public transportation system, used by thousands every day. Unfortunately, not all trains are created equal. As subway riders, we are unsatisfied with our experience and question the efficacy of the MTA. Recent adjustments to payment systems, track and station closures, as well as inconsistent travel times, made us question rider satisfaction. The MTA suggests that fare increases will soon be implemented, but with wavering opinions on the efficiency of the train lines, is this appropriate? Using rider responses from the NYC Open Data 2019 Subway Rider Survey, we can evaluate the public opinion’s perception of the reliability of NYC’s MTA system.  
+
+### Intended Final Product 
+
+Our intended final product will be a website that includes an interactive dashboard with several visualizations that summarize New Yorker’s perceptions of the MTA system.  
+
+### Anticipated Data Sources
+
+NYC Open Data 2019 Subway Rider Survey is a survey intended to understand New Yorker’s experiences with the MTA system. We intend to analyze: subway lines used most often, frequency of subway use, overall satisfaction, frequency of delays, and common complaints. 
+
+### Planned Analyses and Anticipated Challenges
+
+Our analyses will be understanding how individual variables interact with each other within this dataset. For example, we will analyze how the time of transit use (proxied with time of day the survey was taken) affects the type of delay or complaint stated. Interactive plotly is a tool that we will use to demonstrate, for example, preferences of transportation by neighborhood (using respondent zip code data). Neighborhood information will allow us to also understand how perceptions of fare increases and affordability of public transit differ across communities, even letting us supplement this with other open-source data about income, racial backgrounds, and education levels.<br> 
+
+From our initial peruse of this dataset, we anticipate there to be challenges in ensuring standardized categorization of categorical variables and challenges in how to approach missing or NA cells. 
+
+### Timeline 
+
+1. Week of Nov 9: Meet as a group to review the dataset, finalize research questions, assign roles, and discuss cleaning and analysis plans.
+  
+2. Week of Nov 16: Perform and discuss results and key trends from data cleaning and exploratory data analysis. 
+3. Week of Nov 23: Develop visualizations, statistical summaries, and refine main findings. Start drafting report sections.
+4. Week of Dec 1:  Finalize report, webpage, and screencast. Review and polish all materials for submission.
+
+
