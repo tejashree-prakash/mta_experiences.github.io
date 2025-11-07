@@ -13,11 +13,11 @@ Kennedy Wade (kjw2175), Tejashree Prakash (tp2806), Yasmine Evang (yme2112), Jai
 
 ### Motivation 
 
-New York City has a well-known public transportation system, used by thousands every day. Unfortunately, not all trains are created equal. As subway riders, we are unsatisfied with our experience and question the efficacy of the MTA. Recent adjustments to payment systems, track and station closures, as well as inconsistent travel times, made us question rider satisfaction. The MTA suggests that fare increases will soon be implemented, but with wavering opinions on the efficiency of the train lines, is this appropriate? Using rider responses from the NYC Open Data 2019 Subway Rider Survey, we can evaluate the public opinion’s perception of the reliability of NYC’s MTA system.  
+New York City has one of the most highly used metropolitan transit systems, used by thousands every day. Unfortunately, not all trains are created equal. As subway riders, we are unsatisfied with our experience and question the efficacy of the MTA. Recent adjustments to payment systems, track and station closures, as well as inconsistent travel times, made us question rider satisfaction. The MTA suggests that fare increases will soon be implemented, but with wavering opinions on the efficiency of the train lines, is this appropriate? Using rider responses from the NYC Open Data 2019 Subway Rider Survey, we can evaluate the public opinion’s perception of the reliability of NYC’s MTA system.  
 
 ### Intended Final Product 
 
-Our intended final product will be a website that includes an interactive dashboard with several visualizations that summarize New Yorker’s perceptions of the MTA system.  
+Our final product will be a website that includes an interactive dashboard with several visualizations as well as commentary sections to summarize New Yorker’s perceptions of the MTA system based on our analyses. 
 
 ### Anticipated Data Sources
 
