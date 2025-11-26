@@ -7,6 +7,7 @@ load packages
 ```{r}
 library(tidyverse)
 library(lubridate)
+library(readxl)
 ```
 
 Here I will clean the 2019_subway_rider_data 
@@ -190,7 +191,6 @@ final data set is rider_data_full
 should approximate delay duration be an ordered factor?
 
 anyways final data set is rider_data
-
 
 
 
