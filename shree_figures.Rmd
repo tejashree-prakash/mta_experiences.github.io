@@ -3,7 +3,7 @@ output: github_document
 ---
 
 By borough / zip code (like the TA’s example) 
-Primary use of subway
+Primary use of subway 
 Average subway ride length 
 Most used line 
 
