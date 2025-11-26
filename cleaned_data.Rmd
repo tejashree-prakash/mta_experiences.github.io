@@ -142,6 +142,7 @@ rider_data =
   )
 ```
 
+<<<<<<< HEAD
 Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google. There were three zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
 
 ```{r}
@@ -175,3 +176,15 @@ I think that maybe top 3 complaints shouldn't be separated into individual rows 
 should approximate delay duration be an ordered factor?
 
 final data set is rider_data_full
+=======
+
+
+should approximate delay duration be an ordered factor?
+
+anyways final data set is rider_data
+
+
+
+
+
+>>>>>>> e522183bd9f292fb1392c8acd6beda74dc04f701
