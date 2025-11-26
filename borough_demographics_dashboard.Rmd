@@ -68,7 +68,7 @@ rider_data =
 
 
 rider_data =
-  subway_drops |> 
+  subway_drops |>  
   mutate(average_length_subway_ride = 
            factor(average_length_subway_ride,
                   levels = c("< 20 min", 
