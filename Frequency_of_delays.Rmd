@@ -1,0 +1,293 @@
+---
+title: "Frequency of Delays by Subway Line"
+output: html_document
+---
+
+This is an interactive visualization representing the frequency of delays by subway line.
+
+Packages (need to install gt package to use gt library first)
+```{r}
+library(tidyverse)
+library(janitor)
+library(viridis)
+library(plotly)
+library(knitr)
+library(gt)
+```
+
+Load data.
+```{r}
+raw <- read_csv("data/2019_subway_rider_data.csv") |> 
+  clean_names()
+```
+
+Clean dataset.
+```{r}
+# split multi-line answers (e.g., "A/C" → "A", "C")
+cleaned <- raw |> 
+  mutate(
+    subway_line = subway_line_used_most_often |> 
+      str_replace_all("[^A-Za-z0-9]", "/") |>   # normalize separators
+      str_split("/")                            # split into multiple lines
+  ) |> 
+  unnest(subway_line) |> 
+  mutate(
+    subway_line = str_trim(subway_line),
+    subway_line = str_to_upper(subway_line)
+  ) |> 
+  filter(subway_line %in% c(
+    "1","2","3","4","5","6","7",
+    "A","B","C","D","E","F","M",
+    "G","J","Z","N","Q","R","W","L","S"
+  ))
+
+# Convert column naming to an ordered factor for plotting:
+cleaned <- cleaned |> 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c(
+        "Never",
+        "Rarely",
+        "Once a month",
+        "A few times a month",
+        "A few times a week",
+        "Everyday"
+      ),
+      ordered = TRUE
+    )
+  )
+
+#convert to a numeric midpoint in minutes (for average delay per line):
+cleaned <- cleaned |> 
+  mutate(
+    delay_min = case_when(
+      approximate_delay_duration == "< 10 min" ~ 5,
+      approximate_delay_duration == "10 - 20 min" ~ 15,
+      approximate_delay_duration == "20 - 40 min" ~ 30,
+      approximate_delay_duration == "40 - 60 min" ~ 50,
+      approximate_delay_duration == "Over 60 min" ~ 70,
+      approximate_delay_duration == "Over 40 min" ~ 50,
+      TRUE ~ NA_real_
+    )
+  )
+```
+
+Display table of Subway Line Directory:
+```{r}
+subway_directory_display <- tribble(
+  ~`Line Family`, ~Lines, ~Color,
+  "Red Line", "1, 2, 3", "#EE352E",
+  "Green Line", "4, 5, 6", "#00933C",
+  "Purple Line", "7", "#B933AD",
+  "Blue Line", "A, C, E", "#0039A6",
+  "Orange Line", "B, D, F, M", "#FF6319",
+  "Yellow Line", "N, Q, R, W", "#FCCC0A",
+  "Light Green Line", "G", "#6CBE45",
+  "Brown Line", "J, Z", "#996633",
+  "Gray Line", "L", "#A7A9AC",
+  "Shuttle", "S", "#808183"
+)
+
+subway_directory_display |>
+  gt() |>
+  tab_header(
+    title = "NYC Subway Line Directory"
+  ) |>
+  text_transform(
+    locations = cells_body(columns = Color),
+    fn = function(color) {
+      paste0(
+        "<div style='background-color:", color,
+        "; width: 60px; height: 20px; border-radius: 4px'></div>"
+      )
+    }
+  ) |>
+  cols_width(
+    everything() ~ px(180)
+  ) |>
+  opt_table_outline()
+```
+
+
+Join-ready Subway Line Directory for analysis:
+```{r}
+subway_directory <- tribble(
+  ~subway_line, ~group_color, ~hex_color,
+  "1","Red Line","#EE352E",
+  "2","Red Line","#EE352E",
+  "3","Red Line","#EE352E",
+  "4","Green Line","#00933C",
+  "5","Green Line","#00933C",
+  "6","Green Line","#00933C",
+  "7","Purple Line","#B933AD",
+  "A","Blue Line","#0039A6",
+  "C","Blue Line","#0039A6",
+  "E","Blue Line","#0039A6",
+  "B","Orange Line","#FF6319",
+  "D","Orange Line","#FF6319",
+  "F","Orange Line","#FF6319",
+  "M","Orange Line","#FF6319",
+  "N","Yellow Line","#FCCC0A",
+  "Q","Yellow Line","#FCCC0A",
+  "R","Yellow Line","#FCCC0A",
+  "W","Yellow Line","#FCCC0A",
+  "G","Light Green Line","#6CBE45",
+  "J","Brown Line","#996633",
+  "Z","Brown Line","#996633",
+  "L","Gray Line","#A7A9AC",
+  "S","Shuttle","#808183"
+)
+
+cleaned <- cleaned |> 
+  left_join(subway_directory, by = "subway_line")
+```
+
+Frequency of delays across all trains.
+Interactive Plotly Bar Chart
+```{r}
+freq_by_line <- cleaned |> 
+  drop_na(frequency_of_delays) |> 
+  count(subway_line, frequency_of_delays) |> 
+  group_by(subway_line) |> 
+  summarize(delay_score = sum(as.numeric(frequency_of_delays))) |> 
+  left_join(subway_directory, by = "subway_line")
+
+# Group bars together by color family matching the directory order 
+freq_by_line <- cleaned |> 
+  drop_na(frequency_of_delays) |> 
+  count(subway_line, frequency_of_delays) |> 
+  group_by(subway_line) |> 
+  summarize(delay_score = sum(as.numeric(frequency_of_delays))) |> 
+  left_join(subway_directory, by = "subway_line") |> 
+  arrange(group_color, subway_line) |> 
+  mutate(
+    subway_line = factor(subway_line, levels = subway_line)
+  )
+
+plot_ly(
+  data = freq_by_line,
+  x = ~subway_line,
+  y = ~delay_score,
+  type = "bar",
+  marker = list(color = ~hex_color),
+  
+  # Send group_color to the hovertemplate
+  customdata = ~group_color,
+  
+  # Hover box formatting
+  hovertemplate = paste(
+    "<b>Subway Line:</b> %{x}<br>",
+    "<b>Delay Frequency Score:</b> %{y}<br>",
+    "<extra></extra>"  # removes default tooltip
+  )
+) |>
+  layout(
+    title = "Frequency of Reported Delays by Subway Line",
+    xaxis = list(title = "Subway Line"),
+    yaxis = list(title = "Delay Frequency Score"),
+    showlegend = FALSE
+  )
+```
+
+Frequency of Delays Across Line Family 
+```{r}
+freq_by_group <- cleaned |> 
+  drop_na(frequency_of_delays) |> 
+  count(group_color, frequency_of_delays) |> 
+  group_by(group_color) |> 
+  summarize(delay_score = sum(as.numeric(frequency_of_delays))) |> 
+  left_join(
+    subway_directory |> distinct(group_color, hex_color),
+    by = "group_color"
+  )
+
+plot_ly(
+  data = freq_by_group,
+  x = ~group_color,
+  y = ~delay_score,
+  type = "bar",
+  marker = list(color = ~hex_color),
+
+  # add hovertemplate
+  hovertemplate = paste(
+    "<b>Color Group:</b> %{x}<br>",
+    "<b>Delay Frequency Score:</b> %{y}<br>",
+    "<extra></extra>"
+  )
+) |>
+  layout(
+    title = "Frequency of Reported Delays by Subway Color Group",
+    xaxis = list(title = "Color Group"),
+    yaxis = list(title = "Delay Frequency Score"),
+    showlegend = FALSE
+  )
+```
+
+
+Proportion of Riders Reporting Long Delays (≥20 min) by subway line:
+```{r}
+# Define long-delay categories
+long_categories <- c( 
+  "20 - 40 min", "20 - 45 min",
+  "40 - 60 min", "45 - 60 min",
+  "> 60 min"
+)
+
+# Create an ordering by line family
+line_order <- subway_directory |> 
+  arrange(group_color, subway_line) |> 
+  pull(subway_line)
+
+# Build long delay dataset
+long_delay_by_line <- cleaned |> 
+  filter(!is.na(approximate_delay_duration)) |> 
+  mutate(
+    long_delay = approximate_delay_duration %in% long_categories
+  ) |> 
+  count(subway_line, long_delay) |> 
+  group_by(subway_line) |> 
+  mutate(prop = n / sum(n)) |> 
+  filter(long_delay == TRUE) |> 
+  select(subway_line, prop) |> 
+  left_join(subway_directory, by = "subway_line") |> 
+  mutate(
+    subway_line = factor(subway_line, levels = line_order),
+    group_color = factor(group_color, levels = unique(subway_directory$group_color))
+  )
+
+# Now plot
+plot_ly(
+  data = long_delay_by_line,
+  x = ~subway_line,
+  y = ~prop,
+  type = "bar",
+  marker = list(color = ~hex_color),
+  customdata = ~group_color,
+  hovertemplate = paste(
+    "<b>Subway Line:</b> %{x}<br>",
+    "<b>Proportion Long Delays (≥20 min):</b> %{y:.2f}<br>",
+    "<b>Color Group:</b> %{customdata}",
+    "<extra></extra>"
+  )
+) |>
+  layout(
+    title = list(
+      text = "<b>Proportion of Riders Reporting Long Delays (≥ 20 min) by Subway Line</b>",
+      y = 0.95
+    ),
+    xaxis = list(
+      title = "Subway Line",
+      tickangle = 0,
+      categoryorder = "array",
+      categoryarray = line_order
+    ),
+    yaxis = list(
+      title = "Proportion of Long Delays",
+      tickformat = ".0%",
+      range = c(0, max(long_delay_by_line$prop) * 1.1)
+    ),
+    bargap = 0.20,     # spacing between groups
+    bargroupgap = 0.05 # spacing within groups
+  )
+```

@@ -6,13 +6,15 @@ output: github_document
 load packages
 ```{r}
 library(tidyverse)
+library(lubridate)
+library(readxl)
 ```
 
 Here I will clean the 2019_subway_rider_data 
 
 ```{r}
 subway_rider_data = 
-  read_csv("data/2019_subway_rider_data.csv") |> 
+  read_csv("2019_Subway_Rider_Survey_20251121.csv") |> 
   janitor::clean_names()
 
 
@@ -142,11 +144,71 @@ rider_data =
   )
 ```
 
+<<<<<<< HEAD
+Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google. There were three zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
+
+```{r}
+zip_raw <- read_excel("nyc_zipcodes.xls", skip = 4)
+
+# Step 2: Rename columns properly
+colnames(zip_raw) <- c(
+  "borough", "zipcode", "total_population", "white", "black_or_african_american",
+  "american_indian_alaska_native", "asian", "native_hawaiian_other_pacific",
+  "some_other_race", "two_or_more_races", "hispanic_origin", "total_housing_units"
+)
+
+# Step 3: Now select only borough and zipcode
+zip_code_data <- zip_raw %>%
+  select(borough, zipcode) %>%
+  mutate(zipcode = as.character(zipcode))  # ensure character
+
+# Step 4: Make rider_data zip_code a character
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+
+# Step 5: Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+
+# Step 6: Fill borough where missing
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+# Step 7: Remove invalid zip codes
+rider_data_full <- rider_data_full %>%
+  filter(!zip_code %in% c("12105", "11290", "11135"))
+
+```
+
+I think that maybe top 3 complaints shouldn't be separated into individual rows because now it's double or triple counting all of the other responses in other columns. 
+
+should approximate delay duration be an ordered factor?
+
+final data set is rider_data_full
+=======
 
 
 should approximate delay duration be an ordered factor?
 
 anyways final data set is rider_data
+
+
+
+
+>>>>>>> e522183bd9f292fb1392c8acd6beda74dc04f701
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
