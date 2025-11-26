@@ -6,7 +6,7 @@ output:
     vertical_layout: fill
     theme: flatly
 ---
-
+Importing the cleaned dataset 
 ```{r setup, include=TRUE}
 
 library(flexdashboard)
@@ -193,15 +193,13 @@ complaint_data_time <- rider_data_full |>
   )
 ```
 
-
-
 Column {data-width=1800}
 -----------------------------------------------------------------------
 
 ### Chart A
 
 ```{r, fig.width=15, fig.height=8}
-### Complaint types by time and line 
+### Complaint types by time and line overall 
 
 # Create summary data for the main plot
 complaint_summary =
@@ -242,6 +240,7 @@ main_plot <- complaint_summary |>
 main_plot
 ```
 
+
 Column {data-width=1800}
 -----------------------------------------------------------------------
 
@@ -250,6 +249,7 @@ Column {data-width=1800}
 ```{r, fig.width=15, fig.height=8}
 
 # Summary of top complaints overall
+
 top_complaints <- complaint_data_time |> 
   count(complaint) |> 
   arrange(desc(n)) |> 
@@ -285,8 +285,10 @@ Column {data-width=1800}
 
 ### Chart C
 
-
 ```{r, fig.width=15, fig.height=8}
+
+# distrubtion of complaint types overall 
+
 complaint_treemap_data <- rider_data_full %>%
   filter(!is.na(subway_line_used_most_often),
          !is.na(complaint)) %>%
@@ -328,6 +330,115 @@ treemap_plot <- ggplot(
 
 treemap_plot
 ```
+
+
+Column {data-width=1800}
+-----------------------------------------------------------------------
+
+### Chart D
+
+```{r,fig.width=15, fig.height=8}
+# Summary of top complaints by Borough
+
+valid_boroughs <- c("Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island")
+
+# Create cleaned dataset
+rider_data_full_clean <- rider_data_full %>%
+  mutate(
+    borough = case_when(
+      borough %in% valid_boroughs ~ borough,
+      TRUE ~ NA_character_
+    )
+  )
+
+top_complaints_borough <- rider_data_full_clean |>
+  filter(!is.na(borough), !is.na(complaint)) |>
+  count(borough, complaint) |>
+  group_by(borough) |>
+  arrange(desc(n), .by_group = TRUE) |>
+  slice_head(n = 10) |>
+  ungroup()
+
+plot_top_borough <- top_complaints_borough |> 
+  mutate(
+    text_label = str_c(
+      "Borough: ", borough,
+      "\nComplaint: ", complaint,
+      "\nCount: ", n
+    )
+  ) |>
+  plot_ly(
+    x = ~n,
+    y = ~fct_reorder(complaint, n),
+    color = ~borough,   # Now only 5 categories
+    type = "bar",
+    orientation = "h",
+    text = ~text_label,
+    hoverinfo = "text",
+    colors = viridis::viridis_pal()(length(unique(top_complaints_borough$borough)))
+  ) |> 
+  layout(
+    title = "Top Complaint Types by Borough",
+    xaxis = list(title = "Number of Complaints"),
+    yaxis = list(title = "Complaint Type"),
+    barmode = "group"
+  )
+
+plot_top_borough
+```
+
+
+
+
+Column {data-width=1800}
+-----------------------------------------------------------------------
+
+### Chart E
+
+```{r,fig.width=15, fig.height=8}
+# Complaint types by line and borough
+
+
+complaint_line_borough <- rider_data_full_clean |> 
+  filter(!is.na(subway_line_used_most_often),
+         !is.na(borough),
+         !is.na(complaint)) |>
+  count(subway_line_used_most_often, borough, complaint) |> 
+  group_by(subway_line_used_most_often, borough) |> 
+  mutate(percent = n / sum(n) * 100) |> 
+  ungroup()
+
+plot_line_borough <- complaint_line_borough |> 
+  mutate(
+    text_label = str_c(
+      "Line: ", subway_line_used_most_often,
+      "\nBorough: ", borough,
+      "\nComplaint: ", complaint,
+      "\nCount: ", n,
+      "\nPercent: ", round(percent, 1), "%"
+    )
+  ) |> 
+  plot_ly(
+    x = ~borough,
+    y = ~percent,
+    type = "bar",
+    color = ~complaint,
+    text = ~text_label,
+    hoverinfo = "text",
+    colors = viridis::viridis_pal()(length(unique(complaint_line_borough$complaint)))
+  ) |> 
+  layout(
+    barmode = "stack",
+    title = "Complaint Types by Subway Line and Borough",
+    xaxis = list(title = "Borough"),
+    yaxis = list(title = "Percent of Complaints"),
+    showlegend = TRUE
+  )
+
+plot_line_borough
+```
+
+
 
 
 
