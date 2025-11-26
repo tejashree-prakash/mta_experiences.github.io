@@ -1,0 +1,59 @@
+---
+output: github_document
+---
+
+By borough / zip code (like the TA’s example) 
+Primary use of subway
+Average subway ride length 
+Most used line 
+
+Perception of affordability 
+Opinion on increased fair 
+Satisfaction 
+
+Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google. There were three zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
+
+```{r}
+zip_code_data = 
+  read_csv("data/nyc_zipcodes.csv") %>%
+  select(borough, zipcode)
+
+#Make sure character type
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode))
+
+#Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+
+#If there's no match, we want to keep the zip_code in the borough column, so we use coalesce to handle this
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#manually go through remaining zip codes - removing 11135 11290 12105 as they are not real zip codes
+rider_data_full <- rider_data_full %>%
+  filter(zip_code != 12105) %>%
+  filter(zip_code != 11290) %>%
+  filter(zip_code != 11135) 
+```
+
+
+Now I want to create visualizations for each variable comparison. This will demonstrate exploratory analysis and demographics. 
+```{r}
+#Primary use of subway 
+
+#Average subway ride length 
+
+
+#Most used line 
+
+#Perception of affordability 
+
+#Opinion on increased fair 
+
+#Satisfaction 
+
+```
+
