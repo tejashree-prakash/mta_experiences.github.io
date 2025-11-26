@@ -1,5 +1,5 @@
 ---
-output: github_document
+output: html_document 
 ---
 
 By borough / zip code (like the TA’s example) 
@@ -14,6 +14,11 @@ Satisfaction
 Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google. There were three zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
 
 ```{r}
+library(tidyverse)
+library(plotly)
+library(dplyr)
+
+
 zip_code_data = 
   read_csv("data/nyc_zipcodes.csv") %>%
   select(borough, zipcode)
@@ -37,23 +42,270 @@ rider_data_full <- rider_data_full %>%
   filter(zip_code != 12105) %>%
   filter(zip_code != 11290) %>%
   filter(zip_code != 11135) 
+
 ```
 
 
 Now I want to create visualizations for each variable comparison. This will demonstrate exploratory analysis and demographics. 
 ```{r}
+#Location distribution 
+borough_df <- rider_data_full %>% 
+  count(borough)
+
+plot_ly(
+  borough_df,
+  x = ~borough,
+  y = ~n,
+  type = "bar",
+  hovertemplate = "Borough: %{x}<br>Count: %{y}<extra></extra>"
+) %>%
+  layout(title = "Survey Respondents by Borough",
+         xaxis = list(title = "Borough"),
+         yaxis = list(title = "Count"))
+
+
 #Primary use of subway 
+primary_df <- rider_data_full %>%
+  count(borough, primary_use_of_subway) %>%
+  group_by(borough) %>%
+  mutate(prop = n / sum(n))
+
+plot_ly(
+  primary_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~primary_use_of_subway,
+  type = "bar",
+  hovertemplate = 
+    "Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra></extra>",
+  customdata = ~primary_use_of_subway
+) %>%
+  layout(
+    barmode = "stack",
+    title = "Primary Subway Use by Borough (Proportions)",
+    yaxis = list(tickformat = ".0%", title = "Proportion")
+  )
+
 
 #Average subway ride length 
+ride_df <- rider_data_full %>% count(average_length_subway_ride)
+
+plot_ly(
+  ride_df,
+  x = ~average_length_subway_ride,
+  y = ~n,
+  type = "bar",
+  hovertemplate = "%{x}<br>Count: %{y}<extra></extra>"
+) %>%
+  layout(title = "Ride Length Distribution",
+         xaxis = list(title = "Ride Length Category"),
+         yaxis = list(title = "Count"))
 
 
 #Most used line 
+line_df <- rider_data_full %>% 
+  count(subway_line_used_most_often)
+
+plot_ly() %>%
+  add_segments(
+    data = line_df,
+    x = 0,
+    xend = ~n,
+    y = ~reorder(subway_line_used_most_often, n),
+    yend = ~reorder(subway_line_used_most_often, n),
+    hoverinfo = "none"
+  ) %>%
+  add_markers(
+    data = line_df,
+    x = ~n,
+    y = ~reorder(subway_line_used_most_often, n),
+    hovertemplate = "Line: %{y}<br>Count: %{x}<extra></extra>"
+  ) %>%
+  layout(
+    title = "Most Used Subway Lines",
+    xaxis = list(title = "Count"),
+    yaxis = list(title = "Line")
+  )
+
 
 #Perception of affordability 
+afford_df <- rider_data_full %>%
+  count(borough, is_subway_affordable) %>%
+  group_by(borough) %>%
+  mutate(prop = n / sum(n))
+
+plot_ly(
+  afford_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~is_subway_affordable,
+  type = "bar",
+  hovertemplate = 
+    "Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra></extra>",
+  customdata = ~is_subway_affordable
+) %>%
+  layout(
+    barmode = "stack",
+    title = "Affordability Perception by Borough",
+    yaxis = list(tickformat = ".0%", title = "Proportion")
+  )
+
 
 #Opinion on increased fair 
+satis_df <- rider_data_full %>%
+  count(borough, opinion_on_increased_fares) %>%
+  group_by(borough) %>%
+  mutate(
+    prop = n / sum(n),
+    percent_label = paste0(round(prop * 100, 1), "%")
+  ) %>%
+  ungroup()
+
+library(plotly)
+
+boroughs <- unique(satis_df$borough)
+plot <- plot_ly()
+
+for (i in seq_along(boroughs)) {
+  
+  b <- boroughs[i]
+  df_b <- filter(satis_df, borough == b)
+  
+  plot <- add_trace(
+    plot,
+    data = df_b,
+    labels = ~opinion_on_increased_fares,
+    values = ~prop,
+    type = "pie",
+    hole = 0.2 + (i - 1) * 0.15,
+    textinfo = "none",
+    hovertemplate = paste(
+      "<b>Borough:</b> ", b, "<br>",
+      "<b>Opinion:</b> %{label}<br>",
+      "<b>Percent:</b> %{customdata}<extra></extra>"
+    ),
+    customdata = ~percent_label,
+    showlegend = (i == 1)
+  )
+}
+
+plot <- layout(
+  plot,
+  title = "Opinion on Increased Fares (Multi-Ring Donut)",
+  margin = list(l=20, r=20, t=60, b=20)
+)
+
+plot
+
 
 #Satisfaction 
+satis_overall <- rider_data_full %>%
+  count(overall_satisfaction) %>%
+  mutate(prop = n / sum(n),
+         percent = paste0(round(prop*100,1), "%"))
+
+plot_ly(
+  satis_overall,
+  labels = ~overall_satisfaction,
+  values = ~prop,
+  type = "pie",
+  hole = .5,
+  textinfo = "label+percent",
+  hovertemplate = "%{label}<br>%{percent}<extra></extra>"
+) %>%
+  layout(title = "Overall Satisfaction Levels")
+```
+
+
+```{r}
+#interactive plotly for satisfaction 
+
+satis_df <- rider_data_full %>%
+  count(borough, overall_satisfaction) %>%
+  group_by(borough) %>%
+  mutate(
+    prop = n / sum(n),
+    percent_label = paste0(round(prop*100, 1), "%")
+  )
+library(plotly)
+plots <- lapply(unique(satis_df$borough), function(b) {
+  df_b <- filter(satis_df, borough == b)
+  
+  plot_ly(
+    df_b,
+    labels = ~overall_satisfaction,
+    values = ~prop,
+    type = "pie",
+    hole = 0.5,
+    textinfo = "none",
+    hovertemplate = paste(
+      "<b>Borough:</b> ", b, "<br>",
+      "<b>Category:</b> %{label}<br>",
+      "<b>Percent:</b> %{customdata}<extra></extra>"
+    ),
+    customdata = ~percent_label
+  ) %>%
+    layout(title = b, showlegend = FALSE)
+})
+
+subplot(plots, nrows = 2, margin = 0.02) %>%
+  layout(title = "MTA Satisfaction Levels by Borough")
+
+
+
+```
+
+
+```{r}
+satis_df <- rider_data_full %>%
+  count(borough, overall_satisfaction) %>%
+  group_by(borough) %>%
+  mutate(
+    prop = n / sum(n),
+    percent_label = paste0(round(prop * 100, 1), "%")
+  ) %>%
+  ungroup()
+
+
+library(plotly)
+
+boroughs <- unique(satis_df$borough)
+
+p <- plot_ly()
+
+for (i in seq_along(boroughs)) {
+  
+  b <- boroughs[i]
+  df_b <- filter(satis_df, borough == b)
+  
+  # Each borough gets its own ring
+  p <- add_trace(
+    p,
+    data = df_b,
+    labels = ~overall_satisfaction,
+    values = ~prop,
+    type = "pie",
+    hole = 0.2 + (i - 1) * 0.15,      # inner hole size per ring
+    sort = FALSE,
+    direction = "clockwise",
+    textinfo = "none",
+    hovertemplate = paste(
+      "<b>Borough:</b> ", b, "<br>",
+      "<b>Category:</b> %{label}<br>",
+      "<b>Percent:</b> %{customdata}<extra></extra>"
+    ),
+    customdata = ~percent_label,
+    showlegend = (i == 1)             # legend only once
+  )
+}
+
+p <- layout(
+  p,
+  title = "MTA Satisfaction Across Boroughs (Multi-Ring Donut)",
+  margin = list(l = 20, r = 20, t = 50, b = 20)
+)
+
+p
 
 ```
 
