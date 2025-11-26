@@ -1,0 +1,310 @@
+---
+title: "Subway Complaint Analysis Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(lubridate)
+library(plotly)
+library(viridis)
+library(readxl)
+```
+
+
+Here I will clean the 2019_subway_rider_data 
+
+```{r}
+subway_rider_data = 
+  read_csv("2019_Subway_Rider_Survey_20251121.csv") |> 
+  janitor::clean_names()
+
+
+subway_drops =
+  subway_rider_data |> 
+  select(-survey_stop_borough, -survey_stop_location) |> 
+  drop_na() |> 
+  mutate(survey_id = row_number()) |> 
+  relocate(survey_id, .before = 1)
+  
+```
+
+Now I will specifically clean the data within the columns
+
+Cleaned rider frequency table: 
+```{r}
+rider_data =
+  subway_drops |>
+  mutate(
+    use_of_subway_frequency = case_when(
+      use_of_subway_frequency == "Everyday / Almost everyday" ~ "Every day",
+      use_of_subway_frequency == "More than once a week, varies" ~ "Several times a week",
+      use_of_subway_frequency %in% c("Weekdays, Mon - Fri", "~5 days per week") ~ "5 days per week",
+      use_of_subway_frequency == "Once a week" ~ "Once a week",
+      use_of_subway_frequency == "Once a month" ~ "Once a month",
+      use_of_subway_frequency == "Almost never" ~ "Almost never",
+      use_of_subway_frequency == "Never" ~ "Never",
+      TRUE ~ NA_character_
+    ),
+    use_of_subway_frequency = 
+      factor(
+        use_of_subway_frequency,
+        levels = c("Never", 
+                   "Almost never", 
+                   "Once a month", 
+                   "Once a week",
+                   "Several times a week", 
+                   "5 days per week", 
+                   "Every day"),
+        ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(average_length_subway_ride = 
+           factor(average_length_subway_ride,
+                  levels = c("< 20 min", 
+                             "20 - 40 min", 
+                             "40 - 60 min",
+                             "60 - 90 min", 
+                             "90 min - 2 hours"),
+                  ordered = TRUE))
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    overall_satisfaction = 
+      recode(
+        overall_satisfaction,
+        "Not satisfied" = "Unsatisfied"),
+    overall_satisfaction = 
+      factor(
+        overall_satisfaction,
+        levels = c("Highly unsatisfied",
+                 "Unsatisfied",
+                 "Neutral",
+                 "Somewhat satisfied",
+                 "Very satisfied"),
+      ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c("Everyday",
+                 "A few times a week",
+                 "Rarely",
+                 "Almost never",
+                 "Never"),
+      ordered = TRUE)
+    )
+    
+```
+
+
+converting complaints into long format: 
+
+
+```{r}
+rider_data =
+  rider_data |> 
+  mutate(
+    top_three_complaints = 
+      str_remove_all(top_three_complaints, "\\[|\\]|'")
+  ) |> 
+  separate_rows(top_three_complaints, sep = ",") |> 
+  mutate(top_three_complaints = 
+           str_trim(top_three_complaints)) |> 
+  rename(complaint = top_three_complaints)
+```
+
+
+
+Making some of the variables as a character and some as a factor!
+```{r}
+rider_data = 
+  rider_data |> 
+  mutate(
+    is_subway_affordable = if_else(
+      is_subway_affordable == "Yes", TRUE, FALSE),
+    zip_code = as.character(zip_code)
+    )
+
+
+rider_data =
+  rider_data |> 
+  mutate(
+    across(c(subway_line_used_most_often,
+             get_to_subway_via,
+             primary_use_of_subway,
+             alternative_transport), as.factor)
+  )
+```
+
+<<<<<<< HEAD
+Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google. There were three zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
+
+```{r}
+zip_raw <- read_excel("nyc_zipcodes.xls", skip = 4)
+
+# Step 2: Rename columns properly
+colnames(zip_raw) <- c(
+  "borough", "zipcode", "total_population", "white", "black_or_african_american",
+  "american_indian_alaska_native", "asian", "native_hawaiian_other_pacific",
+  "some_other_race", "two_or_more_races", "hispanic_origin", "total_housing_units"
+)
+
+# Step 3: Now select only borough and zipcode
+zip_code_data <- zip_raw %>%
+  select(borough, zipcode) %>%
+  mutate(zipcode = as.character(zipcode))  # ensure character
+
+# Step 4: Make rider_data zip_code a character
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+
+# Step 5: Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+
+# Step 6: Fill borough where missing
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+# Step 7: Remove invalid zip codes
+rider_data_full <- rider_data_full %>%
+  filter(!zip_code %in% c("12105", "11290", "11135"))
+
+```
+
+
+Create complaint_data_time from rider_data_full with time information
+```{r}
+complaint_data_time <- rider_data_full |> 
+  mutate(
+    submitted_at = mdy_hm(submitted_at),
+    hour = hour(submitted_at),
+    time_of_day = case_when(
+      hour >= 6 & hour < 12 ~ "Morning",
+      hour >= 12 & hour < 17 ~ "Afternoon", 
+      hour >= 17 & hour < 21 ~ "Evening",
+      TRUE ~ "Night"
+    ),
+    time_of_day = factor(time_of_day, 
+                        levels = c("Morning", "Afternoon", "Evening", "Night"))
+  )
+```
+
+
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+### Complaint types by time and line 
+
+# Create summary data for the main plot
+complaint_summary =
+  complaint_data_time |> 
+  count(subway_line_used_most_often, time_of_day, complaint) |> 
+  group_by(subway_line_used_most_often, time_of_day) |> 
+  mutate(percent = n / sum(n) * 100) |> 
+  ungroup()
+
+# Create interactive plot using plot_ly (following class examples)
+main_plot <- complaint_summary |> 
+  mutate(
+    text_label = str_c(
+      "Line: ", subway_line_used_most_often,
+      "\nTime: ", time_of_day, 
+      "\nComplaint: ", complaint,
+      "\nCount: ", n,
+      "\nPercent: ", round(percent, 1), "%"
+    )
+  ) |> 
+  plot_ly(
+    x = ~time_of_day, 
+    y = ~n, 
+    color = ~complaint,
+    type = "bar",
+    text = ~text_label,
+    hoverinfo = "text",
+    colors = viridis::viridis_pal()(length(unique(complaint_summary$complaint)))
+  ) |> 
+  layout(
+    barmode = "stack",
+    title = "Complaint Types by Time of Day and Subway Line",
+    xaxis = list(title = "Time of Day"),
+    yaxis = list(title = "Number of Complaints"),
+    showlegend = TRUE
+  )
+
+main_plot
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+# Summary of top complaints overall
+top_complaints <- complaint_data_time |> 
+  count(complaint) |> 
+  arrange(desc(n)) |> 
+  head(10)
+
+bar_plot <- top_complaints |> 
+  mutate(
+    text_label = str_c("Complaint: ", complaint, "\nCount: ", n)
+  ) |> 
+  plot_ly(
+    x = ~n,
+    y = ~fct_reorder(complaint, n),
+    type = "bar",
+    orientation = "h",
+    text = ~text_label,
+    hoverinfo = "text",
+    marker = list(color = viridis::viridis_pal()(10))
+  ) |> 
+  layout(
+    title = "Top 10 Complaint Types",
+    xaxis = list(title = "Number of Complaints"),
+    yaxis = list(title = "")
+  )
+
+bar_plot
+
+```
+
+### Chart C
+
+```{r}
+# Using ggplotly approach (as shown in class notes)
+gg_base <- complaint_summary |> 
+  ggplot(aes(x = time_of_day, y = n, fill = complaint)) +
+  geom_bar(stat = "identity", position = "stack") +
+  scale_fill_viridis_d() +
+  labs(
+    title = "Complaint Types by Time of Day",
+    x = "Time of Day",
+    y = "Number of Complaints",
+    fill = "Complaint Type"
+  ) +
+  theme_minimal()
+
+ggplotly(gg_base, tooltip = c("fill", "y"))
+```
+
