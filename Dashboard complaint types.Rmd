@@ -7,17 +7,17 @@ output:
     theme: flatly
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=TRUE}
+
 library(flexdashboard)
 library(tidyverse)
 library(lubridate)
 library(plotly)
 library(viridis)
 library(readxl)
+library(treemapify)
 ```
 
-
-Here I will clean the 2019_subway_rider_data 
 
 ```{r}
 subway_rider_data = 
@@ -34,9 +34,7 @@ subway_drops =
   
 ```
 
-Now I will specifically clean the data within the columns
 
-Cleaned rider frequency table: 
 ```{r}
 rider_data =
   subway_drops |>
@@ -112,9 +110,6 @@ rider_data =
 ```
 
 
-converting complaints into long format: 
-
-
 ```{r}
 rider_data =
   rider_data |> 
@@ -128,9 +123,6 @@ rider_data =
   rename(complaint = top_three_complaints)
 ```
 
-
-
-Making some of the variables as a character and some as a factor!
 ```{r}
 rider_data = 
   rider_data |> 
@@ -151,8 +143,6 @@ rider_data =
   )
 ```
 
-<<<<<<< HEAD
-Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google. There were three zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
 
 ```{r}
 zip_raw <- read_excel("nyc_zipcodes.xls", skip = 4)
@@ -187,8 +177,6 @@ rider_data_full <- rider_data_full %>%
 
 ```
 
-
-Create complaint_data_time from rider_data_full with time information
 ```{r}
 complaint_data_time <- rider_data_full |> 
   mutate(
@@ -207,12 +195,12 @@ complaint_data_time <- rider_data_full |>
 
 
 
-Column {data-width=650}
+Column {data-width=1800}
 -----------------------------------------------------------------------
 
 ### Chart A
 
-```{r}
+```{r, fig.width=15, fig.height=8}
 ### Complaint types by time and line 
 
 # Create summary data for the main plot
@@ -254,12 +242,13 @@ main_plot <- complaint_summary |>
 main_plot
 ```
 
-Column {data-width=350}
+Column {data-width=1800}
 -----------------------------------------------------------------------
 
 ### Chart B
 
-```{r}
+```{r, fig.width=15, fig.height=8}
+
 # Summary of top complaints overall
 top_complaints <- complaint_data_time |> 
   count(complaint) |> 
@@ -289,22 +278,56 @@ bar_plot
 
 ```
 
+
+
+Column {data-width=1800}
+-----------------------------------------------------------------------
+
 ### Chart C
 
-```{r}
-# Using ggplotly approach (as shown in class notes)
-gg_base <- complaint_summary |> 
-  ggplot(aes(x = time_of_day, y = n, fill = complaint)) +
-  geom_bar(stat = "identity", position = "stack") +
-  scale_fill_viridis_d() +
+
+```{r, fig.width=15, fig.height=8}
+complaint_treemap_data <- rider_data_full %>%
+  filter(!is.na(subway_line_used_most_often),
+         !is.na(complaint)) %>%
+  group_by(subway_line_used_most_often, complaint) %>%
+  summarize(n = n(), .groups = "drop") %>%
+  group_by(subway_line_used_most_often) %>%
+  mutate(
+    total_line = sum(n),
+    percent = n / total_line * 100
+  )
+
+treemap_plot <- ggplot(
+  complaint_treemap_data,
+  aes(
+    area = percent,
+    fill = complaint,
+    label = paste0(complaint, "\n", round(percent,1), "%")
+  )
+) +
+  geom_treemap() +
+  geom_treemap_text(
+    place = "centre",
+    grow = TRUE,
+    colour = "white",
+    min.size = 4
+  ) +
+  facet_wrap(~ subway_line_used_most_often) +
+  scale_fill_viridis_d(option = "C") +
   labs(
-    title = "Complaint Types by Time of Day",
-    x = "Time of Day",
-    y = "Number of Complaints",
+    title = "Distribution of Complaint Types Within Each Subway Line",
+    subtitle = "Treemap size represents the percentage of complaint types per subway line",
     fill = "Complaint Type"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 18, face="bold"),
+    strip.text = element_text(size = 12, face = "bold")
+  )
 
-ggplotly(gg_base, tooltip = c("fill", "y"))
+treemap_plot
 ```
+
+
 
