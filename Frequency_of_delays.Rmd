@@ -1,6 +1,10 @@
 ---
 title: "Frequency of Delays by Subway Line"
-output: html_document
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    theme: flatly
 ---
 
 This is an interactive visualization representing the frequency of delays by subway line.
@@ -73,7 +77,7 @@ cleaned <- cleaned |>
   )
 ```
 
-1. Display table of Subway Line Directory:
+### 1. Subway Line Directory:
 ```{r}
 subway_directory_display <- tribble(
   ~`Line Family`, ~Lines, ~Color,
@@ -143,8 +147,8 @@ cleaned <- cleaned |>
   left_join(subway_directory, by = "subway_line")
 ```
 
-2. Distribution of Delay Frequency Responses by Subway Line
-Interactive Plotly Stacked Bar Chart
+### 2. Distribution of Delay Frequency Responses by Subway Line 
+Interactive Plotly Stacked Bar Chart 
 ```{r}
 # Build distribution dataset
 dist_delay <- cleaned |>
@@ -186,7 +190,7 @@ plot_ly(
 ```
 
 
-3. Proportion of Riders Reporting Long Delays (≥20 min) by individual line
+### 3. Proportion of Riders Reporting Long Delays (≥20 min) by individual line
 Interactive plotly bar chart
 ```{r}
 # Define long-delay categories
@@ -254,7 +258,7 @@ plot_ly(
   )
 ```
 
-4. Ordinal frequency of delay responses
+### 4. Ordinal frequency of delay responses
 Interactive plotly heat map
 ```{r}
 # keep only the meaningful delay levels
