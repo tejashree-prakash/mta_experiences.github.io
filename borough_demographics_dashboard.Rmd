@@ -19,7 +19,7 @@ Satisfaction
 Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google. There were three zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
 
 
-```{r setup, include=TRUE}
+```{r setup, include=FALSE}
 library(tidyverse)
 library(plotly)
 library(dplyr)
@@ -140,7 +140,7 @@ rider_data_full <- rider_data_full %>%
 ```
 
 
-### Chart A 
+### Survey Respondents by Borough
 ```{r, fig.height=14}
 #Location distribution 
 borough_df <- rider_data_full %>% 
@@ -161,7 +161,7 @@ plot_ly(
 ```
 
 
-### Chart B
+### Primary Subway Use by Borough
 ```{r, fig.height=14}
 #Primary use of subway 
 primary_df <- rider_data_full %>%
@@ -189,7 +189,7 @@ plot_ly(
 
 
 
-### Chart C
+### Ride Length Distribution by Borough
 ```{r, fig.height=14}
 #Average subway ride length 
 ride_df <- rider_data_full %>%
@@ -200,6 +200,7 @@ plot_ly(ride_df,
         y = ~n,
         color = ~borough,
         type = "bar",
+        colors = colorRamp(c("blue", "lightgreen")),
         hovertemplate = "Borough: %{color}<br>Ride Length: %{x}<br>Count: %{y}<extra></extra>") %>%
   layout(
     barmode = "stack",
@@ -210,7 +211,7 @@ plot_ly(ride_df,
 ```
 
 
-### Chart D
+### Most Used Subway Lines by Borough
 ```{r, fig.height=14}
 #Most used line 
 line_df <- rider_data_full %>%
@@ -247,7 +248,7 @@ plot_ly(hover_df) %>%
 ```
 
 
-### Chart E
+### Affordability Perception by Borough
 ```{r, fig.height=14}
 #Perception of affordability 
 afford_df <- rider_data_full %>%
@@ -275,14 +276,13 @@ plot_ly(
 ```
 
 
-### Chart F
+### Opinions on Increased Fairs by Borough
 ```{r, fig.height=14}
 #Opinion on increased fair 
 library(ggplot2)
 library(dplyr)
 library(patchwork)  # for arranging plots
 
-# Prepare data
 satis_df <- rider_data_full %>%
   count(borough, opinion_on_increased_fares) %>%
   group_by(borough) %>%
@@ -291,7 +291,7 @@ satis_df <- rider_data_full %>%
   ) %>%
   ungroup()
 
-# Unique boroughs
+#Group by borough 
 boroughs <- unique(satis_df$borough)
 
 # Create individual pie charts for each borough
@@ -311,7 +311,7 @@ wrap_plots(plots, nrow = 2)
 
 ```
 
-### Chart G
+### Aggregated Satisfaction Levels 
 ```{r, fig.height=14}
 #Satisfaction 
 satis_overall <- rider_data_full %>%
@@ -333,4 +333,9 @@ plot_ly(
 
 ```
 
+
+### Satisfaction Levels by Borough
+```{r}
+
+```
 
