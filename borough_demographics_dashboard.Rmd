@@ -1,0 +1,336 @@
+---
+title: "Borough Demographics Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    theme: flatly
+---
+
+By borough / zip code (like the TA’s example) 
+Primary use of subway 
+Average subway ride length 
+Most used line 
+
+Perception of affordability 
+Opinion on increased fair 
+Satisfaction 
+
+Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google. There were three zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
+
+
+```{r setup, include=TRUE}
+library(tidyverse)
+library(plotly)
+library(dplyr)
+```
+
+
+```{r}
+#Clean data
+subway_rider_data = 
+  read_csv("data/2019_subway_rider_data.csv") |> 
+  janitor::clean_names()
+
+
+subway_drops =
+  subway_rider_data |> 
+  select(-survey_stop_borough, -survey_stop_location) |> 
+  drop_na() |> 
+  mutate(survey_id = row_number()) |> 
+  relocate(survey_id, .before = 1)
+  
+rider_data =
+  subway_drops |>
+  mutate(
+    use_of_subway_frequency = case_when(
+      use_of_subway_frequency == "Everyday / Almost everyday" ~ "Every day",
+      use_of_subway_frequency == "More than once a week, varies" ~ "Several times a week",
+      use_of_subway_frequency %in% c("Weekdays, Mon - Fri", "~5 days per week") ~ "5 days per week",
+      use_of_subway_frequency == "Once a week" ~ "Once a week",
+      use_of_subway_frequency == "Once a month" ~ "Once a month",
+      use_of_subway_frequency == "Almost never" ~ "Almost never",
+      use_of_subway_frequency == "Never" ~ "Never",
+      TRUE ~ NA_character_
+    ),
+    use_of_subway_frequency = 
+      factor(
+        use_of_subway_frequency,
+        levels = c("Never", 
+                   "Almost never", 
+                   "Once a month", 
+                   "Once a week",
+                   "Several times a week", 
+                   "5 days per week", 
+                   "Every day"),
+        ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(average_length_subway_ride = 
+           factor(average_length_subway_ride,
+                  levels = c("< 20 min", 
+                             "20 - 40 min", 
+                             "40 - 60 min",
+                             "60 - 90 min", 
+                             "90 min - 2 hours"),
+                  ordered = TRUE))
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    overall_satisfaction = 
+      recode(
+        overall_satisfaction,
+        "Not satisfied" = "Unsatisfied"),
+    overall_satisfaction = 
+      factor(
+        overall_satisfaction,
+        levels = c("Highly unsatisfied",
+                 "Unsatisfied",
+                 "Neutral",
+                 "Somewhat satisfied",
+                 "Very satisfied"),
+      ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c("Everyday",
+                 "A few times a week",
+                 "Rarely",
+                 "Almost never",
+                 "Never"),
+      ordered = TRUE)
+    )
+    
+#Zip code --> borough 
+
+zip_code_data = 
+  read_csv("data/nyc_zipcodes.csv") %>%
+  select(borough, zipcode)
+
+#Make sure character type
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode))
+
+#Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+
+#If there's no match, we want to keep the zip_code in the borough column, so we use coalesce to handle this
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#manually go through remaining zip codes - removing 11135 11290 12105 as they are not real zip codes & also removing one observation that didn't have zip code 
+rider_data_full <- rider_data_full %>%
+  filter(zip_code != 12105) %>%
+  filter(zip_code != 11290) %>%
+  filter(zip_code != 11135) %>%
+  filter(survey_id != 919) 
+```
+
+
+### Chart A 
+```{r, fig.height=14}
+#Location distribution 
+borough_df <- rider_data_full %>% 
+  count(borough)
+
+plot_ly(
+  borough_df,
+  x = ~borough,
+  y = ~n,
+  type = "bar",
+  hovertemplate = "Borough: %{x}<br>Count: %{y}<extra></extra>"
+) %>%
+  layout(title = "Survey Respondents by Borough",
+         xaxis = list(title = "Borough"),
+         yaxis = list(title = "Count")) %>%
+  layout(autosize = TRUE)
+
+```
+
+
+### Chart B
+```{r, fig.height=14}
+#Primary use of subway 
+primary_df <- rider_data_full %>%
+  count(borough, primary_use_of_subway) %>%
+  group_by(borough) %>%
+  mutate(prop = n / sum(n))
+
+plot_ly(
+  primary_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~primary_use_of_subway,
+  type = "bar",
+  hovertemplate = 
+    "Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra></extra>",
+  customdata = ~primary_use_of_subway
+) %>%
+  layout(
+    barmode = "stack",
+    title = "Primary Subway Use by Borough",
+    yaxis = list(tickformat = ".0%", title = "Proportion")
+  ) %>%
+  layout(autosize = TRUE)
+```
+
+
+
+### Chart C
+```{r, fig.height=14}
+#Average subway ride length 
+ride_df <- rider_data_full %>%
+  count(borough, average_length_subway_ride)
+
+plot_ly(ride_df,
+        x = ~average_length_subway_ride,
+        y = ~n,
+        color = ~borough,
+        type = "bar",
+        hovertemplate = "Borough: %{color}<br>Ride Length: %{x}<br>Count: %{y}<extra></extra>") %>%
+  layout(
+    barmode = "stack",
+    title = "Ride Length Distribution by Borough",
+    xaxis = list(title = "Ride Length Category"),
+    yaxis = list(title = "Count")
+  )
+```
+
+
+### Chart D
+```{r, fig.height=14}
+#Most used line 
+line_df <- rider_data_full %>%
+  count(borough, subway_line_used_most_often)
+
+#Make the hover show counts per borough
+hover_df <- line_df %>%
+  group_by(subway_line_used_most_often) %>%
+  summarise(
+    total_count = sum(n),
+    borough_info = paste0(borough, ": ", n, collapse = "<br>")
+  )
+
+#Produce plot
+plot_ly(hover_df) %>%
+  add_segments(
+    x = 0,
+    xend = ~total_count,
+    y = ~reorder(subway_line_used_most_often, total_count),
+    yend = ~reorder(subway_line_used_most_often, total_count),
+    hoverinfo = "none"
+  ) %>%
+  add_markers(
+    x = ~total_count,
+    y = ~reorder(subway_line_used_most_often, total_count),
+    hovertemplate = "Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra></extra>",
+    customdata = ~borough_info
+  ) %>%
+  layout(
+    title = "Most Used Subway Lines by Borough",
+    xaxis = list(title = "Count"),
+    yaxis = list(title = "Line")
+  )
+```
+
+
+### Chart E
+```{r, fig.height=14}
+#Perception of affordability 
+afford_df <- rider_data_full %>%
+  count(borough, is_subway_affordable) %>%
+  group_by(borough) %>%
+  mutate(prop = n / sum(n))
+
+plot_ly(
+  afford_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~is_subway_affordable,
+  type = "bar",
+  hovertemplate = 
+    "Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra></extra>",
+  customdata = ~is_subway_affordable
+) %>%
+  layout(
+    barmode = "stack",
+    title = "Affordability Perception by Borough",
+    yaxis = list(tickformat = ".0%", title = "Proportion")
+  ) %>%
+  layout(autosize = TRUE)
+
+```
+
+
+### Chart F
+```{r, fig.height=14}
+#Opinion on increased fair 
+library(ggplot2)
+library(dplyr)
+library(patchwork)  # for arranging plots
+
+# Prepare data
+satis_df <- rider_data_full %>%
+  count(borough, opinion_on_increased_fares) %>%
+  group_by(borough) %>%
+  mutate(
+    prop = n / sum(n)
+  ) %>%
+  ungroup()
+
+# Unique boroughs
+boroughs <- unique(satis_df$borough)
+
+# Create individual pie charts for each borough
+plots <- lapply(boroughs, function(b) {
+  df_b <- filter(satis_df, borough == b)
+  
+  ggplot(df_b, aes(x = "", y = prop, fill = opinion_on_increased_fares)) +
+    geom_col(width = 1, color = "white") +
+    coord_polar(theta = "y") +
+    labs(title = b, fill = "Opinion") +
+    theme_void() +
+    theme(legend.position = "bottom")
+})
+
+# Arrange plots in a grid (e.g., 2 rows)
+wrap_plots(plots, nrow = 2)
+
+```
+
+### Chart G
+```{r, fig.height=14}
+#Satisfaction 
+satis_overall <- rider_data_full %>%
+  count(overall_satisfaction) %>%
+  mutate(prop = n / sum(n),
+         percent = paste0(round(prop*100,1), "%"))
+
+plot_ly(
+  satis_overall,
+  labels = ~overall_satisfaction,
+  values = ~prop,
+  type = "pie",
+  hole = .5,
+  textinfo = "label+percent",
+  hovertemplate = "%{label}<br>%{percent}<extra></extra>"
+) %>%
+  layout(title = "Aggregated Satisfaction Levels") %>%
+  layout(autosize = TRUE)
+
+```
+
+
