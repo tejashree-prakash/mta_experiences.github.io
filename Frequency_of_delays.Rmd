@@ -1,6 +1,10 @@
 ---
 title: "Frequency of Delays by Subway Line"
-output: html_document
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    theme: flatly
 ---
 
 This is an interactive visualization representing the frequency of delays by subway line.
@@ -73,7 +77,7 @@ cleaned <- cleaned |>
   )
 ```
 
-Display table of Subway Line Directory:
+### 1. Subway Line Directory:
 ```{r}
 subway_directory_display <- tribble(
   ~`Line Family`, ~Lines, ~Color,
@@ -143,89 +147,51 @@ cleaned <- cleaned |>
   left_join(subway_directory, by = "subway_line")
 ```
 
-Frequency of delays across all trains.
-Interactive Plotly Bar Chart
+### 2. Distribution of Delay Frequency Responses by Subway Line 
+Interactive Plotly Stacked Bar Chart 
 ```{r}
-freq_by_line <- cleaned |> 
-  drop_na(frequency_of_delays) |> 
-  count(subway_line, frequency_of_delays) |> 
-  group_by(subway_line) |> 
-  summarize(delay_score = sum(as.numeric(frequency_of_delays))) |> 
-  left_join(subway_directory, by = "subway_line")
+# Build distribution dataset
+dist_delay <- cleaned |>
+  filter(!is.na(frequency_of_delays)) |>
+  count(subway_line, frequency_of_delays) |>
+  group_by(subway_line) |>
+  mutate(prop = n / sum(n)) |>
+  ungroup() |>
+  left_join(subway_directory, by="subway_line") |>
+  arrange(group_color, subway_line) |>
+  mutate(subway_line = factor(subway_line, levels = unique(subway_line)))
 
-# Group bars together by color family matching the directory order 
-freq_by_line <- cleaned |> 
-  drop_na(frequency_of_delays) |> 
-  count(subway_line, frequency_of_delays) |> 
-  group_by(subway_line) |> 
-  summarize(delay_score = sum(as.numeric(frequency_of_delays))) |> 
-  left_join(subway_directory, by = "subway_line") |> 
-  arrange(group_color, subway_line) |> 
-  mutate(
-    subway_line = factor(subway_line, levels = subway_line)
-  )
-
+# Plot
 plot_ly(
-  data = freq_by_line,
+  data = dist_delay,
   x = ~subway_line,
-  y = ~delay_score,
+  y = ~prop,
   type = "bar",
-  marker = list(color = ~hex_color),
-  
-  # Send group_color to the hovertemplate
-  customdata = ~group_color,
-  
-  # Hover box formatting
+  color = ~frequency_of_delays,
+  colors = viridisLite::viridis(6),
+  customdata = ~frequency_of_delays,
   hovertemplate = paste(
     "<b>Subway Line:</b> %{x}<br>",
-    "<b>Delay Frequency Score:</b> %{y}<br>",
-    "<extra></extra>"  # removes default tooltip
-  )
-) |>
-  layout(
-    title = "Frequency of Reported Delays by Subway Line",
-    xaxis = list(title = "Subway Line"),
-    yaxis = list(title = "Delay Frequency Score"),
-    showlegend = FALSE
-  )
-```
-
-Frequency of Delays Across Line Family 
-```{r}
-freq_by_group <- cleaned |> 
-  drop_na(frequency_of_delays) |> 
-  count(group_color, frequency_of_delays) |> 
-  group_by(group_color) |> 
-  summarize(delay_score = sum(as.numeric(frequency_of_delays))) |> 
-  left_join(
-    subway_directory |> distinct(group_color, hex_color),
-    by = "group_color"
-  )
-
-plot_ly(
-  data = freq_by_group,
-  x = ~group_color,
-  y = ~delay_score,
-  type = "bar",
-  marker = list(color = ~hex_color),
-
-  # add hovertemplate
-  hovertemplate = paste(
-    "<b>Color Group:</b> %{x}<br>",
-    "<b>Delay Frequency Score:</b> %{y}<br>",
+    "<b>Delay Frequency:</b> %{customdata}<br>",
+    "<b>Proportion of Riders:</b> %{y:.1%}<br>",
     "<extra></extra>"
   )
 ) |>
   layout(
-    title = "Frequency of Reported Delays by Subway Color Group",
-    xaxis = list(title = "Color Group"),
-    yaxis = list(title = "Delay Frequency Score"),
-    showlegend = FALSE
+    barmode = "stack",
+    title = list(
+      text = "<b>Distribution of Delay Frequency Responses by Subway Line</b>",
+      x = 0.5
+    ),
+    xaxis = list(title = "Subway Line"),
+    yaxis = list(title = "Proportion", tickformat=".0%"),
+    showlegend = TRUE
   )
 ```
 
 
-Proportion of Riders Reporting Long Delays (≥20 min) by subway line:
+### 3. Proportion of Riders Reporting Long Delays (≥20 min) by individual line
+Interactive plotly bar chart
 ```{r}
 # Define long-delay categories
 long_categories <- c( 
@@ -273,7 +239,7 @@ plot_ly(
 ) |>
   layout(
     title = list(
-      text = "<b>Proportion of Riders Reporting Long Delays (≥ 20 min) by Subway Line</b>",
+      text = "Proportion of Riders Reporting Long Delays (≥ 20 min)",
       y = 0.95
     ),
     xaxis = list(
@@ -291,3 +257,69 @@ plot_ly(
     bargroupgap = 0.05 # spacing within groups
   )
 ```
+
+### 4. Ordinal frequency of delay responses
+Interactive plotly heat map
+```{r}
+# keep only the meaningful delay levels
+keep_delays <- c(
+  "Rarely",
+  "A few times a week",
+  "Everyday"
+)
+
+heat_data <- cleaned |> 
+  filter(!is.na(frequency_of_delays)) |> 
+  filter(frequency_of_delays %in% keep_delays) |> 
+  count(subway_line, frequency_of_delays) |> 
+  tidyr::complete(
+    subway_line = unique(subway_directory$subway_line),
+    frequency_of_delays = keep_delays,
+    fill = list(n = 0)
+  ) |>
+  group_by(subway_line) |> 
+  mutate(prop = n / sum(n)) |> 
+  ungroup() |> 
+  left_join(subway_directory, by = "subway_line") |> 
+  arrange(group_color, subway_line) |> 
+  mutate(
+    subway_line = factor(subway_line, levels = unique(subway_line)),
+    frequency_of_delays = factor(frequency_of_delays, levels = keep_delays)
+  )
+
+# Heatmap (now only 3 categories)
+plot_ly(
+  data = heat_data,
+  x = ~frequency_of_delays,
+  y = ~subway_line,
+  z = ~prop,
+  type = "heatmap",
+  colors = viridisLite::viridis(100),
+  customdata = ~n,
+  hovertemplate = paste(
+    "<b>Line:</b> %{y}<br>",
+    "<b>Delay Frequency:</b> %{x}<br>",
+    "<b>Proportion:</b> %{z:.1%}<br>",
+    "<b>Count:</b> %{customdata}<br>",
+    "<extra></extra>"
+  )
+) |>
+  layout(
+    title = "Delay Frequency Distribution by Subway Line",
+    xaxis = list(
+      title = "Delay Frequency",
+      tickangle = 0,
+      categoryorder = "array",
+      categoryarray = keep_delays
+    ),
+    yaxis = list(
+      title = "Subway Line",
+      categoryorder = "array",
+      categoryarray = unique(heat_data$subway_line)
+    ),
+    margin = list(l = 90, r = 20, b = 80, t = 80),
+    paper_bgcolor = "white",
+    plot_bgcolor = "white"
+  )
+```
+
