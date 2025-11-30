@@ -6,7 +6,7 @@ output:
     vertical_layout: fill
     theme: flatly
 ---
-Importing the cleaned dataset 
+ 
 ```{r setup, include=TRUE}
 
 library(flexdashboard)
@@ -183,72 +183,118 @@ complaint_data_time <- rider_data_full |>
     submitted_at = mdy_hm(submitted_at),
     hour = hour(submitted_at),
     time_of_day = case_when(
-      hour >= 6 & hour < 12 ~ "Morning",
-      hour >= 12 & hour < 17 ~ "Afternoon", 
-      hour >= 17 & hour < 21 ~ "Evening",
-      TRUE ~ "Night"
+      hour >= 6 & hour < 12 ~ "Morning",  #6 am to 11:59 am
+      hour >= 12 & hour < 17 ~ "Afternoon", #12 pm to 4:59 pm
+      hour >= 17 & hour < 21 ~ "Evening",  #5pm to 8:59 pm
+      TRUE ~ "Night" # 9pm to 5:59 am 
     ),
     time_of_day = factor(time_of_day, 
                         levels = c("Morning", "Afternoon", "Evening", "Night"))
   )
 ```
 
-Column {data-width=1800}
------------------------------------------------------------------------
 
-### Chart A
+## Subway Complaints {.tabset}
+
+### Complaint Percent by Line and Time
 
 ```{r, fig.width=15, fig.height=8}
-### Complaint types by time and line overall 
-
-# Create summary data for the main plot
-complaint_summary =
-  complaint_data_time |> 
+# Chart A - Complaint types by time and line overall 
+# Prepare summary data
+complaint_summary <- complaint_data_time |> 
   count(subway_line_used_most_often, time_of_day, complaint) |> 
   group_by(subway_line_used_most_often, time_of_day) |> 
   mutate(percent = n / sum(n) * 100) |> 
   ungroup()
 
-# Create interactive plot using plot_ly (following class examples)
-main_plot <- complaint_summary |> 
-  mutate(
-    text_label = str_c(
-      "Line: ", subway_line_used_most_often,
-      "\nTime: ", time_of_day, 
-      "\nComplaint: ", complaint,
-      "\nCount: ", n,
-      "\nPercent: ", round(percent, 1), "%"
-    )
-  ) |> 
-  plot_ly(
-    x = ~time_of_day, 
-    y = ~n, 
-    color = ~complaint,
-    type = "bar",
-    text = ~text_label,
-    hoverinfo = "text",
-    colors = viridis::viridis_pal()(length(unique(complaint_summary$complaint)))
-  ) |> 
-  layout(
-    barmode = "stack",
-    title = "Complaint Types by Time of Day and Subway Line",
-    xaxis = list(title = "Time of Day"),
-    yaxis = list(title = "Number of Complaints"),
-    showlegend = TRUE
-  )
+# Unique time periods
+times <- unique(complaint_summary$time_of_day)
 
-main_plot
+# Build one trace per complaint type * time_of_day
+plot <- plot_ly()
+
+i <- 0
+for (t in times) {
+  df_t <- complaint_summary |> filter(time_of_day == t)
+  
+  for (comp in unique(df_t$complaint)) {
+    df_tc <- df_t |> filter(complaint == comp)
+    
+    plot <- plot |> add_trace(
+      data = df_tc,
+      x = ~percent,
+      y = ~subway_line_used_most_often,
+      type = "bar",
+      orientation = "h",
+      name = comp,
+      # Use hovertemplate with customdata for count
+      hovertemplate = paste(
+        "Time: ", t,
+        "<br>Line: %{y}",
+        "<br>Complaint: ", comp,
+        "<br>Count: %{customdata}",
+        "<br>Percent: %{x:.1f}%",
+        "<extra></extra>"
+      ),
+      customdata = ~n,  # Pass the count data
+      visible = ifelse(t == times[1], TRUE, FALSE),
+      legendgroup = comp,
+      color = comp
+    )
+    
+    i <- i + 1
+  }
+}
+
+# Build dropdown buttons
+buttons <- list()
+for (k in seq_along(times)) {
+  vis <- rep(FALSE, length(unique(complaint_summary$complaint)) * length(times))
+  
+  start <- (k - 1) * length(unique(complaint_summary$complaint)) + 1
+  end <- start + length(unique(complaint_summary$complaint)) - 1
+  
+  vis[start:end] <- TRUE
+  
+  buttons[[k]] <- list(
+    method = "restyle",
+    args = list("visible", vis),
+    label = times[k]
+  )
+}
+
+# Final layout with dropdown moved
+plot |> layout(
+  title = "Complaint Percent by Subway Line and Time of Day",
+  xaxis = list(title = "Percent of Complaints"),
+  yaxis = list(title = "Subway Line"),
+  barmode = "stack",
+  # Move legend if needed (optional)
+  legend = list(
+    x = 1.1,
+    y = 0.5
+  ),
+  updatemenus = list(
+    list(
+      y = 0.98,        # Move to top right, below title
+      x = 0.98,        # Right side
+      buttons = buttons,
+      type = "dropdown",
+      xanchor = "left",  # Anchor to left side
+      yanchor = "top"     # Anchor to top
+    )
+  )
+)
+
 ```
 
 
-Column {data-width=1800}
------------------------------------------------------------------------
 
-### Chart B
+### Summary of top complaints 
 
 ```{r, fig.width=15, fig.height=8}
 
-# Summary of top complaints overall
+#  Chart B - Summary of top complaints overall
 
 top_complaints <- complaint_data_time |> 
   count(complaint) |> 
@@ -256,16 +302,14 @@ top_complaints <- complaint_data_time |>
   head(10)
 
 bar_plot <- top_complaints |> 
-  mutate(
-    text_label = str_c("Complaint: ", complaint, "\nCount: ", n)
-  ) |> 
   plot_ly(
     x = ~n,
     y = ~fct_reorder(complaint, n),
     type = "bar",
     orientation = "h",
-    text = ~text_label,
-    hoverinfo = "text",
+    text = ~n,  
+    textposition = "inside",  
+    hoverinfo = "x+y",
     marker = list(color = viridis::viridis_pal()(10))
   ) |> 
   layout(
@@ -279,15 +323,11 @@ bar_plot
 ```
 
 
-
-Column {data-width=1800}
------------------------------------------------------------------------
-
-### Chart C
+###  Distribution of complaint types overall 
 
 ```{r, fig.width=15, fig.height=8}
 
-# distrubtion of complaint types overall 
+# Chart C - Distribution of complaint types overall 
 
 complaint_treemap_data <- rider_data_full %>%
   filter(!is.na(subway_line_used_most_often),
@@ -305,7 +345,7 @@ treemap_plot <- ggplot(
   aes(
     area = percent,
     fill = complaint,
-    label = paste0(complaint, "\n", round(percent,1), "%")
+    label = paste0(round(percent, 1), "%")
   )
 ) +
   geom_treemap() +
@@ -313,7 +353,8 @@ treemap_plot <- ggplot(
     place = "centre",
     grow = TRUE,
     colour = "white",
-    min.size = 4
+    min.size = 6,     
+    fontface = "bold" 
   ) +
   facet_wrap(~ subway_line_used_most_often) +
   scale_fill_viridis_d(option = "C") +
@@ -324,21 +365,19 @@ treemap_plot <- ggplot(
   ) +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 18, face="bold"),
-    strip.text = element_text(size = 12, face = "bold")
+    plot.title = element_text(size = 20, face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    strip.text = element_text(size = 14, face = "bold")
   )
 
 treemap_plot
 ```
 
 
-Column {data-width=1800}
------------------------------------------------------------------------
-
-### Chart D
+### Summary of top complaints by Borough
 
 ```{r,fig.width=15, fig.height=8}
-# Summary of top complaints by Borough
+#  Chart D - Summary of top complaints by Borough
 
 valid_boroughs <- c("Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island")
 
@@ -360,21 +399,18 @@ top_complaints_borough <- rider_data_full_clean |>
   ungroup()
 
 plot_top_borough <- top_complaints_borough |> 
-  mutate(
-    text_label = str_c(
-      "Borough: ", borough,
-      "\nComplaint: ", complaint,
-      "\nCount: ", n
-    )
-  ) |>
   plot_ly(
     x = ~n,
     y = ~fct_reorder(complaint, n),
-    color = ~borough,   # Now only 5 categories
+    color = ~borough,
     type = "bar",
     orientation = "h",
-    text = ~text_label,
-    hoverinfo = "text",
+    hovertemplate = paste(
+      "Borough: %{data.name}<br>",
+      "Complaint: %{y}<br>",
+      "Count: %{x}<br>",
+      "<extra></extra>"
+    ),
     colors = viridis::viridis_pal()(length(unique(top_complaints_borough$borough)))
   ) |> 
   layout(
@@ -385,57 +421,51 @@ plot_top_borough <- top_complaints_borough |>
   )
 
 plot_top_borough
+
 ```
 
 
-
-
-Column {data-width=1800}
------------------------------------------------------------------------
-
-### Chart E
+### Complaint types by borough
 
 ```{r,fig.width=15, fig.height=8}
-# Complaint types by line and borough
-
+#  Chart E - Complaint types by line and borough
 
 complaint_line_borough <- rider_data_full_clean |> 
   filter(!is.na(subway_line_used_most_often),
          !is.na(borough),
          !is.na(complaint)) |>
-  count(subway_line_used_most_often, borough, complaint) |> 
-  group_by(subway_line_used_most_often, borough) |> 
+  count(borough, complaint) |>         
+  group_by(borough) |>                 
   mutate(percent = n / sum(n) * 100) |> 
   ungroup()
 
 plot_line_borough <- complaint_line_borough |> 
-  mutate(
-    text_label = str_c(
-      "Line: ", subway_line_used_most_often,
-      "\nBorough: ", borough,
-      "\nComplaint: ", complaint,
-      "\nCount: ", n,
-      "\nPercent: ", round(percent, 1), "%"
-    )
-  ) |> 
   plot_ly(
     x = ~borough,
     y = ~percent,
     type = "bar",
     color = ~complaint,
-    text = ~text_label,
-    hoverinfo = "text",
+ 
+    hovertemplate = paste(
+      "Borough: %{x}<br>",
+      "Complaint: %{data.name}<br>",
+      "Percent: %{y:.1f}%<br>",
+      "Count: %{customdata}",
+      "<extra></extra>"
+    ),
+    customdata = ~n,  
     colors = viridis::viridis_pal()(length(unique(complaint_line_borough$complaint)))
   ) |> 
   layout(
     barmode = "stack",
-    title = "Complaint Types by Subway Line and Borough",
+    title = "Complaint Types by Borough",
     xaxis = list(title = "Borough"),
     yaxis = list(title = "Percent of Complaints"),
     showlegend = TRUE
   )
 
 plot_line_borough
+
 ```
 
 
