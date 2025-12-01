@@ -146,18 +146,24 @@ rider_data_full <- rider_data_full %>%
 borough_df <- rider_data_full %>% 
   count(borough)
 
+#Pick blue from gradient 
+viridis_blue <- viridis(100)[40]
+
+#Produce plot
 plot_ly(
   borough_df,
   x = ~borough,
   y = ~n,
   type = "bar",
+  marker = list(color = viridis_blue),
   hovertemplate = "Borough: %{x}<br>Count: %{y}<extra></extra>"
 ) %>%
-  layout(title = "Survey Respondents by Borough",
-         xaxis = list(title = "Borough"),
-         yaxis = list(title = "Count")) %>%
-  layout(autosize = TRUE)
-
+  layout(
+    title = "Survey Respondents by Borough",
+    xaxis = list(title = "Borough"),
+    yaxis = list(title = "Count"),
+    autosize = TRUE
+  )
 ```
 
 
@@ -169,13 +175,19 @@ primary_df <- rider_data_full %>%
   group_by(borough) %>%
   mutate(prop = n / sum(n))
 
+#Set colors for the categorical variable 
+uses <- unique(primary_df$primary_use_of_subway)
+vir_cols <- viridis(length(uses))
+names(vir_cols) <- uses
+
 plot_ly(
   primary_df,
   x = ~borough,
   y = ~prop,
   color = ~primary_use_of_subway,
   type = "bar",
-  hovertemplate = 
+  colors = vir_cols,
+  hovertemplate =
     "Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra></extra>",
   customdata = ~primary_use_of_subway
 ) %>%
@@ -195,13 +207,21 @@ plot_ly(
 ride_df <- rider_data_full %>%
   count(borough, average_length_subway_ride)
 
-plot_ly(ride_df,
-        x = ~average_length_subway_ride,
-        y = ~n,
-        color = ~borough,
-        type = "bar",
-        colors = colorRamp(c("blue", "lightgreen")),
-        hovertemplate = "Borough: %{color}<br>Ride Length: %{x}<br>Count: %{y}<extra></extra>") %>%
+#Set colors for the categorical variable 
+boroughs <- unique(ride_df$borough)
+vir_cols <- viridis(length(boroughs)) #one color for each borough
+names(vir_cols) <- boroughs  
+
+#Produce plot
+plot_ly(
+  ride_df,
+  x = ~average_length_subway_ride,
+  y = ~n,
+  color = ~borough,
+  type = "bar",
+  colors = vir_cols,
+  hovertemplate = "Borough: %{color}<br>Ride Length: %{x}<br>Count: %{y}<extra></extra>"
+) %>%
   layout(
     barmode = "stack",
     title = "Ride Length Distribution by Borough",
@@ -225,6 +245,37 @@ hover_df <- line_df %>%
     borough_info = paste0(borough, ": ", n, collapse = "<br>")
   )
 
+#Add colors for each subway line 
+line_colors <- tibble::tribble(
+  ~subway_line, ~color,
+  "1", "#EE352E",
+  "2", "#EE352E",
+  "3", "#EE352E",
+  "4", "#00933C",
+  "5", "#00933C",
+  "6", "#00933C",
+  "7", "#B933AD",
+  "A", "#0039A6",
+  "C", "#0039A6",
+  "E", "#0039A6",
+  "B", "#FF6319",
+  "D", "#FF6319",
+  "F", "#FF6319",
+  "M", "#FF6319",
+  "N", "#FCCC0A",
+  "Q", "#FCCC0A",
+  "R", "#FCCC0A",
+  "W", "#FCCC0A",
+  "G", "#6CBE45",
+  "J", "#996633",
+  "Z", "#996633",
+  "L", "#A7A9AC",
+  "S", "#808183"
+)
+hover_df <- hover_df %>%
+  left_join(line_colors, by = c("subway_line_used_most_often" = "subway_line"))
+
+
 #Produce plot
 plot_ly(hover_df) %>%
   add_segments(
@@ -232,19 +283,24 @@ plot_ly(hover_df) %>%
     xend = ~total_count,
     y = ~reorder(subway_line_used_most_often, total_count),
     yend = ~reorder(subway_line_used_most_often, total_count),
-    hoverinfo = "none"
+    line = list(color = ~color),
+    hoverinfo = "none",
+    showlegend = FALSE 
   ) %>%
   add_markers(
     x = ~total_count,
     y = ~reorder(subway_line_used_most_often, total_count),
+    marker = list(color = ~color),
     hovertemplate = "Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra></extra>",
-    customdata = ~borough_info
+    customdata = ~borough_info,
+    showlegend = FALSE
   ) %>%
   layout(
     title = "Most Used Subway Lines by Borough",
     xaxis = list(title = "Count"),
-    yaxis = list(title = "Line")
+    yaxis = list(title = "Subway Line")
   )
+
 ```
 
 
@@ -270,8 +326,33 @@ plot_ly(
     barmode = "stack",
     title = "Affordability Perception by Borough",
     yaxis = list(tickformat = ".0%", title = "Proportion")
-  ) %>%
-  layout(autosize = TRUE)
+  ) 
+
+#Initialize to see unique TRUE/FALSE values 
+vals <- unique(afford_df$is_subway_affordable)
+
+#Make colors for each categorical option
+library(viridis)
+vals <- unique(afford_df$is_subway_affordable)
+vir_cols <- viridis(length(vals))     
+names(vir_cols) <- vals                        
+
+
+plot_ly(
+  afford_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~is_subway_affordable,
+  type = "bar",
+  colors = vir_cols,                         
+  customdata = ~is_subway_affordable,
+  hovertemplate = "Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra></extra>"
+) %>%
+  layout(
+    barmode = "stack",
+    title = "Affordability Perception by Borough",
+    yaxis = list(tickformat = ".0%", title = "Proportion")
+  )
 
 ```
 
@@ -279,35 +360,50 @@ plot_ly(
 ### Opinions on Increased Fairs by Borough
 ```{r, fig.height=14}
 #Opinion on increased fair 
-library(ggplot2)
-library(dplyr)
-library(patchwork)  # for arranging plots
-
-satis_df <- rider_data_full %>%
+opinion_df <- rider_data_full %>%
   count(borough, opinion_on_increased_fares) %>%
   group_by(borough) %>%
   mutate(
-    prop = n / sum(n)
+    prop = n / sum(n),
+    hover_text = paste0(
+      "Borough: ", borough, "<br>",
+      "Opinion: ", opinion_on_increased_fares, "<br>",
+      "Count: ", n, "<br>",
+      "Proportion: ", scales::percent(prop, accuracy = 0.1)
+    )
   ) %>%
   ungroup()
 
-#Group by borough 
-boroughs <- unique(satis_df$borough)
+#Convert to wide
+heat_matrix <- opinion_df %>%
+  select(borough, opinion_on_increased_fares, prop) %>%
+  pivot_wider(
+    names_from = opinion_on_increased_fares,
+    values_from = prop
+  )
 
-# Create individual pie charts for each borough
-plots <- lapply(boroughs, function(b) {
-  df_b <- filter(satis_df, borough == b)
-  
-  ggplot(df_b, aes(x = "", y = prop, fill = opinion_on_increased_fares)) +
-    geom_col(width = 1, color = "white") +
-    coord_polar(theta = "y") +
-    labs(title = b, fill = "Opinion") +
-    theme_void() +
-    theme(legend.position = "bottom")
-})
+#Convert to wide for the hovering information
+hover_matrix <- opinion_df %>%
+  select(borough, opinion_on_increased_fares, hover_text) %>%
+  pivot_wider(
+    names_from = opinion_on_increased_fares,
+    values_from = hover_text
+  )
 
-# Arrange plots in a grid (e.g., 2 rows)
-wrap_plots(plots, nrow = 2)
+#Produce plot
+plot_ly(
+  x = colnames(heat_matrix)[-1],
+  y = heat_matrix$borough,
+  z = as.matrix(heat_matrix[,-1]),
+  text = as.matrix(hover_matrix[,-1]),
+  type = "heatmap",
+  hoverinfo = "text",
+  colorscale = "Viridis") %>%
+  layout(
+    title = "Opinions on Increased Fares by Borough",
+    xaxis = list(title = "Opinion"),
+    yaxis = list(title = "Borough")
+  )
 
 ```
 
@@ -319,6 +415,10 @@ satis_overall <- rider_data_full %>%
   mutate(prop = n / sum(n),
          percent = paste0(round(prop*100,1), "%"))
 
+#Set colors to gradient manually 
+library(viridis)
+viridis_colors <- viridis(nrow(satis_overall))
+
 plot_ly(
   satis_overall,
   labels = ~overall_satisfaction,
@@ -326,16 +426,60 @@ plot_ly(
   type = "pie",
   hole = .5,
   textinfo = "label+percent",
+  marker = list(colors = viridis_colors),   # ← APPLY VIRIDIS HERE
   hovertemplate = "%{label}<br>%{percent}<extra></extra>"
 ) %>%
-  layout(title = "Aggregated Satisfaction Levels") %>%
-  layout(autosize = TRUE)
-
+  layout(title = "Aggregated Satisfaction Levels")
 ```
 
 
 ### Satisfaction Levels by Borough
 ```{r}
+# Prep data
+satis_df <- rider_data_full %>%
+  count(borough, overall_satisfaction) %>%
+  group_by(borough) %>%
+  mutate(
+    prop = n / sum(n),
+    hover_text = paste0(
+      "Borough: ", borough, "<br>",
+      "Opinion: ", overall_satisfaction, "<br>",
+      "Count: ", n, "<br>",
+      "Proportion: ", scales::percent(prop, accuracy = 0.1)
+    )
+  ) %>%
+  ungroup()
+
+#Convert to wide
+heat_matrix <- satis_df %>%
+  select(borough, overall_satisfaction, prop) %>%
+  pivot_wider(
+    names_from = overall_satisfaction,
+    values_from = prop
+  )
+
+#Convert to wide for the hovering information
+hover_matrix <- satis_df %>%
+  select(borough, overall_satisfaction, hover_text) %>%
+  pivot_wider(
+    names_from = overall_satisfaction,
+    values_from = hover_text
+  )
+
+#Produce plot
+plot_ly(
+  x = colnames(heat_matrix)[-1],
+  y = heat_matrix$borough,
+  z = as.matrix(heat_matrix[,-1]),
+  text = as.matrix(hover_matrix[,-1]),
+  type = "heatmap",
+  hoverinfo = "text",
+  colorscale = "Viridis") %>%
+  layout(
+    title = "Overall Satisfaction by Borough",
+    xaxis = list(title = "Satisfaction Level"),
+    yaxis = list(title = "Borough")
+  )
 
 ```
 
