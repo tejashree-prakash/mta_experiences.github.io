@@ -309,6 +309,12 @@ plot_ly(hover_df) %>%
 
 ### Affordability Perception by Borough
 ```{r, fig.height=14}
+#Perception of affordability 
+afford_df <- rider_data_full %>%
+  count(borough, is_subway_affordable) %>%
+  group_by(borough) %>%
+  mutate(prop = n / sum(n))
+
 #Initialize to see unique TRUE/FALSE values 
 vals <- unique(afford_df$is_subway_affordable)
 
@@ -317,7 +323,7 @@ vals <- unique(afford_df$is_subway_affordable)
 vir_cols <- viridis(length(vals))     
 names(vir_cols) <- vals                        
 
-#Produce plot
+
 plot_ly(
   afford_df,
   x = ~borough,
