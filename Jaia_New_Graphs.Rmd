@@ -1,0 +1,414 @@
+---
+title: "Frequency of Delays by Subway Line"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    theme: flatly
+---
+Using Yasmine's cleaned dataset,
+this is an interactive visualization representing the frequency of delays by subway line.
+
+load packages she used + what I need for my graphs
+```{r}
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(viridis)
+library(plotly)
+library(knitr)
+library(gt)
+```
+
+Here I will clean the 2019_subway_rider_data 
+
+```{r}
+subway_rider_data = 
+  read_csv("2019_Subway_Rider_Survey_20251121.csv") |> 
+  janitor::clean_names()
+
+
+subway_drops =
+  subway_rider_data |> 
+  select(-survey_stop_borough, -survey_stop_location) |> 
+  drop_na() |> 
+  mutate(survey_id = row_number()) |> 
+  relocate(survey_id, .before = 1)
+  
+```
+
+Now I will specifically clean the data within the columns
+
+Cleaned rider frequency table: 
+```{r}
+rider_data =
+  subway_drops |>
+  mutate(
+    use_of_subway_frequency = case_when(
+      use_of_subway_frequency == "Everyday / Almost everyday" ~ "Every day",
+      use_of_subway_frequency == "More than once a week, varies" ~ "Several times a week",
+      use_of_subway_frequency %in% c("Weekdays, Mon - Fri", "~5 days per week") ~ "5 days per week",
+      use_of_subway_frequency == "Once a week" ~ "Once a week",
+      use_of_subway_frequency == "Once a month" ~ "Once a month",
+      use_of_subway_frequency == "Almost never" ~ "Almost never",
+      use_of_subway_frequency == "Never" ~ "Never",
+      TRUE ~ NA_character_
+    ),
+    use_of_subway_frequency = 
+      factor(
+        use_of_subway_frequency,
+        levels = c("Never", 
+                   "Almost never", 
+                   "Once a month", 
+                   "Once a week",
+                   "Several times a week", 
+                   "5 days per week", 
+                   "Every day"),
+        ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(average_length_subway_ride = 
+           factor(average_length_subway_ride,
+                  levels = c("< 20 min", 
+                             "20 - 40 min", 
+                             "40 - 60 min",
+                             "60 - 90 min", 
+                             "90 min - 2 hours"),
+                  ordered = TRUE))
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    overall_satisfaction = 
+      recode(
+        overall_satisfaction,
+        "Not satisfied" = "Unsatisfied"),
+    overall_satisfaction = 
+      factor(
+        overall_satisfaction,
+        levels = c("Highly unsatisfied",
+                 "Unsatisfied",
+                 "Neutral",
+                 "Somewhat satisfied",
+                 "Very satisfied"),
+      ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c("Everyday",
+                 "A few times a week",
+                 "Rarely",
+                 "Almost never",
+                 "Never"),
+      ordered = TRUE)
+    )
+    
+```
+
+Making some of the variables as a character and some as a factor!
+
+```{r}
+rider_data = 
+  rider_data |> 
+  mutate(
+    is_subway_affordable = if_else(
+      is_subway_affordable == "Yes", TRUE, FALSE),
+    zip_code = as.character(zip_code)
+    )
+
+
+rider_data =
+  rider_data |> 
+  mutate(
+    across(c(subway_line_used_most_often,
+             get_to_subway_via,
+             primary_use_of_subway,
+             alternative_transport), as.factor)
+  )
+```
+
+
+```{r}
+rider_data = 
+  rider_data %>%
+  mutate(
+    top_three_complaints = 
+      str_remove_all(top_three_complaints, "\\[|\\]|'")
+  )
+```
+
+Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
+
+```{r}
+zip_code_data = 
+  read_csv("data/nyc_zipcodes.csv") %>%
+  select(borough, zipcode)
+
+
+#Make sure character variables 
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode)) #make sure it's a character variable 
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+
+#Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+
+#Fill borough where missing
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#Remove invalid zip codes
+rider_data_full <- rider_data_full %>%
+  filter(survey_id != 2410) %>% 
+  filter(survey_id != 944) %>% 
+  filter(survey_id != 241) %>% 
+  filter(survey_id != 919) 
+```
+
+Subway Line Directory Table
+```{r}
+subway_directory_display <- tribble(
+  ~`Line Family`, ~Lines, ~Color,
+  "Red Line", "1, 2, 3", "#EE352E",
+  "Green Line", "4, 5, 6", "#00933C",
+  "Purple Line", "7", "#B933AD",
+  "Blue Line", "A, C, E", "#0039A6",
+  "Orange Line", "B, D, F, M", "#FF6319",
+  "Yellow Line", "N, Q, R, W", "#FCCC0A",
+  "Light Green Line", "G", "#6CBE45",
+  "Brown Line", "J, Z", "#996633",
+  "Gray Line", "L", "#A7A9AC",
+  "Shuttle", "S", "#808183"
+)
+
+subway_directory_display %>%
+  gt() %>%
+  tab_header(title = "NYC Subway Line Directory") %>%
+  text_transform(
+    locations = cells_body(columns = Color),
+    fn = function(x) {
+      # x = column vector of hex colors
+      mapply(function(col) {
+        html(
+          paste0(
+            "<div style='background-color:", col,
+            "; width: 60px; height: 20px; border-radius: 4px'></div>"
+          )
+        )
+      }, x)
+    }
+  ) %>%
+  cols_width(
+    `Line Family` ~ px(180),
+    Lines ~ px(180),
+    Color ~ px(100)
+  ) %>%
+  opt_table_outline()
+```
+
+Join-ready Subway Line Directory + Join to cleaned dataset
+```{r}
+subway_directory <- tribble(
+~subway_line, ~group_color, ~hex_color,
+"1","Red Line","#EE352E",
+"2","Red Line","#EE352E",
+"3","Red Line","#EE352E",
+"4","Green Line","#00933C",
+"5","Green Line","#00933C",
+"6","Green Line","#00933C",
+"7","Purple Line","#B933AD",
+"A","Blue Line","#0039A6",
+"C","Blue Line","#0039A6",
+"E","Blue Line","#0039A6",
+"B","Orange Line","#FF6319",
+"D","Orange Line","#FF6319",
+"F","Orange Line","#FF6319",
+"M","Orange Line","#FF6319",
+"N","Yellow Line","#FCCC0A",
+"Q","Yellow Line","#FCCC0A",
+"R","Yellow Line","#FCCC0A",
+"W","Yellow Line","#FCCC0A",
+"G","Light Green Line","#6CBE45",
+"J","Brown Line","#996633",
+"Z","Brown Line","#996633",
+"L","Gray Line","#A7A9AC",
+"S","Shuttle","#808183"
+)
+```
+
+Join line directory into rider_data_full
+```{r}
+rider_data_full <- rider_data_full |>
+  mutate(
+    subway_line = subway_line_used_most_often |>
+      str_replace_all("[^A-Za-z0-9]", "/") |>
+      str_split("/")
+  ) |>
+  unnest(subway_line) |>
+  mutate(
+    subway_line = str_trim(subway_line),
+    subway_line = str_to_upper(subway_line)
+  ) |>
+  filter(subway_line %in% subway_directory$subway_line) |>
+  left_join(subway_directory, by = "subway_line") |>
+  select(
+    -group_color.y, -hex_color.y
+  ) |>
+  rename(
+    group_color = group_color.x,
+    hex_color = hex_color.x
+  )
+```
+
+## Plots! 
+
+Distribution of Delay Frequency Responses 
+Interactive Plotly Stacked Bar Chart 
+```{r}
+dist_delay <- rider_data_full |>
+  filter(!is.na(frequency_of_delays)) |>
+  count(subway_line, group_color, frequency_of_delays) |>
+  group_by(subway_line) |>
+  mutate(prop = n / sum(n)) |>
+  ungroup() |>
+  arrange(group_color, subway_line) |>
+  mutate(subway_line = factor(subway_line, levels = unique(subway_line)))
+
+plot_ly(
+data = dist_delay,
+x = ~subway_line,
+y = ~prop,
+type = "bar",
+color = ~frequency_of_delays,
+colors = viridisLite::viridis(5),
+customdata = ~group_color,
+hovertemplate = paste(
+"Subway Line: %{x}",
+"Line Group: %{customdata}",
+"Proportion of Riders: %{y:.1%}",
+""
+)
+) |>
+layout(
+barmode = "stack",
+title = list(
+text = "Distribution of Delay Frequency Responses by Subway Line",
+x = 0.5
+),
+xaxis = list(title = "Subway Line"),
+yaxis = list(title = "Proportion", tickformat=".0%"),
+showlegend = TRUE
+)
+```
+
+To establish proportion of Riders with Long Delays (≥20 min):
+Define long delay buckets.
+
+Proportion of Riders with Long Delays (≥20 min)
+Interactive plotly bar chart
+```{r}
+long_categories <- c(
+"20 - 40 min", "40 - 60 min", "60 - 90 min",
+"90 min - 2 hours", "> 60 min"
+)
+
+line_order <- subway_directory |>
+arrange(group_color, subway_line) |>
+pull(subway_line)
+
+long_delay_by_line <- rider_data_full |>
+filter(!is.na(average_length_subway_ride)) |>
+mutate(long_delay = average_length_subway_ride %in% long_categories) |>
+count(subway_line, long_delay) |>
+group_by(subway_line) |>
+mutate(prop = n / sum(n)) |>
+filter(long_delay == TRUE) |>
+left_join(subway_directory, by = "subway_line") |>
+mutate(
+subway_line = factor(subway_line, levels = line_order)
+)
+
+plot_ly(
+data = long_delay_by_line,
+x = ~subway_line,
+y = ~prop,
+type = "bar",
+marker = list(color = ~hex_color),
+customdata = ~group_color,
+hovertemplate = paste(
+  "<b>Subway Line:</b> %{x}<br>",
+  "<b>Long Delay Proportion:</b> %{y:.2f}<br>",
+  "<extra></extra>"
+)
+) |>
+layout(
+title = "Proportion of Riders Reporting Long Delays (≥20 min)",
+xaxis = list(title = "Subway Line", categoryarray = line_order),
+yaxis = list(title = "Proportion", tickformat=".0%"),
+bargap = 0.20
+)
+```
+
+Ordinal frequency of delay responses
+Interactive plotly heat map
+```{r}
+keep_delays <- c(
+"Rarely",
+"A few times a week",
+"Everyday"
+)
+
+heat_data <- rider_data_full |>
+filter(!is.na(frequency_of_delays)) |>
+filter(frequency_of_delays %in% keep_delays) |>
+count(subway_line, frequency_of_delays) |>
+complete(
+subway_line = unique(subway_directory$subway_line),
+frequency_of_delays = keep_delays,
+fill = list(n = 0)
+) |>
+group_by(subway_line) |>
+mutate(prop = n / sum(n)) |>
+ungroup() |>
+left_join(subway_directory, by = "subway_line") |>
+arrange(group_color, subway_line) |>
+mutate(
+subway_line = factor(subway_line, levels = unique(subway_line)),
+frequency_of_delays = factor(frequency_of_delays, levels = keep_delays)
+)
+
+plot_ly(
+data = heat_data,
+x = ~frequency_of_delays,
+y = ~subway_line,
+z = ~prop,
+type = "heatmap",
+colors = viridisLite::viridis(100),
+customdata = ~n,
+hovertemplate = paste(
+"Line: %{y}",
+"Delay Frequency: %{x}",
+"Proportion: %{z:.1%}",
+"Count: %{customdata}",
+""
+)
+) |>
+layout(
+title = "Delay Frequency Distribution by Subway Line",
+xaxis = list(title = "Delay Frequency"),
+yaxis = list(title = "Subway Line"),
+margin = list(l = 90, r = 20, b = 80, t = 80)
+)
+```
+
