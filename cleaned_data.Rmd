@@ -112,8 +112,6 @@ Making some of the variables as a character and some as a factor!
 rider_data = 
   rider_data |> 
   mutate(
-    is_subway_affordable = if_else(
-      is_subway_affordable == "Yes", TRUE, FALSE),
     zip_code = as.character(zip_code)
     )
 
