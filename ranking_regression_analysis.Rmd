@@ -1,0 +1,376 @@
+---
+title: "Regression Analysis"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    theme: flatly
+---
+
+Running regression to develop our subway line ranking system. overall_satisfaction = subway_line_used_most_often + approximate_delay_duration + most_common_reason_for_delay + primary_use_of_subway + frequency_of_delays
+
+All predictors are converted to an ordinal, categorical variable. Assumption, overall satisfaction as a Likert scale 1-5 continuous variable, allowing for linear regression. 
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(plotly)
+library(dplyr)
+library(viridis)
+library(ordinal)
+```
+
+
+```{r}
+#DATA CLEANING
+subway_rider_data = 
+  read_csv("data/2019_subway_rider_data.csv") |> 
+  janitor::clean_names()
+
+
+subway_drops =
+  subway_rider_data |> 
+  select(-survey_stop_borough, -survey_stop_location) |> 
+  drop_na() |> 
+  mutate(survey_id = row_number()) |> 
+  relocate(survey_id, .before = 1)
+  
+rider_data =
+  subway_drops |>
+  mutate(
+    use_of_subway_frequency = case_when(
+      use_of_subway_frequency == "Everyday / Almost everyday" ~ "Every day",
+      use_of_subway_frequency == "More than once a week, varies" ~ "Several times a week",
+      use_of_subway_frequency %in% c("Weekdays, Mon - Fri", "~5 days per week") ~ "5 days per week",
+      use_of_subway_frequency == "Once a week" ~ "Once a week",
+      use_of_subway_frequency == "Once a month" ~ "Once a month",
+      use_of_subway_frequency == "Almost never" ~ "Almost never",
+      use_of_subway_frequency == "Never" ~ "Never",
+      TRUE ~ NA_character_
+    ),
+    use_of_subway_frequency = 
+      factor(
+        use_of_subway_frequency,
+        levels = c("Never", 
+                   "Almost never", 
+                   "Once a month", 
+                   "Once a week",
+                   "Several times a week", 
+                   "5 days per week", 
+                   "Every day"),
+        ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(average_length_subway_ride = 
+           factor(average_length_subway_ride,
+                  levels = c("< 20 min", 
+                             "20 - 40 min", 
+                             "40 - 60 min",
+                             "60 - 90 min", 
+                             "90 min - 2 hours"),
+                  ordered = TRUE))
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    overall_satisfaction = 
+      recode(
+        overall_satisfaction,
+        "Not satisfied" = "Unsatisfied"),
+    overall_satisfaction = 
+      factor(
+        overall_satisfaction,
+        levels = c("Highly unsatisfied",
+                 "Unsatisfied",
+                 "Neutral",
+                 "Somewhat satisfied",
+                 "Very satisfied"),
+      ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c("Everyday",
+                 "A few times a week",
+                 "Rarely",
+                 "Almost never",
+                 "Never"),
+      ordered = TRUE)
+    )
+    
+#Zip code --> borough 
+
+zip_code_data = 
+  read_csv("data/nyc_zipcodes.csv") %>%
+  select(borough, zipcode)
+
+#Make sure character type
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode))
+
+#Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+
+#If there's no match, we want to keep the zip_code in the borough column, so we use coalesce to handle this
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#manually go through remaining zip codes - removing 11135 11290 12105 as they are not real zip codes & also removing one observation that didn't have zip code 
+rider_data_full <- rider_data_full %>%
+  filter(survey_id != 2410) %>% 
+  filter(survey_id != 944) %>% 
+  filter(survey_id != 241) %>% 
+  filter(survey_id != 919) 
+```
+
+
+```{r}
+#Converting categorical variables to orders
+regression_rider_data <-
+  rider_data_full %>%
+    mutate(
+    average_length_subway_ride = 
+      recode(
+        average_length_subway_ride,
+        "< 20 min" = "0", 
+        "20 - 40 min" = "1",
+        "40 - 60 min" = "2",
+        "60 - 90 min" = "3",
+        "90 min - 2 hours" = "4"), 
+    average_length_subway_ride = 
+      factor(
+        average_length_subway_ride, 
+        levels = c("0", "1", "2", "3", "4"), 
+        ordered = TRUE
+      )) %>%
+    mutate(
+    frequency_of_delays = 
+      recode(
+        frequency_of_delays,
+        "Never" = "0", 
+        "Almost Never" = "1",
+        "Rarely" = "2",
+        "A few times a week" = "3",
+        "Everyday" = "4"), 
+    frequency_of_delays = 
+      factor(
+        frequency_of_delays, 
+        levels = c("0", "1", "2", "3", "4"), 
+        ordered = TRUE
+      )) %>%
+    mutate(
+    approximate_delay_duration = 
+      recode(
+        approximate_delay_duration,
+        "5 - 10 min" = "0", 
+        "10 - 20 min" = "1",
+        "20 - 45 min" = "2",
+        "45 - 60 min" = "3",
+        "> 60 min" = "4"), 
+    approximate_delay_duration = 
+      factor(
+        approximate_delay_duration, 
+        levels = c("0", "1", "2", "3", "4"), 
+        ordered = TRUE
+      )) %>%
+    mutate(
+    frequency_of_rerouting = 
+      recode(
+        frequency_of_rerouting,
+        "Almost never" = "0",
+        "Only on weekends" = "1", 
+        "Only at night" = "2",
+        "All the time" = "3"), 
+    frequency_of_rerouting = 
+      factor(
+        frequency_of_rerouting, 
+        levels = c("0", "1", "2", "3"), 
+        ordered = TRUE
+      )) %>%
+     mutate(
+      borough = case_when(
+      borough == "Manhattan" ~ 0,
+      borough %in% c("Brooklyn", "Queens", "Staten Island", "Bronx", "Long Island") ~ 1,
+      borough %in% c("New Jersey", "New York State", "Outside NY") ~ 2,
+      TRUE ~ NA_real_
+    )) 
+
+#Converting overall satisfaction to be "continuous" 
+regression_rider_data <-
+  regression_rider_data %>%
+    mutate(
+      overall_satisfaction = case_when(
+      overall_satisfaction == "Highly unsatisfied" ~ 1,
+      overall_satisfaction == "Not satisfied" ~ 2,
+      overall_satisfaction == "Neutral" ~ 3,
+      overall_satisfaction == "Somewhat satisfied" ~ 4,
+      overall_satisfaction == "Very satisfied" ~ 5))
+```
+
+
+
+```{r}
+#Run the model 
+fit <- lm(overall_satisfaction ~ average_length_subway_ride + frequency_of_delays + approximate_delay_duration + frequency_of_rerouting + borough, data = regression_rider_data)
+
+#Tidying output
+fit |> 
+  broom::tidy() |> 
+  select(term, estimate, p.value)
+
+#Visualizations
+regression_rider_data |> 
+  modelr::add_residuals(fit) |> 
+  ggplot(aes(x = overall_satisfaction, y = resid)) + geom_point()
+```
+
+
+We should do a logistic regression model. 
+
+```{r}
+#Recode overall satisfaction (outcome) to be ordered 
+regression_rider_data <- regression_rider_data %>%
+  mutate(
+    overall_satisfaction = factor(
+      overall_satisfaction,
+      levels = c(1, 2, 3, 4, 5),
+      ordered = TRUE
+    )
+  )
+
+#Run logistic regression model 
+model <- clm(
+  overall_satisfaction ~ 
+    average_length_subway_ride +
+    frequency_of_delays +
+    approximate_delay_duration +
+    frequency_of_rerouting +
+    borough,
+  data = regression_rider_data,
+  link = "logit"
+)
+
+#Summary of model
+model_df <- broom::tidy(model, conf.int = TRUE) |>
+  dplyr::mutate(across(where(is.numeric), round, 3)) 
+
+#Publication style table 
+tab_model(model)
+```
+
+Visualizing effect size - if predictors increase or decrease satisfaction odds.
+```{r}
+tidy_model <- broom::tidy(model) %>%
+  filter(!grepl("\\|", term)) %>%
+  mutate(odds_ratio = exp(estimate),
+         conf.low = exp(estimate - 1.96 * std.error),
+         conf.high = exp(estimate + 1.96 * std.error))
+
+plot_ly(tidy_model,
+        x = ~odds_ratio, 
+        y = ~term,
+        type = 'scatter',
+        mode = 'markers',
+        error_x = list(type = 'data', symmetric = FALSE,
+                       array = tidy_model$conf.high - tidy_model$odds_ratio,
+                       arrayminus = tidy_model$odds_ratio - tidy_model$conf.low)) %>%
+  layout(title = "Odds Ratios with 95% CI",
+         xaxis = list(title = "Odds Ratio"),
+         yaxis = list(title = "Predictor"))
+
+```
+
+
+Distributions 
+```{r}
+#Pick blue from gradient 
+viridis_blue <- viridis(100)[40]
+
+plot_ly(regression_rider_data, 
+        x = ~overall_satisfaction, 
+        type = "histogram",
+        colors = vir_cols)
+```
+
+
+Predicted probabilities with average subway length and satisfaction 
+```{r}
+#Create grid of predicted probabilities 
+grid <- expand.grid(
+  average_length_subway_ride = levels(regression_rider_data$average_length_subway_ride),
+  borough = unique(regression_rider_data$borough),
+  frequency_of_delays = levels(regression_rider_data$frequency_of_delays)[1],  # fix at reference level
+  approximate_delay_duration = levels(regression_rider_data$approximate_delay_duration)[1],
+  frequency_of_rerouting = levels(regression_rider_data$frequency_of_rerouting)[1]
+)
+
+grid$average_length_subway_ride <- factor(grid$average_length_subway_ride, 
+                                          ordered = TRUE,
+                                          levels = levels(regression_rider_data$average_length_subway_ride))
+grid$frequency_of_delays <- factor(grid$frequency_of_delays, 
+                                   ordered = TRUE,
+                                   levels = levels(regression_rider_data$frequency_of_delays))
+grid$approximate_delay_duration <- factor(grid$approximate_delay_duration, 
+                                         ordered = TRUE,
+                                         levels = levels(regression_rider_data$approximate_delay_duration))
+grid$frequency_of_rerouting <- factor(grid$frequency_of_rerouting, 
+                                      ordered = TRUE,
+                                      levels = levels(regression_rider_data$frequency_of_rerouting))
+
+#Get probabilities 
+pred_probs <- predict(model, newdata = grid, type = "prob")
+pred_df <- cbind(grid, pred_probs)
+
+pred_long <- pred_df %>%
+  pivot_longer(
+    cols = starts_with("fit"), 
+    names_to = "Satisfaction", 
+    values_to = "Probability"
+  )
+
+#Recode names
+pred_long <- pred_long %>%
+  mutate(Satisfaction = recode(
+    Satisfaction,
+    "fit.1" = "Highly Unsatisfied",
+    "fit.2" = "Not satisfied",
+    "fit.3" = "Neutral",
+    "fit.4" = "Somewhat satisfied",
+    "fit.5" = "Very satisfied"
+  ))
+
+
+#Produce plot
+plot_ly(pred_long, 
+    x = ~average_length_subway_ride, 
+    y = ~borough, 
+    z = ~Probability, 
+    type = "heatmap", 
+    colorscale = "Viridis", 
+    text = ~paste("Satisfaction:", Satisfaction, "<br>Probability:", round(Probability, 3)),
+    hoverinfo = "text") %>%
+       layout(
+          title = "Predicted Probability Heatmap",
+          xaxis = list(
+            title = "Average Length of Subway Ride",
+            tickvals = 0:5,                 
+            ticktext = c("< 20 min", "20 - 40 min", "40 - 60 min", "60 - 90 min", "90 min - 2 hours")  #Putting labels back 
+          ),
+          yaxis = list(
+            title = "Borough",
+            tickvals = 0:5,                           # positions along y-axis
+            ticktext = c("Manhattan", "Other Boroughs in NYC", "Outside NY")  # custom labels
+          )
+        )
+```
+
