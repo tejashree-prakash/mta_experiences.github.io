@@ -23,6 +23,7 @@ Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/d
 library(tidyverse)
 library(plotly)
 library(dplyr)
+library(viridis)
 ```
 
 
@@ -220,7 +221,9 @@ plot_ly(
   color = ~borough,
   type = "bar",
   colors = vir_cols,
-  hovertemplate = "Borough: %{color}<br>Ride Length: %{x}<br>Count: %{y}<extra></extra>"
+  text = ~borough, #adding so the borough name will populate in the hover text
+  textposition = "none", #hide the label from printing onto the bar plot 
+  hovertemplate = "Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra></extra>"
 ) %>%
   layout(
     barmode = "stack",
@@ -306,38 +309,15 @@ plot_ly(hover_df) %>%
 
 ### Affordability Perception by Borough
 ```{r, fig.height=14}
-#Perception of affordability 
-afford_df <- rider_data_full %>%
-  count(borough, is_subway_affordable) %>%
-  group_by(borough) %>%
-  mutate(prop = n / sum(n))
-
-plot_ly(
-  afford_df,
-  x = ~borough,
-  y = ~prop,
-  color = ~is_subway_affordable,
-  type = "bar",
-  hovertemplate = 
-    "Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra></extra>",
-  customdata = ~is_subway_affordable
-) %>%
-  layout(
-    barmode = "stack",
-    title = "Affordability Perception by Borough",
-    yaxis = list(tickformat = ".0%", title = "Proportion")
-  ) 
-
 #Initialize to see unique TRUE/FALSE values 
 vals <- unique(afford_df$is_subway_affordable)
 
 #Make colors for each categorical option
-library(viridis)
 vals <- unique(afford_df$is_subway_affordable)
 vir_cols <- viridis(length(vals))     
 names(vir_cols) <- vals                        
 
-
+#Produce plot
 plot_ly(
   afford_df,
   x = ~borough,
@@ -416,7 +396,6 @@ satis_overall <- rider_data_full %>%
          percent = paste0(round(prop*100,1), "%"))
 
 #Set colors to gradient manually 
-library(viridis)
 viridis_colors <- viridis(nrow(satis_overall))
 
 plot_ly(

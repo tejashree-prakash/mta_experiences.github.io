@@ -14,7 +14,7 @@ Here I will clean the 2019_subway_rider_data
 
 ```{r}
 subway_rider_data = 
-  read_csv("2019_Subway_Rider_Survey_20251121.csv") |> 
+  read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
   janitor::clean_names()
 
 
@@ -112,8 +112,6 @@ Making some of the variables as a character and some as a factor!
 rider_data = 
   rider_data |> 
   mutate(
-    is_subway_affordable = if_else(
-      is_subway_affordable == "Yes", TRUE, FALSE),
     zip_code = as.character(zip_code)
     )
 
