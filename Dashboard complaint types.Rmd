@@ -428,7 +428,7 @@ plot_top_borough
 ### Complaint types by borough
 
 ```{r,fig.width=15, fig.height=8}
-#  Chart E - Complaint types by line and borough
+#  Chart E - Complaint types by borough
 
 complaint_line_borough <- rider_data_full_clean |> 
   filter(!is.na(subway_line_used_most_often),
