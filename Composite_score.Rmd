@@ -1,0 +1,405 @@
+---
+title: "Composite_score"
+output: html_document
+---
+load packages
+```{r}
+library(tidyverse)
+library(lubridate)
+library(readxl)
+```
+
+Here I will clean the 2019_subway_rider_data 
+
+```{r}
+subway_rider_data = 
+  read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
+  janitor::clean_names()
+
+
+subway_drops =
+  subway_rider_data |> 
+  select(-survey_stop_borough, -survey_stop_location) |> 
+  drop_na() |> 
+  mutate(survey_id = row_number()) |> 
+  relocate(survey_id, .before = 1)
+  
+```
+
+Now I will specifically clean the data within the columns
+
+Cleaned rider frequency table: 
+```{r}
+rider_data =
+  subway_drops |>
+  mutate(
+    use_of_subway_frequency = case_when(
+      use_of_subway_frequency == "Everyday / Almost everyday" ~ "Every day",
+      use_of_subway_frequency == "More than once a week, varies" ~ "Several times a week",
+      use_of_subway_frequency %in% c("Weekdays, Mon - Fri", "~5 days per week") ~ "5 days per week",
+      use_of_subway_frequency == "Once a week" ~ "Once a week",
+      use_of_subway_frequency == "Once a month" ~ "Once a month",
+      use_of_subway_frequency == "Almost never" ~ "Almost never",
+      use_of_subway_frequency == "Never" ~ "Never",
+      TRUE ~ NA_character_
+    ),
+    use_of_subway_frequency = 
+      factor(
+        use_of_subway_frequency,
+        levels = c("Never", 
+                   "Almost never", 
+                   "Once a month", 
+                   "Once a week",
+                   "Several times a week", 
+                   "5 days per week", 
+                   "Every day"),
+        ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(average_length_subway_ride = 
+           factor(average_length_subway_ride,
+                  levels = c("< 20 min", 
+                             "20 - 40 min", 
+                             "40 - 60 min",
+                             "60 - 90 min", 
+                             "90 min - 2 hours"),
+                  ordered = TRUE))
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    overall_satisfaction = 
+      recode(
+        overall_satisfaction,
+        "Not satisfied" = "Unsatisfied"),
+    overall_satisfaction = 
+      factor(
+        overall_satisfaction,
+        levels = c("Highly unsatisfied",
+                 "Unsatisfied",
+                 "Neutral",
+                 "Somewhat satisfied",
+                 "Very satisfied"),
+      ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c("Everyday",
+                 "A few times a week",
+                 "Rarely",
+                 "Almost never",
+                 "Never"),
+      ordered = TRUE)
+    )
+    
+```
+
+
+Making some of the variables as a character and some as a factor!
+
+
+```{r}
+rider_data = 
+  rider_data |> 
+  mutate(
+    zip_code = as.character(zip_code)
+    )
+
+
+rider_data =
+  rider_data |> 
+  mutate(
+    across(c(subway_line_used_most_often,
+             get_to_subway_via,
+             primary_use_of_subway,
+             alternative_transport), as.factor)
+  )
+```
+
+
+```{r}
+rider_data = 
+  rider_data %>%
+  mutate(
+    top_three_complaints = 
+      str_remove_all(top_three_complaints, "\\[|\\]|'")
+  )
+```
+
+
+Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
+
+```{r}
+zip_code_data = 
+  read_csv("data/nyc_zipcodes.csv") %>%
+  select(borough, zipcode)
+
+
+#Make sure character variables 
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode)) #make sure it's a character variable 
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+
+#Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+
+#Fill borough where missing
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#Remove invalid zip codes
+rider_data_full <- rider_data_full %>%
+  filter(survey_id != 2410) %>% 
+  filter(survey_id != 944) %>% 
+  filter(survey_id != 241) %>% 
+  filter(survey_id != 919) 
+```
+
+final data set is rider_data_full
+
+Subway Line Directory Table Code:
+```{r}
+subway_directory_display <- tribble(
+  ~`Line Family`, ~Lines, ~Color,
+  "Red Line", "1, 2, 3", "#EE352E",
+  "Green Line", "4, 5, 6", "#00933C",
+  "Purple Line", "7", "#B933AD",
+  "Blue Line", "A, C, E", "#0039A6",
+  "Orange Line", "B, D, F, M", "#FF6319",
+  "Yellow Line", "N, Q, R, W", "#FCCC0A",
+  "Light Green Line", "G", "#6CBE45",
+  "Brown Line", "J, Z", "#996633",
+  "Gray Line", "L", "#A7A9AC",
+  "Shuttle", "S", "#808183"
+)
+
+subway_directory_display %>%
+  gt() %>%
+  tab_header(title = "NYC Subway Line Directory") %>%
+  text_transform(
+    locations = cells_body(columns = Color),
+    fn = function(x) {
+      # x = column vector of hex colors
+      mapply(function(col) {
+        html(
+          paste0(
+            "<div style='background-color:", col,
+            "; width: 60px; height: 20px; border-radius: 4px'></div>"
+          )
+        )
+      }, x)
+    }
+  ) %>%
+  cols_width(
+    `Line Family` ~ px(180),
+    Lines ~ px(180),
+    Color ~ px(100)
+  ) %>%
+  opt_table_outline()
+```
+
+Join-ready Subway Line Directory + Join to cleaned dataset
+```{r}
+subway_directory <- tribble(
+~subway_line, ~group_color, ~hex_color,
+"1","Red Line","#EE352E",
+"2","Red Line","#EE352E",
+"3","Red Line","#EE352E",
+"4","Green Line","#00933C",
+"5","Green Line","#00933C",
+"6","Green Line","#00933C",
+"7","Purple Line","#B933AD",
+"A","Blue Line","#0039A6",
+"C","Blue Line","#0039A6",
+"E","Blue Line","#0039A6",
+"B","Orange Line","#FF6319",
+"D","Orange Line","#FF6319",
+"F","Orange Line","#FF6319",
+"M","Orange Line","#FF6319",
+"N","Yellow Line","#FCCC0A",
+"Q","Yellow Line","#FCCC0A",
+"R","Yellow Line","#FCCC0A",
+"W","Yellow Line","#FCCC0A",
+"G","Light Green Line","#6CBE45",
+"J","Brown Line","#996633",
+"Z","Brown Line","#996633",
+"L","Gray Line","#A7A9AC",
+"S","Shuttle","#808183"
+)
+```
+
+
+```{r}
+# Categories defining "long delays"
+long_categories <-  c(
+  "20 - 40 min", "40 - 60 min", "60 - 90 min",
+  "90 min - 2 hours", "> 60 min"
+)
+
+# Ordinal score for frequency of delays
+delay_freq_scores <- c(
+  "Never" = 1,
+  "Almost never" = 2,
+  "Rarely" = 3,
+  "A few times a week" = 4,
+  "Everyday" = 5
+)
+
+# Numeric midpoints for average delay length
+delay_length_scores <- c(
+  "< 20 min"        = 10,     # midpoint choice
+  "20 - 40 min"     = 30,
+  "40 - 60 min"     = 50,
+  "60 - 90 min"     = 75,
+  "90 min - 2 hours" = 105
+)
+
+# Satisfaction ordinal scale
+satisfaction_scores <- c(
+  "Highly unsatisfied" = 1,
+  "Unsatisfied"        = 2,
+  "Neutral"            = 3,
+  "Somewhat satisfied" = 4,
+  "Very satisfied"     = 5
+)
+```
+
+```{r}
+scored_data <- rider_data_full |>
+  mutate(
+    subway_line = subway_line_used_most_often |>
+      str_replace_all("[^A-Za-z0-9]", "/") |>
+      str_split("/")
+  ) |>
+  unnest(subway_line) |>
+  mutate(
+    subway_line = str_trim(subway_line),
+    subway_line = str_to_upper(subway_line)
+  ) |>
+  filter(subway_line %in% subway_directory$subway_line) |>
+  left_join(subway_directory, by = "subway_line") |>
+  mutate(
+    long_delay       = average_length_subway_ride %in% long_categories,
+    delay_freq_num   = delay_freq_scores[frequency_of_delays],
+    delay_length_num = delay_length_scores[average_length_subway_ride],   # ← FIX
+    satisfaction_num = satisfaction_scores[overall_satisfaction]
+  )
+
+```
+
+```{r}
+family_scores_raw <- scored_data |>
+  group_by(group_color) |>
+  summarise(
+    pct_long_delay   = mean(long_delay, na.rm = TRUE),
+    avg_delay_freq   = mean(delay_freq_num, na.rm = TRUE),
+    avg_delay_length = mean(delay_length_num, na.rm = TRUE),
+    avg_satisfaction = mean(satisfaction_num, na.rm = TRUE)
+  ) |>
+  ungroup()
+
+```
+
+```{r}
+family_scores_norm <- family_scores_raw |>
+  mutate(
+    z_pct_long_delay   = scale(pct_long_delay)[,1]    * -1,
+    z_delay_freq       = scale(avg_delay_freq)[,1]    * -1,
+    z_delay_length     = scale(avg_delay_length)[,1]  * -1,
+    z_satisfaction     = scale(avg_satisfaction)[,1]
+  )
+
+```
+
+```{r}
+family_composite <- family_scores_raw |>
+  mutate(
+    z_pct_long_delay = scale(-pct_long_delay)[,1],
+    z_delay_freq     = scale(-avg_delay_freq)[,1],
+    z_delay_length   = scale(-avg_delay_length)[,1],
+    z_satisfaction   = scale(avg_satisfaction)[,1]
+  ) |>
+
+  # Replace z-score NAs with 0 (neutral)
+  mutate(
+    across(starts_with("z_"), ~replace_na(.x, 0))
+  ) |>
+
+  mutate(
+    composite_score = z_pct_long_delay +
+                      z_delay_freq +
+                      z_delay_length +
+                      z_satisfaction
+  ) |>
+  arrange(desc(composite_score)) |>
+  mutate(rank = row_number())
+```
+
+```{r}
+# Step 2: Remove extra columns & make all scores positive
+family_composite_clean <- family_composite |>
+  mutate(
+    composite_score = composite_score - min(composite_score, na.rm = TRUE)
+  ) |>
+  arrange(desc(composite_score)) |>
+  mutate(rank = row_number()) |>
+  select(group_color, composite_score, rank)
+```
+
+
+```{r}
+subway_directory_display_final <- subway_directory_display |>
+  left_join(family_composite_clean, by = c("Line Family" = "group_color"))
+```
+
+```{r}
+subway_directory_display_final %>%
+  gt() %>%
+  tab_header(title = "NYC Subway Line Directory with Composite Score") %>%
+  cols_move(
+    columns = c(composite_score, rank),
+    after = Color
+  ) %>%
+  cols_label(
+    composite_score = "Score",
+    rank = "Rank"
+  ) %>%
+  fmt_number(
+    columns = composite_score,
+    decimals = 2
+  ) %>%
+  text_transform(
+    locations = cells_body(columns = Color),
+    fn = function(x) {
+      mapply(function(col) {
+        html(
+          paste0(
+            "<div style='background-color:", col,
+            "; width: 60px; height: 20px; border-radius: 4px'></div>"
+          )
+        )
+      }, x)
+    }
+  ) %>%
+  cols_width(
+    `Line Family` ~ px(180),
+    Lines ~ px(180),
+    Color ~ px(100),
+    composite_score ~ px(120),
+    rank ~ px(60)
+  ) %>%
+  opt_table_outline()
+
+```
+
