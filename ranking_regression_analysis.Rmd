@@ -291,7 +291,7 @@ plot_ly(tidy_model,
 ```
 
 
-Distributions 
+Distributions  
 ```{r}
 #Pick blue from gradient 
 viridis_blue <- viridis(100)[40]
