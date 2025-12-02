@@ -336,57 +336,6 @@ bar_plot
 ```
 
 
-###  Distribution of complaint types overall 
-
-```{r, fig.width=15, fig.height=8}
-
-# Chart C - Distribution of complaint types overall 
-
-complaint_treemap_data <- rider_data_full %>%
-  filter(!is.na(subway_line_used_most_often),
-         !is.na(complaint)) %>%
-  group_by(subway_line_used_most_often, complaint) %>%
-  summarize(n = n(), .groups = "drop") %>%
-  group_by(subway_line_used_most_often) %>%
-  mutate(
-    total_line = sum(n),
-    percent = n / total_line * 100
-  )
-
-treemap_plot <- ggplot(
-  complaint_treemap_data,
-  aes(
-    area = percent,
-    fill = complaint,
-    label = paste0(round(percent, 1), "%")
-  )
-) +
-  geom_treemap() +
-  geom_treemap_text(
-    place = "centre",
-    grow = TRUE,
-    colour = "white",
-    min.size = 6,     
-    fontface = "bold" 
-  ) +
-  facet_wrap(~ subway_line_used_most_often) +
-  scale_fill_viridis_d(option = "C") +
-  labs(
-    title = "Distribution of Complaint Types Within Each Subway Line",
-    subtitle = "Treemap size represents the percentage of complaint types per subway line",
-    fill = "Complaint Type"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 20, face = "bold"),
-    plot.subtitle = element_text(size = 14),
-    strip.text = element_text(size = 14, face = "bold")
-  )
-
-treemap_plot
-```
-
-
 ### Summary of top complaints by Borough
 
 ```{r,fig.width=15, fig.height=8}
@@ -434,50 +383,6 @@ plot_top_borough <- top_complaints_borough |>
   )
 
 plot_top_borough
-
-```
-
-
-### Complaint types by borough
-
-```{r,fig.width=15, fig.height=8}
-#  Chart E - Complaint types by borough
-
-complaint_line_borough <- rider_data_full_clean |> 
-  filter(!is.na(subway_line_used_most_often),
-         !is.na(borough),
-         !is.na(complaint)) |>
-  count(borough, complaint) |>         
-  group_by(borough) |>                 
-  mutate(percent = n / sum(n) * 100) |> 
-  ungroup()
-
-plot_line_borough <- complaint_line_borough |> 
-  plot_ly(
-    x = ~borough,
-    y = ~percent,
-    type = "bar",
-    color = ~complaint,
- 
-    hovertemplate = paste(
-      "Borough: %{x}<br>",
-      "Complaint: %{data.name}<br>",
-      "Percent: %{y:.1f}%<br>",
-      "Count: %{customdata}",
-      "<extra></extra>"
-    ),
-    customdata = ~n,  
-    colors = viridis::viridis_pal()(length(unique(complaint_line_borough$complaint)))
-  ) |> 
-  layout(
-    barmode = "stack",
-    title = "Complaint Types by Borough",
-    xaxis = list(title = "Borough"),
-    yaxis = list(title = "Percent of Complaints"),
-    showlegend = TRUE
-  )
-
-plot_line_borough
 
 ```
 
