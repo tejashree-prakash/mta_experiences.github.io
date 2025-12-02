@@ -1,0 +1,122 @@
+---
+title: "subway_map"
+output: html_document
+date: "2025-12-02"
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(sf)
+library(leaflet)
+library(htmltools)
+
+```
+
+```{r}
+zip_path = "data/nyu_2451_34758.zip"
+
+if (!file.exists("data/routes_nyc_subway_may2016.shp")) 
+  {unzip(zip_path, exdir = "data")}
+
+```
+
+
+```{r}
+subway_routes = 
+  sf::st_read("data/routes_nyc_subway_may2016.shp")
+
+
+subway_routes = 
+  subway_routes |>
+  sf::st_transform(4326)
+
+```
+
+
+Using our color palette
+```{r}
+# 3. Define hex color palette for each subway line -----------------------
+
+palette_df = 
+  tibble::tribble(
+    ~route_id, ~color,
+    "1",  "#EE352E",
+    "2",  "#EE352E",
+    "3",  "#EE352E",
+    "4",  "#00933C",
+    "5",  "#00933C",
+    "6",  "#00933C",
+    "7",  "#B933AD",
+    "A",  "#0039A6",
+    "C",  "#0039A6",
+    "E",  "#0039A6",
+    "B",  "#FF6319",
+    "D",  "#FF6319",
+    "F",  "#FF6319",
+    "M",  "#FF6319",
+    "N",  "#FCCC0A",
+    "Q",  "#FCCC0A",
+    "R",  "#FCCC0A",
+    "W",  "#FCCC0A",
+    "G",  "#6CBE45",
+    "J",  "#996633",
+    "Z",  "#996633",
+    "L",  "#A7A9AC",
+    "S",  "#808183",
+
+    "FS", "#808183",
+    "GS", "#808183",
+    "H",  "#808183",
+    "SI", "#808183"
+    )
+```
+
+
+```{r}
+subway_routes = 
+  subway_routes |>
+  left_join(palette_df, by = "route_id")
+
+```
+
+
+```{r}
+nyc_subway_routes = 
+leaflet() |>
+  addProviderTiles("CartoDB.Positron") |>
+  addPolylines(
+    data   = subway_routes,
+    color  = ~color,
+    weight = 2,
+    popup  = ~paste0(
+      "<b>Route: </b>", route_id, "<br>",
+      "<b>Name: </b>", route_long
+    ),
+    group  = ~route_id,
+    highlightOptions = 
+      highlightOptions(
+        weight = 5,
+        opacity = 1,
+        bringToFront = TRUE)
+    ) |>
+  addLayersControl(
+    overlayGroups = palette_df$route_id,
+    options = layersControlOptions(collapsed = FALSE)
+  )|>
+  htmlwidgets::prependContent(
+    tags$div(
+      style = "font-size:20px; font-weight:bold; padding:8px;",
+      "NYC Subway Routes")
+  )
+```
+
+
+
+
+
+
+
