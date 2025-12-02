@@ -133,9 +133,9 @@ rider_data_full <- rider_data_full %>%
 
 #manually go through remaining zip codes - removing 11135 11290 12105 as they are not real zip codes & also removing one observation that didn't have zip code 
 rider_data_full <- rider_data_full %>%
-  filter(zip_code != 12105) %>%
-  filter(zip_code != 11290) %>%
-  filter(zip_code != 11135) %>%
+  filter(survey_id != 2410) %>% 
+  filter(survey_id != 944) %>% 
+  filter(survey_id != 241) %>% 
   filter(survey_id != 919) 
 ```
 

@@ -105,22 +105,6 @@ rider_data =
 ```
 
 
-converting complaints into long format: 
-
-
-```{r}
-rider_data =
-  rider_data |> 
-  mutate(
-    top_three_complaints = 
-      str_remove_all(top_three_complaints, "\\[|\\]|'")
-  ) |> 
-  separate_rows(top_three_complaints, sep = ",") |> 
-  mutate(top_three_complaints = 
-           str_trim(top_three_complaints)) |> 
-  rename(complaint = top_three_complaints)
-```
-
 Making some of the variables as a character and some as a factor!
 
 
@@ -144,58 +128,49 @@ rider_data =
   )
 ```
 
-<<<<<<< HEAD
-Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google. There were three zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
 
 ```{r}
-zip_raw <- read_excel("nyc_zipcodes.xls", skip = 4)
+rider_data = 
+  rider_data %>%
+  mutate(
+    top_three_complaints = 
+      str_remove_all(top_three_complaints, "\\[|\\]|'")
+  )
+```
 
-# Step 2: Rename columns properly
-colnames(zip_raw) <- c(
-  "borough", "zipcode", "total_population", "white", "black_or_african_american",
-  "american_indian_alaska_native", "asian", "native_hawaiian_other_pacific",
-  "some_other_race", "two_or_more_races", "hispanic_origin", "total_housing_units"
-)
 
-# Step 3: Now select only borough and zipcode
-zip_code_data <- zip_raw %>%
-  select(borough, zipcode) %>%
-  mutate(zipcode = as.character(zipcode))  # ensure character
+Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
 
-# Step 4: Make rider_data zip_code a character
+```{r}
+zip_code_data = 
+  read_csv("data/nyc_zipcodes.csv") %>%
+  select(borough, zipcode)
+
+
+#Make sure character variables 
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode)) #make sure it's a character variable 
 rider_data <- rider_data %>%
   mutate(zip_code = as.character(zip_code))
 
-# Step 5: Join
+#Join
 rider_data_full <- rider_data %>%
   left_join(zip_code_data, by = c("zip_code" = "zipcode"))
 
-# Step 6: Fill borough where missing
+#Fill borough where missing
 rider_data_full <- rider_data_full %>%
   mutate(borough = coalesce(borough, as.character(zip_code)))
 
-# Step 7: Remove invalid zip codes
+#Remove invalid zip codes
 rider_data_full <- rider_data_full %>%
-  filter(!zip_code %in% c("12105", "11290", "11135"))
-
+  filter(survey_id != 2410) %>% 
+  filter(survey_id != 944) %>% 
+  filter(survey_id != 241) %>% 
+  filter(survey_id != 919) 
 ```
-
-I think that maybe top 3 complaints shouldn't be separated into individual rows because now it's double or triple counting all of the other responses in other columns. 
-
-should approximate delay duration be an ordered factor?
 
 final data set is rider_data_full
 =======
-
-
-should approximate delay duration be an ordered factor?
-
-anyways final data set is rider_data
-
-
-
-
->>>>>>> e522183bd9f292fb1392c8acd6beda74dc04f701
 
 
 
