@@ -154,7 +154,7 @@ regression_rider_data <-
       recode(
         frequency_of_delays,
         "Never" = "0", 
-        "Almost Never" = "1",
+        "Almost never" = "1",
         "Rarely" = "2",
         "A few times a week" = "3",
         "Everyday" = "4"), 
@@ -214,7 +214,24 @@ regression_rider_data <-
 ```
 
 
+Distributions  
+```{r}
+#Pick blue from gradient 
+viridis_blue <- viridis(100)[40]
 
+plot_ly(regression_rider_data, 
+        x = ~overall_satisfaction, 
+        type = "histogram",
+         marker = list(color = viridis_blue)) %>%
+  layout(title = "Distribution of Overall Satisfication Levels",
+         xaxis = list(title = "Satisfaction Level",
+                      tickvals = 0:5,      
+                      ticktext = c("Highly Unsatisfied", "Not Satisfied", "Neutral", "Somewhat Satisfied", "Very Satisfied")),
+         yaxis = list(title = "Count"))
+
+```
+
+Running linear model 
 ```{r}
 #Run the model 
 fit <- lm(overall_satisfaction ~ average_length_subway_ride + frequency_of_delays + approximate_delay_duration + frequency_of_rerouting + borough, data = regression_rider_data)
@@ -227,7 +244,15 @@ fit |>
 #Visualizations
 regression_rider_data |> 
   modelr::add_residuals(fit) |> 
-  ggplot(aes(x = overall_satisfaction, y = resid)) + geom_point()
+  ggplot(aes(x = overall_satisfaction, y = resid)) + geom_point() +
+  labs(
+    title = "Residual Plot for Linear Regression",
+    x = "Overall Satisfaction",
+    y = "Residuals", 
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
 ```
 
 
@@ -261,7 +286,8 @@ model_df <- broom::tidy(model, conf.int = TRUE) |>
   dplyr::mutate(across(where(is.numeric), round, 3)) 
 
 #Publication style table 
-tab_model(model)
+tab_model(model, 
+          title = "Ordinal Regression Model Results")
 ```
 
 Visualizing effect size - if predictors increase or decrease satisfaction odds.
@@ -272,6 +298,12 @@ tidy_model <- broom::tidy(model) %>%
          conf.low = exp(estimate - 1.96 * std.error),
          conf.high = exp(estimate + 1.96 * std.error))
 
+#Remove not significant predictors 
+tidy_model <- tidy_model %>%
+  filter(term %in% c("average_length_subway_ride.L", "frequency_of_delays.L", "approximate_delay_duration.L", "approximate_delay_duration^4", "frequency_of_rerouting.L", "frequency_of_rerouting.Q", "frequency_of_rerouting.C", "borough")) %>%
+  mutate(term = fct_reorder(term, odds_ratio, .desc = FALSE))  # order decreasing OR
+
+
 plot_ly(tidy_model,
         x = ~odds_ratio, 
         y = ~term,
@@ -280,22 +312,9 @@ plot_ly(tidy_model,
         error_x = list(type = 'data', symmetric = FALSE,
                        array = tidy_model$conf.high - tidy_model$odds_ratio,
                        arrayminus = tidy_model$odds_ratio - tidy_model$conf.low)) %>%
-  layout(title = "Odds Ratios with 95% CI",
+  layout(title = "Significant Predictor Effects on Satisfaction (ORs with 95% CI)",
          xaxis = list(title = "Odds Ratio"),
          yaxis = list(title = "Predictor"))
-
-```
-
-
-Distributions  
-```{r}
-#Pick blue from gradient 
-viridis_blue <- viridis(100)[40]
-
-plot_ly(regression_rider_data, 
-        x = ~overall_satisfaction, 
-        type = "histogram",
-         marker = list(color = viridis_blue))
 ```
 
 
@@ -356,11 +375,82 @@ plot_ly(pred_long,
     text = ~paste("Satisfaction:", Satisfaction, "<br>Probability:", round(Probability, 3)),
     hoverinfo = "text") %>%
        layout(
-          title = "Predicted Probability Heatmap",
+          title = "Predicting Probability of Satisfaction by Avg Subway Ride Length",
           xaxis = list(
             title = "Average Length of Subway Ride",
             tickvals = 0:5,                 
             ticktext = c("< 20 min", "20 - 40 min", "40 - 60 min", "60 - 90 min", "90 min - 2 hours")  #Putting labels back 
+          ),
+          yaxis = list(
+            title = "Borough",
+            tickvals = 0:5,                           # positions along y-axis
+            ticktext = c("Manhattan", "Other Boroughs in NYC", "Outside NY")  # custom labels
+          )
+        )
+```
+
+
+```{r}
+#Create grid of predicted probabilities with frequency of delay as variable now
+grid_delays <- expand.grid(
+  frequency_of_delays = levels(regression_rider_data$frequency_of_delays), 
+  borough = unique(regression_rider_data$borough),
+  average_length_subway_ride = levels(regression_rider_data$average_length_subway_ride) [1], #fix at reference level
+  approximate_delay_duration = levels(regression_rider_data$approximate_delay_duration)[1],
+  frequency_of_rerouting = levels(regression_rider_data$frequency_of_rerouting)[1]
+)
+
+grid_delays$average_length_subway_ride <- factor(grid_delays$average_length_subway_ride, 
+                                          ordered = TRUE,
+                                          levels = levels(regression_rider_data$average_length_subway_ride))
+grid_delays$frequency_of_delays <- factor(grid_delays$frequency_of_delays, 
+                                   ordered = TRUE,
+                                   levels = levels(regression_rider_data$frequency_of_delays))
+grid_delays$approximate_delay_duration <- factor(grid_delays$approximate_delay_duration, 
+                                         ordered = TRUE,
+                                         levels = levels(regression_rider_data$approximate_delay_duration))
+grid_delays$frequency_of_rerouting <- factor(grid_delays$frequency_of_rerouting, 
+                                      ordered = TRUE,
+                                      levels = levels(regression_rider_data$frequency_of_rerouting))
+
+#Get probabilities 
+pred_probs <- predict(model, newdata = grid_delays, type = "prob")
+pred_df <- cbind(grid_delays, pred_probs)
+
+pred_long <- pred_df %>%
+  pivot_longer(
+    cols = starts_with("fit"), 
+    names_to = "Satisfaction", 
+    values_to = "Probability"
+  )
+
+#Recode names
+pred_long <- pred_long %>%
+  mutate(Satisfaction = recode(
+    Satisfaction,
+    "fit.1" = "Highly Unsatisfied",
+    "fit.2" = "Not satisfied",
+    "fit.3" = "Neutral",
+    "fit.4" = "Somewhat satisfied",
+    "fit.5" = "Very satisfied"
+  ))
+
+
+#Produce plot
+plot_ly(pred_long, 
+    x = ~frequency_of_delays, 
+    y = ~borough, 
+    z = ~Probability, 
+    type = "heatmap", 
+    colorscale = "Viridis", 
+    text = ~paste("Satisfaction:", Satisfaction, "<br>Probability:", round(Probability, 3)),
+    hoverinfo = "text") %>%
+       layout(
+          title = "Predicting Probability of Satisfaction by Frequency Delays",
+          xaxis = list(
+            title = "Frequency of Delays",
+            tickvals = 0:5,                 
+            ticktext = c("Never", "Almost Never", "Rarely", "A few times a week", "Everyday")  #Putting labels back 
           ),
           yaxis = list(
             title = "Borough",

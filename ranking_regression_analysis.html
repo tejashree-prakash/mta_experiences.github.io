@@ -16,7 +16,7 @@
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -30,7 +30,6 @@
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
@@ -225,9 +224,6 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
 
 
 
@@ -265,15 +261,18 @@ $(document).ready(function () {
       <a href="proposal.html">Report</a>
     </li>
     <li>
+      <a href="ranking_regression_analysis.html">Regression analysis</a>
+    </li>
+    <li>
       <a href="https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd">Data source</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown-header">Data Exploration</li>
-<li class="dropdown-header">Borough Analysis</li>
-<li class="dropdown-header">Subway Line Analysis</li>
+        <li>
+  <a href="index.html">Welcome</a>
+</li>
 <li>
   <a href="borough_demographics_dashboard.html">Borough dashboard</a>
 </li>
@@ -283,23 +282,12 @@ $(document).ready(function () {
 <li>
   <a href="Updated-Dashboard-complaint-types-II.html">Complaint types</a>
 </li>
-<li>
-  <a href="ranking_regression_analysis.html">Regression analysis</a>
-</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
 <div id="header">
-
-<div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-</ul>
-</div>
 
 
 
@@ -320,7 +308,7 @@ subway_rider_data =
   read_csv(&quot;data/2019_subway_rider_data.csv&quot;) |&gt; 
   janitor::clean_names()</code></pre>
 <pre><code>## Rows: 10704 Columns: 19
-## ── Column specification ────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
 ## lgl  (1): is_subway_affordable
@@ -411,7 +399,7 @@ zip_code_data =
   read_csv(&quot;data/nyc_zipcodes.csv&quot;) %&gt;%
   select(borough, zipcode)</code></pre>
 <pre><code>## Rows: 343 Columns: 2
-## ── Column specification ────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (2): borough, zipcode
 ## 
@@ -429,8 +417,8 @@ rider_data_full &lt;- rider_data %&gt;%
 <pre><code>## Warning in left_join(., zip_code_data, by = c(zip_code = &quot;zipcode&quot;)): Detected an unexpected many-to-many relationship between `x` and `y`.
 ## ℹ Row 6 of `x` matches multiple rows in `y`.
 ## ℹ Row 109 of `y` matches multiple rows in `x`.
-## ℹ If a many-to-many relationship is expected, set `relationship = &quot;many-to-many&quot;` to
-##   silence this warning.</code></pre>
+## ℹ If a many-to-many relationship is expected, set `relationship =
+##   &quot;many-to-many&quot;` to silence this warning.</code></pre>
 <pre class="r"><code>#If there&#39;s no match, we want to keep the zip_code in the borough column, so we use coalesce to handle this
 rider_data_full &lt;- rider_data_full %&gt;%
   mutate(borough = coalesce(borough, as.character(zip_code)))
@@ -464,7 +452,7 @@ regression_rider_data &lt;-
       recode(
         frequency_of_delays,
         &quot;Never&quot; = &quot;0&quot;, 
-        &quot;Almost Never&quot; = &quot;1&quot;,
+        &quot;Almost never&quot; = &quot;1&quot;,
         &quot;Rarely&quot; = &quot;2&quot;,
         &quot;A few times a week&quot; = &quot;3&quot;,
         &quot;Everyday&quot; = &quot;4&quot;), 
@@ -521,6 +509,22 @@ regression_rider_data &lt;-
       overall_satisfaction == &quot;Neutral&quot; ~ 3,
       overall_satisfaction == &quot;Somewhat satisfied&quot; ~ 4,
       overall_satisfaction == &quot;Very satisfied&quot; ~ 5))</code></pre>
+<p>Distributions</p>
+<pre class="r"><code>#Pick blue from gradient 
+viridis_blue &lt;- viridis(100)[40]
+
+plot_ly(regression_rider_data, 
+        x = ~overall_satisfaction, 
+        type = &quot;histogram&quot;,
+         marker = list(color = viridis_blue)) %&gt;%
+  layout(title = &quot;Distribution of Overall Satisfication Levels&quot;,
+         xaxis = list(title = &quot;Satisfaction Level&quot;,
+                      tickvals = 0:5,      
+                      ticktext = c(&quot;Highly Unsatisfied&quot;, &quot;Not Satisfied&quot;, &quot;Neutral&quot;, &quot;Somewhat Satisfied&quot;, &quot;Very Satisfied&quot;)),
+         yaxis = list(title = &quot;Count&quot;))</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-e299638782bc7995107e" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-e299638782bc7995107e">{"x":{"visdat":{"13b5156550b7b":["function () ","plotlyVisDat"]},"cur_data":"13b5156550b7b","attrs":{"13b5156550b7b":{"x":{},"marker":{"color":"#2A768EFF"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"histogram"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Distribution of Overall Satisfication Levels","xaxis":{"domain":[0,1],"automargin":true,"title":"Satisfaction Level","tickvals":[0,1,2,3,4,5],"ticktext":["Highly Unsatisfied","Not Satisfied","Neutral","Somewhat Satisfied","Very Satisfied"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count"},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[5,4,2,2,1,3,3,2,4,2,4,3,4,3,2,2,4,5,1,2,4,1,5,3,1,3,4,4,4,2,4,3,3,1,3,2,4,2,3,2,4,4,4,2,4,2,3,5,4,1,4,4,4,4,1,4,4,5,5,1,2,1,2,1,2,2,3,3,1,4,2,2,5,2,2,1,3,4,3,2,2,3,5,2,5,4,2,4,4,2,1,4,1,1,4,4,2,2,1,4,4,3,4,2,4,3,3,2,3,2,5,3,1,1,4,1,5,3,2,5,4,3,1,3,1,4,2,4,5,5,3,3,4,5,5,3,2,2,4,2,2,4,2,3,3,3,2,4,4,2,1,3,3,3,4,4,3,4,5,4,2,2,4,4,3,2,1,3,4,3,3,4,3,2,2,1,5,5,4,2,4,1,2,2,3,2,2,3,1,3,4,3,1,1,1,4,4,1,5,1,2,2,1,3,1,1,3,2,1,2,4,4,3,3,2,3,2,5,4,4,3,5,2,3,2,3,2,4,4,2,5,5,3,3,3,3,1,4,4,2,2,1,2,2,2,2,4,1,1,4,2,2,4,2,3,2,1,4,2,2,2,5,5,2,5,4,4,5,5,4,2,2,3,2,5,5,4,2,4,2,1,3,1,5,4,1,5,2,2,5,4,2,2,3,4,5,2,2,5,4,3,3,1,1,4,2,3,3,1,2,2,4,4,4,4,3,1,1,4,4,3,2,3,3,4,2,1,1,4,3,4,4,4,3,3,3,4,3,4,4,4,3,3,3,2,4,4,4,4,3,4,4,3,3,4,4,4,4,3,3,3,4,1,4,2,2,2,3,3,3,5,2,3,4,4,2,2,5,4,2,2,4,3,4,4,1,1,4,4,3,3,3,4,2,2,2,3,3,1,3,4,3,1,1,3,2,2,2,4,4,4,5,2,4,4,3,2,1,1,1,4,3,1,1,2,1,1,4,2,2,3,1,2,2,4,4,2,4,2,2,2,2,1,2,2,2,2,3,2,1,1,1,2,2,2,1,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,2,2,1,4,2,2,1,4,2,2,3,2,4,2,2,2,2,2,2,2,1,2,2,1,4,1,3,2,4,4,1,2,2,1,3,1,3,1,1,2,3,1,2,4,1,5,2,3,2,1,2,2,2,2,4,4,2,3,1,2,3,2,2,2,4,2,2,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1,4,4,4,4,2,2,1,1,4,2,2,2,3,2,1,2,4,1,2,2,2,1,1,3,2,3,1,4,2,4,2,2,2,1,4,2,3,2,2,2,2,3,2,2,2,2,1,3,3,1,2,3,4,2,2,2,2,4,1,2,4,2,2,2,2,4,4,4,4,1,2,1,1,1,3,2,2,1,2,2,2,1,1,2,1,2,1,1,2,2,2,3,2,2,1,1,4,3,4,1,2,4,4,4,1,1,2,2,2,4,3,4,2,5,3,2,2,2,2,1,2,2,2,1,3,1,1,2,5,2,2,3,2,1,3,2,1,2,2,3,3,3,1,2,2,2,3,2,4,2,2,1,4,1,3,2,3,3,2,2,4,2,2,1,2,2,4,4,1,2,1,4,1,2,2,1,1,2,2,2,2,5,4,1,2,2,4,2,1,4,2,2,1,3,2,2,1,2,2,2,1,4,1,2,1,1,4,5,3,1,2,1,1,2,3,2,4,3,4,1,4,1,1,1,1,2,4,3,2,2,4,4,3,4,2,1,2,2,3,1,2,1,1,2,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,4,4,1,2,1,1,1,2,4,2,1,1,2,3,2,1,2,4,2,1,4,3,2,2,2,2,1,2,2,1,3,1,1,2,2,2,3,2,2,3,2,2,4,2,4,4,2,2,2,1,2,2,3,2,4,4,1,2,2,2,4,1,3,2,4,1,3,2,1,2,2,1,2,2,2,2,2,4,2,2,2,3,2,1,1,3,3,2,1,1,1,2,3,2,3,1,1,3,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,4,2,1,3,2,2,1,5,2,1,2,1,4,1,1,3,1,2,4,3,2,3,3,2,2,2,1,4,3,2,4,2,4,2,1,3,4,4,2,1,3,3,1,2,1,2,2,3,2,4,2,4,4,2,1,1,1,2,5,4,5,4,4,2,1,2,1,1,3,3,2,2,4,2,2,2,2,2,2,2,2,1,2,1,1,1,2,4,1,4,2,1,1,4,2,1,1,1,1,2,4,2,1,2,2,1,4,3,1,2,4,1,2,1,3,4,1,1,1,1,2,3,4,2,1,1,2,2,2,2,1,1,1,2,2,2,2,1,3,2,2,4,1,1,1,1,2,3,1,1,2,4,5,1,3,2,1,3,3,2,1,4,3,4,3,2,1,4,2,1,4,3,4,1,1,1,1,4,1,2,3,4,2,1,1,1,2,2,2,2,3,2,2,5,3,3,5,1,2,2,1,1,1,1,1,2,1,2,3,2,1,1,2,1,2,1,1,3,2,1,3,3,1,2,1,1,1,1,1,4,3,4,1,4,4,4,1,1,2,1,1,2,2,1,3,1,1,2,1,4,2,1,1,2,4,2,2,2,2,2,2,3,4,2,2,1,1,2,2,2,1,4,1,3,4,2,4,3,4,1,4,1,2,4,3,4,2,4,2,1,2,4,2,2,2,2,5,3,1,2,3,3,2,4,2,4,1,3,1,1,4,2,2,1,4,3,2,1,4,4,2,2,2,1,3,2,4,2,4,2,3,2,1,1,3,1,1,1,2,1,2,4,1,4,4,1,2,2,2,1,2,2,5,1,2,2,3,4,1,3,1,1,2,2,2,2,2,2,3,2,2,2,1,4,2,2,1,4,2,3,1,3,1,2,4,2,2,2,3,1,3,2,2,3,4,3,1,3,2,1,4,3,2,1,1,2,1,1,1,2,1,3,1,4,3,2,1,3,2,2,1,2,1,2,1,4,2,2,3,2,4,2,2,3,2,3,3,3,2,4,3,1,1,1,4,2,3,1,2,2,1,1,3,4,2,1,5,4,1,4,4,2,2,4,2,1,2,2,2,4,2,4,2,1,2,1,3,3,2,1,3,3,1,4,1,2,2,1,1,2,1,2,3,2,3,4,3,2,2,3,4,2,1,3,1,5,3,1,2,2,3,1,1,2,3,3,1,4,3,2,3,5,2,3,2,1,1,2,2,4,1,2,4,1,2,1,1,4,3,1,1,1,2,1,1,1,4,2,1,2,3,1,3,2,2,1,4,3,2,5,2,2,2,2,4,5,2,2,1,1,2,5,4,4,4,2,1,2,1,1,1,5,2,3,1,2,1,2,4,4,4,1,5,2,2,3,2,4,4,4,2,5,1,4,2,3,3,3,1,2,3,2,1,4,4,4,3,1,2,2,4,4,1,2,4,2,3,2,5,2,3,4,3,2,2,2,4,3,4,2,4,3,3,5,3,1,2,2,1,2,2,2,1,4,4,5,1,1,2,2,2,2,3,1,2,4,5,4,1,2,2,2,5,1,4,4,1,2,1,4,1,4,4,3,4,1,3,1,2,4,2,4,1,3,2,4,3,1,4,2,1,4,1,2,2,2,1,4,2,3,1,3,1,1,1,3,2,2,1,2,2,4,4,4,4,1,1,1,1,3,2,4,2,4,3,2,2,2,2,4,4,3,1,3,5,1,1,4,2,3,2,4,1,1,1,2,4,2,3,2,2,2,4,3,4,4,1,1,4,4,3,2,2,2,3,2,4,1,2,4,2,1,2,1,2,3,3,1,2,4,3,2,2,4,1,1,2,1,4,2,4,4,1,3,1,3,2,2,4,4,3,2,5,2,1,4,1,2,1,1,2,2,1,1,1,3,4,4,2,1,2,2,2,1,2,1,2,2,2,4,2,4,3,2,2,4,1,3,3,5,3,3,2,1,1,4,2,3,5,2,1,1,2,1,4,2,2,1,4,2,3,4,3,2,2,3,3,2,3,5,4,3,2,2,2,2,2,3,4,4,3,2,2,4,2,1,2,2,1,2,4,2,2,3,2,2,2,4,3,2,1,1,1,2,4,1,2,1,3,4,4,4,3,2,3,1,1,2,1,2,3,3,1,2,4,1,2,3,3,4,4,1,1,3,4,1,2,4,2,2,2,3,2,3,2,1,3,3,2,2,1,4,1,4,2,3,4,2,1,2,4,2,2,3,2,3,2,4,2,5,4,1,1,1,3,2,4,3,2,4,2,1,3,1,2,4,1,1,3,3,3,2,2,2,2,1,3,1,2,4,4,4,2,1,2,4,3,1,1,4,4,2,2,2,1,2,2,3,3,2,2,1,2,4,2,2,1,1,1,2,4,1,4,2,2,5,4,1,3,2,2,2,4,4,2,2,4,2,2,2,2,1,2,4,5,1,2,2,1,2,4,5,2,4,3,4,1,2,3,5,3,1,4,3,4,2,4,4,2,1,2,4,2,2,4,5,4,4,4,5,1,2,1,4,3,2,2,2,1,2,2,2,1,1,2,2,4,3,4,1,1,2,4,1,3,2,4,2,4,2,3,1,1,1,1,2,2,3,4,3,1,1,2,1,5,2,2,1,2,2,2,5,2,1,4,1,1,1,2,2,2,3,1,4,3,3,2,4,1,3,2,2,4,2,2,3,2,2,5,3,4,3,3,4,2,2,4,4,3,2,1,4,1,4,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,1,4,2,2,4,1,4,2,2,4,2,2,4,2,4,4,1,5,3,3,1,2,1,2,1,1,4,2,1,2,4,1,1,2,1,2,2,4,2,2,1,1,2,2,4,4,4,1,2,4,4,2,1,2,5,2,2,1,3,2,1,3,1,2,2,1,4,2,5,4,2,3,1,4,4,2,3,2,2,2,2,4,3,2,2,4,4,3,2,1,2,1,1,1,2,4,1,1,1,2,4,4,4,4,3,3,1,2,3,1,5,1,5,4,3,3,2,1,4,5,5,5,1,4,2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,3,1,4,4,4,3,2,2,2,2,1,3,1,2,2,1,1,1,3,2,1,4,2,2,3,2,2,2,1,2,2,2,4,4,1,2,1,1,1,1,2,3,2,4,2,4,2,4,1,1,2,2,1,3,4,4,2,4,3,2,1,3,3,1,2,1,2,1,1,2,1,3,4,2,1,1,4,1,4,4,2,1,3,2,2,3,4,2,2,4,5,4,4,2,2,4,2,1,3,2,2,1,2,1,1,4,2,5,2,5,2,2,1,2,3,3,4,1,3,3,2,1,5,2,1,1,2,1,2,4,4,2,2,4,2,2,2,2,4,3,4,3,3,3,2,3,4,1,2,2,2,4,1,2,3,1,2,4,2,3,2,2,2,2,2,4,4,2,2,1,1,3,1,3,1,4,4,5,1,4,1,4,3,3,2,1,1,4,3,5,4,4,2,4,4,4,5,5,1,4,4,2,4,4,2,2,2,2,4,3,3,3,1,4,1,1,2,2,2,1,2,3,4,3,4,2,2,2,2,1,1,4,2,4,2,1,5,3,2,1,1,3,3,1,2,1,3,3,1,1,3,4,4,2,3,2,3,2,3,1,2,2,1,4,2,1,4,4,4,2,5,4,1,2,5,1,2,1,1,4,2,3,2,2,5,2,4,1,2,4,3,1,4,2,2,1,4,4,2,4,1,1,2,2,1,1,4,3,1,2,1,2,2,2,1,1,3,1,2,2,1,1,1,5,1,4,4,2,2,2,5,2,1,4,2,2,2,3,2,3,1,2,2,2,1,5,4,2,3,2,2,2,4,4,2,2,2,4,2,2,4,1,3,2,4,2,2,1,2,3,2,4,2,4,2,4,2,2,4,1,4,2,1,3,3,2,3,2,4,4,2,2,1,2,2,2,3,2,1,2,2,1,2,1,2,4,4,2,2,4,4,3,4,1,4,2,1,4,4,1,3,2,2,4,3,2,4,4,1,1,4,1,2,4,1,2,2,4,3,3,4,2,2,2,2,2,3,2,1,3,3,1,3,3,1,2,4,2,1,4,3,2,1,2,2,2,2,4,3,1,2,2,2,2,1,2,4,3,2,1,3,4,3,5,1,2,2,4,4,4,1,3,2,3,2,4,1,3,1,4,2,4,2,4,2,2,2,4,3,1,4,2,1,3,2,2,4,1,3,3,3,1,2,5,2,2,3,3,1,3,1,3,4,2,2,4,1,2,2,1,4,2,3,1,2,5,3,3,4,2,2,2,2,2,2,2,2,2,2,4,2,3,1,1,1,4,2,3,1,4,2,1,2,2,2,4,1,3,4,2,3,3,1,2,4,1,4,1,2,1,4,1,2,4,5,3,4,3,3,2,2,3,4,2,2,3,2,4,1,4,4,3,2,3,3,2,2,4,1,2,1,3,1,2,1,3,4,1,1,2,4,2,2,1,2,4,2,2,1,2,2,1,4,2,2,4,2,4,4,2,1,2,1,4,1,4,2,2,2,1,2,1,4,1,3,2,1,3,2,3,2,4,1,5,2,1,3,1,4,4,3,4,3,2,1,3,2,2,1,2,3,2,5,3,3,3,2,4,2,1,1,3,2,4,1,2,2,4,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,3,2,2,1,1,4,4,4,2,4,1,4,2,1,1,2,1,1,2,2,2,3,1,1,2,3,2,2,2,4,1,1,2,1,4,2,4,2,4,2,4,1,1,3,4,2,2,2,3,3,2,4,1,2,4,1,4,2,4,4,2,4,2,5,2,2,3,2,2,3,3,2,3,2,3,2,2,1,1,2,3,1,5,2,5,2,4,3,2,4,2,1,3,2,3,2,1,1,2,3,4,4,3,2,4,1,3,1,3,2,2,2,2,2,1,4,1,1,4,1,2,1,3,3,4,2,3,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,2,3,4,2,3,4,4,3,4,1,4,2,2,3,3,3,3,4,1,4,2,1,4,5,3,2,2,2,1,2,1,2,2,4,2,1,1,4,1,2,1,3,5,4,2,1,3,4,4,2,1,2,1,2,4,1,2,2,4,1,2,2,3,3,5,4,4,1,1,4,3,1,2,1,3,2,2,1,2,2,4,2,1,3,3,2,1,4,2,2,2,2,2,2,2,2,3,3,1,1,1,2,4,2,4,2,3,4,4,3,2,2,4,1,4,1,2,2,2,2,5,1,1,2,3,1,2,2,2,4,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,5,2,1,1,4,4,2,2,2,2,1,1,2,2,1,1,4,2,2,2,2,3,2,2,1,2,1,2,3,1,2,1,1,4,2,2,3,2,2,4,4,1,3,1,5,1,1,2,1,1,4,3,2,2,2,3,3,3,1,2,2,2,2,4,3,2,4,2,1,2,3,2,4,2,4,3,1,4,2,3,5,2,4,2,2,1,2,2,2,2,4,2,4,2,1,1,3,2,4,1,2,2,3,2,2,2,4,4,2,1,3,4,2,1,2,1,1,1,4,1,3,2,1,2,2,2,3,2,2,1,1,4,1,1,2,3,1,1,4,4,2,1,4,2,1,2,2,2,4,1,3,4,2,4,2,3,2,2,3,1,1,2,4,2,2,5,3,4,1,3,4,2,2,1,4,1,1,4,1,2,2,4,1,2,1,2,2,4,2,2,1,3,2,2,3,2,2,4,4,1,2,3,5,2,1,1,3,4,2,2,2,1,1,2,1,2,3,4,4,5,3,4,1,4,4,4,3,4,2,3,4,2,2,3,1,1,4,2,2,4,2,3,3,3,5,4,2,4,4,4,4,1,3,2,2,4,1,4,3,4,3,3,2,4,4,1,2,2,3,2,2,4,1,2,2,4,1,1,2,3,2,2,2,2,1,2,2,2,4,1,2,2,2,1,1,2,1,2,2,2,1,3,1,4,4,4,1,4,2,1,1,2,2,3,1,2,1,2,1,2,1,3,4,2,3,4,1,4,1,2,4,2,2,4,1,1,1,1,4,1,5,4,2,3,4,4,4,4,4,3,4,1,2,2,2,1,3,1,3,4,4,2,1,5,2,2,1,3,3,3,1,2,2,3,4,4,2,2,3,1,2,4,2,2,4,2,3,2,4,3,3,3,2,2,4,5,2,4,2,1,2,1,4,4,2,1,2,4,4,1,2,2,3,2,2,1,1,2,1,2,3,1,1,4,2,2,4,3,1,4,1,1,4,2,2,2,3,3,1,4,3,2,4,2,2,4,4,1,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,4,2,1,2,1,4,4,2,1,1,2,3,1,1,5,1,2,2,1,2,4,2,4,1,3,1,1,1,2,1,5,4,3,4,2,1,2,1,2,2,2,2,4,4,2,2,2,2,3,2,2,3,3,3,1,4,1,1,3,2,2,3,1,2,3,2,2,4,3,3,1,4,2,1,4,1,4,2,1,2,4,2,4,4,4,2,3,4,1,1,1,3,2,3,2,2,1,1,1,2,2,2,2,1,4,2,4,2,4,1,2,4,2,1,2,1,2,2,2,1,1,2,3,2,1,4,3,1,3,2,1,1,3,3,5,2,2,4,3,2,4,2,4,3,2,3,4,2,1,4,4,2,2,1,2,2,1,4,3,2,4,2,2,2,2,2,4,1,4,2,2,2,1,3,4,1,5,3,2,4,2,4,2,1,2,2,2,1,2,4,2,1,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,4,1,3,2,1,3,2,2,4,2,3,2,1,2,4,4,3,4,2,4,1,1,3,2,2,2,2,1,2,4,2,2,4,2,2,1,2,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,3,2,3,2,1,2,2,1,3,2,2,2,4,4,2,2,2,1,2,1,1,4,2,2,3,1,2,2,1,2,1,1,2,2,4,2,1,4,4,3,4,1,4,1,2,4,2,2,2,2,1,2,1,2,1,3,2,2,1,4,1,2,4,3,2,1,1,4,2,4,2,2,2,1,3,2,2,2,1,3,1,2,2,3,1,4,2,4,2,2,1,3,2,2,1,3,3,1,2,2,2,2,1,2,1,2,2,4,4,2,4,4,1,2,2,2,1,2,2,3,1,4,4,3,3,1,1,3,1,5,4,1,1,2,2,1,2,2,2,2,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,2,4,4,3,1,2,4,2,2,2,2,2,2,1,2,2,2,4,1,1,2,2,4,4,1,4,2,3,1,3,2,4,3,2,2,4,2,2,2,2,1,2,2,1,3,1,2,1,2,3,2,2,2,1,3,3,1,1,2,2,1,2,2,2,1,2,1,2,2,4,2,4,2,2,4,4,2,4,2,1,1,1,1,2,1,4,1,1,1,3,1,5,2,2,2,4,2,2,4,1,4,2,1,1,1,4,3,3,2,4,1,1,1,2,2,2,1,2,2,4,4,1,1,1,1,1,3,2,1,2,1,4,3,2,1,2,1,3,2,2,1,1,2,4,2,2,3,1,2,2,1,3,2,5,3,2,4,4,3,2,4,1,2,2,2,3,2,2,1,4,2,4,4,4,1,4,1,1,4,2,1,1,2,2,2,4,2,3,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,3,2,2,1,3,2,2,3,2,1,5,1,2,2,4,2,1,5,1,1,3,2,2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,4,2,2,4,2,5,3,4,4,2,2,2,1,4,5,2,3,2,2,4,3,2,1,4,4,1,2,1,2,1,1,1,2,1,4,2,2,1,1,2,3,2,1,4,4,2,2,4,2,2,2,2,2,2,3,1,1,1,3,1,1,1,2,4,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,5,2,2,2,2,4,2,3,2,2,1,3,1,1,1,2,1,1,1,4,1,2,4,2,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,2,5,2,1,1,1,4,3,5,5,3,4,3,2,4,4,2,2,3,3,3,2,1,1,2,2,1,3,2,2,2,1,3,4,2,2,2,1,3,2,2,2,2,2,2,2,1,1,1,2,2,3,4,4,1,2,1,4,3,4,1,2,4,1,4,4,2,4,2,2,4,1,5,2,4,4,2,2,1,4,2,5,2,4,2,2,1,3,3,1,1,2,4,2,1,1,1,3,2,1,2,3,1,2,1,3,4,4,1,2,1,1,1,1,1,2,1,1,4,2,4,2,4,3,1,4,3,4,1,4,3,1,4,1,4,4,1,2,2,4,4,1,4,1,1,2,2,1,4,4,1,3,3,2,2,4,3,1,4,2,1,2,2,3,1,1,1,4,1,5,1,2,3,4,3,2,1,4,1,1,2,1,1,1,1,1,2,2,2,4,4,2,4,2,1,1,2,5,2,1,2,3,4,2,4,2,1,1,5,1,3,4,4,2,2,1,3,2,5,4,3,1,4,1,2,3,3,4,4,1,2,2,1,2,2,3,1,4,1,2,2,4,2,1,2,2,4,1,2,2,2,4,4,3,3,2,2,4,1,4,1,2,1,4,2,3,4,3,4,2,4,1,2,4,4,2,4,1,1,4,2,5,1,3,2,3,3,3,1,1,2,2,2,1,1,2,1,2,2,4,1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5,1,1,4,1,1,1,2,2,2,1,3,2,2,4,2,2,2,4,1,1,2,3,1,2,2,3,5,5,2,4,2,1,1,1,2,3,1,4,4,4,1,3,3,2,2,2,2,1,1,4,1,2,4,2,4,3,2,1,1,4,2,1,3,2,4,4,2,2,2,1,3,3,2,1,1,2,2,2,2,2,1,1,4,2,1,2,2,4,4,2,1,2,2,2,4,2,2,4,2,2,4,4,4,1,4,4,3,2,3,2,4,2,2,2,4,2,4,4,3,4,3,4,1,1,3,2,1,3,2,2,4,2,5,4,1,1,3,4,1,2,3,2,3,2,1,1,1,2,1,2,4,1,2,1,1,1,1,2,2,2,2,3,3,1,3,4,2,1,2,2,1,2,5,4,3,4,2,1,1,1,3,3,2,1,1,2,2,3,1,1,1,1,1,1,2,2,2,2,4,1,1,1,1,3,1,4,4,4,2,4,2,2,3,1,4,1,1,2,2,3,2,1,2,4,3,2,2,5,4,5,4,4,4,2,4,2,4,2,5,3,1,2,2,2,3,3,4,2,2,1,4,2,2,1,4,4,1,2,2,3,2,3,5,3,2,1,4,1,3,2,2,4,2,2,4,2,2,1,1,4,2,1,2,4,4,2,2,3,2,1,2,1,4,2,2,4,4,1,4,1,2,1,2,2,4,1,4,4,3,2,1,2,5,3,4,4,2,3,4,2,1,4,3,1,4,5,2,2,4,1,2,4,1,1,2,1,1,2,2,5,2,1,1,4,4,1,3,4,5,4,5,2,1,1,2,1,1,3,2,4,3,4,1,2,1,2,2,1,3,2,2,2,1,3,1,4,2,3,2,1,3,4,2,4,4,4,4,2,1,3,2,2,1,3,2,1,2,2,2,2,2,2,1,4,2,3,3,2,2,4,3,2,1,2,4,4,4,2,1,1,1,4,1,2,4],"marker":{"color":"#2A768EFF","line":{"color":"rgba(31,119,180,1)"}},"type":"histogram","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>Running linear model</p>
 <pre class="r"><code>#Run the model 
 fit &lt;- lm(overall_satisfaction ~ average_length_subway_ride + frequency_of_delays + approximate_delay_duration + frequency_of_rerouting + borough, data = regression_rider_data)
 
@@ -528,32 +532,39 @@ fit &lt;- lm(overall_satisfaction ~ average_length_subway_ride + frequency_of_de
 fit |&gt; 
   broom::tidy() |&gt; 
   select(term, estimate, p.value)</code></pre>
-<pre><code>## # A tibble: 16 × 3
+<pre><code>## # A tibble: 17 × 3
 ##    term                         estimate   p.value
 ##    &lt;chr&gt;                           &lt;dbl&gt;     &lt;dbl&gt;
-##  1 (Intercept)                    2.77   4.73e-123
-##  2 average_length_subway_ride.L  -0.178  8.80e-  3
-##  3 average_length_subway_ride.Q   0.103  7.21e-  2
-##  4 average_length_subway_ride.C   0.0322 4.51e-  1
-##  5 average_length_subway_ride^4   0.0126 6.68e-  1
-##  6 frequency_of_delays.L         -1.90   8.83e- 12
-##  7 frequency_of_delays.Q          0.210  3.10e-  1
-##  8 frequency_of_delays.C          0.0171 8.58e-  1
-##  9 approximate_delay_duration.L  -0.450  3.73e-  5
-## 10 approximate_delay_duration.Q   0.0836 3.77e-  1
-## 11 approximate_delay_duration.C  -0.175  7.72e-  2
-## 12 approximate_delay_duration^4  -0.138  5.72e-  2
-## 13 frequency_of_rerouting.L      -0.293  2.70e- 17
-## 14 frequency_of_rerouting.Q      -0.174  4.41e-  8
-## 15 frequency_of_rerouting.C      -0.165  8.97e-  8
-## 16 borough                        0.0673 1.01e-  2</code></pre>
+##  1 (Intercept)                    2.95   1.30e-181
+##  2 average_length_subway_ride.L  -0.182  7.26e-  3
+##  3 average_length_subway_ride.Q   0.108  5.73e-  2
+##  4 average_length_subway_ride.C   0.0318 4.54e-  1
+##  5 average_length_subway_ride^4   0.0119 6.85e-  1
+##  6 frequency_of_delays.L         -2.06   7.94e- 15
+##  7 frequency_of_delays.Q         -0.154  4.91e-  1
+##  8 frequency_of_delays.C          0.100  5.03e-  1
+##  9 frequency_of_delays^4          0.0959 2.15e-  1
+## 10 approximate_delay_duration.L  -0.449  3.72e-  5
+## 11 approximate_delay_duration.Q   0.0823 3.84e-  1
+## 12 approximate_delay_duration.C  -0.174  7.95e-  2
+## 13 approximate_delay_duration^4  -0.142  5.02e-  2
+## 14 frequency_of_rerouting.L      -0.295  7.20e- 18
+## 15 frequency_of_rerouting.Q      -0.171  5.53e-  8
+## 16 frequency_of_rerouting.C      -0.156  3.40e-  7
+## 17 borough                        0.0632 1.49e-  2</code></pre>
 <pre class="r"><code>#Visualizations
 regression_rider_data |&gt; 
   modelr::add_residuals(fit) |&gt; 
-  ggplot(aes(x = overall_satisfaction, y = resid)) + geom_point()</code></pre>
-<pre><code>## Warning: Removed 65 rows containing missing values or values outside the scale range
-## (`geom_point()`).</code></pre>
-<p><img src="ranking_regression_analysis_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+  ggplot(aes(x = overall_satisfaction, y = resid)) + geom_point() +
+  labs(
+    title = &quot;Residual Plot for Linear Regression&quot;,
+    x = &quot;Overall Satisfaction&quot;,
+    y = &quot;Residuals&quot;, 
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )</code></pre>
+<p><img src="ranking_regression_analysis_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>We should do a logistic regression model.</p>
 <pre class="r"><code>#Recode overall satisfaction (outcome) to be ordered 
 regression_rider_data &lt;- regression_rider_data %&gt;%
@@ -592,8 +603,12 @@ model_df &lt;- broom::tidy(model, conf.int = TRUE) |&gt;
 ##   # Now
 ##   across(a:b, \(x) mean(x, na.rm = TRUE))</code></pre>
 <pre class="r"><code>#Publication style table 
-tab_model(model)</code></pre>
+tab_model(model, 
+          title = &quot;Ordinal Regression Model Results&quot;)</code></pre>
 <table style="border-collapse:collapse; border:none;">
+<caption style="font-weight: bold; text-align:left;">
+Ordinal Regression Model Results
+</caption>
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
  
@@ -621,10 +636,10 @@ p
 1|2
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.10
+0.07
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.06 – 0.16
+0.04 – 0.11
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001</strong>
@@ -635,13 +650,13 @@ p
 2|3
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.90
+0.62
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.55 – 1.47
+0.40 – 0.94
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.669
+<strong>0.024</strong>
 </td>
 </tr>
 <tr>
@@ -649,13 +664,13 @@ p
 3|4
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-2.42
+1.66
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.49 – 3.95
+1.09 – 2.53
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-<strong>&lt;0.001</strong>
+<strong>0.019</strong>
 </td>
 </tr>
 <tr>
@@ -663,10 +678,10 @@ p
 4|5
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-37.84
+25.32
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-22.84 – 62.68
+16.40 – 39.09
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001</strong>
@@ -683,7 +698,7 @@ average length subway<br>ride [linear]
 0.50 – 0.88
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-<strong>0.005</strong>
+<strong>0.004</strong>
 </td>
 </tr>
 <tr>
@@ -691,13 +706,13 @@ average length subway<br>ride [linear]
 average length subway<br>ride [quadratic]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.18
+1.19
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.93 – 1.49
+0.94 – 1.51
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.185
+0.157
 </td>
 </tr>
 <tr>
@@ -708,10 +723,10 @@ average length subway<br>ride [cubic]
 1.06
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.89 – 1.27
+0.88 – 1.26
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.524
+0.544
 </td>
 </tr>
 <tr>
@@ -719,13 +734,13 @@ average length subway<br>ride [cubic]
 average length subway<br>ride [4th degree]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.05
+1.04
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.93 – 1.18
+0.92 – 1.18
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.472
+0.497
 </td>
 </tr>
 <tr>
@@ -733,10 +748,10 @@ average length subway<br>ride [4th degree]
 frequency of delays<br>[linear]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.02
+0.01
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00 – 0.05
+0.00 – 0.03
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001</strong>
@@ -747,13 +762,13 @@ frequency of delays<br>[linear]
 frequency of delays<br>[quadratic]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.84
+0.86
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.75 – 4.48
+0.33 – 2.25
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.181
+0.762
 </td>
 </tr>
 <tr>
@@ -761,13 +776,27 @@ frequency of delays<br>[quadratic]
 frequency of delays<br>[cubic]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.79
+1.09
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.53 – 1.19
+0.57 – 2.06
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.266
+0.800
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+frequency of delays [4th<br>degree]
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.02
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.73 – 1.42
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.909
 </td>
 </tr>
 <tr>
@@ -795,7 +824,7 @@ approximate delay<br>duration [quadratic]
 0.80 – 1.66
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.449
+0.453
 </td>
 </tr>
 <tr>
@@ -809,7 +838,7 @@ approximate delay<br>duration [cubic]
 0.48 – 1.06
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.095
+0.097
 </td>
 </tr>
 <tr>
@@ -817,13 +846,13 @@ approximate delay<br>duration [cubic]
 approximate delay<br>duration [4th degree]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.71
+0.70
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.52 – 0.96
+0.52 – 0.95
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-<strong>0.024</strong>
+<strong>0.022</strong>
 </td>
 </tr>
 <tr>
@@ -831,10 +860,10 @@ approximate delay<br>duration [4th degree]
 frequency of rerouting<br>[linear]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.54
+0.53
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.47 – 0.62
+0.46 – 0.61
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001</strong>
@@ -845,10 +874,10 @@ frequency of rerouting<br>[linear]
 frequency of rerouting<br>[quadratic]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.66
+0.67
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.58 – 0.75
+0.59 – 0.76
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001</strong>
@@ -859,10 +888,10 @@ frequency of rerouting<br>[quadratic]
 frequency of rerouting<br>[cubic]
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.70
+0.71
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.62 – 0.79
+0.63 – 0.80
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001</strong>
@@ -873,13 +902,13 @@ frequency of rerouting<br>[cubic]
 borough
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.15
+1.14
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.03 – 1.27
+1.03 – 1.26
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-<strong>0.010</strong>
+<strong>0.015</strong>
 </td>
 </tr>
 <tr>
@@ -887,7 +916,7 @@ borough
 Observations
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">
-5352
+5417
 </td>
 </tr>
 <tr>
@@ -895,7 +924,7 @@ Observations
 R<sup>2</sup> Nagelkerke
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">
-0.373
+0.389
 </td>
 </tr>
 </table>
@@ -907,6 +936,12 @@ satisfaction odds.</p>
          conf.low = exp(estimate - 1.96 * std.error),
          conf.high = exp(estimate + 1.96 * std.error))
 
+#Remove not significant predictors 
+tidy_model &lt;- tidy_model %&gt;%
+  filter(term %in% c(&quot;average_length_subway_ride.L&quot;, &quot;frequency_of_delays.L&quot;, &quot;approximate_delay_duration.L&quot;, &quot;approximate_delay_duration^4&quot;, &quot;frequency_of_rerouting.L&quot;, &quot;frequency_of_rerouting.Q&quot;, &quot;frequency_of_rerouting.C&quot;, &quot;borough&quot;)) %&gt;%
+  mutate(term = fct_reorder(term, odds_ratio, .desc = FALSE))  # order decreasing OR
+
+
 plot_ly(tidy_model,
         x = ~odds_ratio, 
         y = ~term,
@@ -915,21 +950,11 @@ plot_ly(tidy_model,
         error_x = list(type = &#39;data&#39;, symmetric = FALSE,
                        array = tidy_model$conf.high - tidy_model$odds_ratio,
                        arrayminus = tidy_model$odds_ratio - tidy_model$conf.low)) %&gt;%
-  layout(title = &quot;Odds Ratios with 95% CI&quot;,
+  layout(title = &quot;Significant Predictor Effects on Satisfaction (ORs with 95% CI)&quot;,
          xaxis = list(title = &quot;Odds Ratio&quot;),
          yaxis = list(title = &quot;Predictor&quot;))</code></pre>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-5affa5209e7e9b7717a1" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-5affa5209e7e9b7717a1">{"x":{"visdat":{"4a6c248e777e":["function () ","plotlyVisDat"]},"cur_data":"4a6c248e777e","attrs":{"4a6c248e777e":{"x":{},"y":{},"mode":"markers","error_x":{"type":"data","symmetric":false,"array":[0.21773120320677863,0.31783721579022295,0.20711667030974823,0.13480373014587954,0.035083615410132968,2.6450295775261163,0.39977762211025802,0.18557459870044996,0.50844021789013727,0.35149406410959816,0.24812213220403101,0.080467903104890381,0.091027740767693044,0.091326327466332957,0.12655971336778427],"arrayminus":[0.16388935885725991,0.25020208121165688,0.17325609334594472,0.11940805405897081,0.010595605566151743,1.0845976701174487,0.26582387674136587,0.12253045485234076,0.35272142150279073,0.23514658910919412,0.18373859053383601,0.069966021444767545,0.080046611346788143,0.080766123831819026,0.11398887625935639]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Odds Ratios with 95% CI","xaxis":{"domain":[0,1],"automargin":true,"title":"Odds Ratio"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Predictor","type":"category","categoryorder":"array","categoryarray":["approximate_delay_duration.C","approximate_delay_duration.L","approximate_delay_duration.Q","approximate_delay_duration^4","average_length_subway_ride.C","average_length_subway_ride.L","average_length_subway_ride.Q","average_length_subway_ride^4","borough","frequency_of_delays.C","frequency_of_delays.L","frequency_of_delays.Q","frequency_of_rerouting.C","frequency_of_rerouting.L","frequency_of_rerouting.Q"]},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0.66275269222083366,1.1757725237443941,1.0597641381907603,1.045530641573938,0.015180169931681808,1.8384608155960032,0.79333681227902786,0.36067648158709514,1.1516770008759882,0.71039470574856389,0.70809417544862174,0.53609621746455327,0.66354396781231284,0.69847833702220508,1.1476084991052851],"y":["average_length_subway_ride.L","average_length_subway_ride.Q","average_length_subway_ride.C","average_length_subway_ride^4","frequency_of_delays.L","frequency_of_delays.Q","frequency_of_delays.C","approximate_delay_duration.L","approximate_delay_duration.Q","approximate_delay_duration.C","approximate_delay_duration^4","frequency_of_rerouting.L","frequency_of_rerouting.Q","frequency_of_rerouting.C","borough"],"mode":"markers","error_x":{"color":"rgba(31,119,180,1)","type":"data","symmetric":false,"array":[0.21773120320677863,0.31783721579022295,0.20711667030974823,0.13480373014587954,0.035083615410132968,2.6450295775261163,0.39977762211025802,0.18557459870044996,0.50844021789013727,0.35149406410959816,0.24812213220403101,0.080467903104890381,0.091027740767693044,0.091326327466332957,0.12655971336778427],"arrayminus":[0.16388935885725991,0.25020208121165688,0.17325609334594472,0.11940805405897081,0.010595605566151743,1.0845976701174487,0.26582387674136587,0.12253045485234076,0.35272142150279073,0.23514658910919412,0.18373859053383601,0.069966021444767545,0.080046611346788143,0.080766123831819026,0.11398887625935639]},"type":"scatter","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<p>Distributions</p>
-<pre class="r"><code>#Pick blue from gradient 
-viridis_blue &lt;- viridis(100)[40]
-
-plot_ly(regression_rider_data, 
-        x = ~overall_satisfaction, 
-        type = &quot;histogram&quot;,
-         marker = list(color = viridis_blue))</code></pre>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-95b0da63ea1a1bca1e09" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-95b0da63ea1a1bca1e09">{"x":{"visdat":{"4a6c636574ce":["function () ","plotlyVisDat"]},"cur_data":"4a6c636574ce","attrs":{"4a6c636574ce":{"x":{},"marker":{"color":"#2A768EFF"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"histogram"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"overall_satisfaction","type":"category","categoryorder":"array","categoryarray":["1","2","3","4","5"]},"yaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["5","4","2","2","1","3","3","2","4","2","4","3","4","3","2","2","4","5","1","2","4","1","5","3","1","3","4","4","4","2","4","3","3","1","3","2","4","2","3","2","4","4","4","2","4","2","3","5","4","1","4","4","4","4","1","4","4","5","5","1","2","1","2","1","2","2","3","3","1","4","2","2","5","2","2","1","3","4","3","2","2","3","5","2","5","4","2","4","4","2","1","4","1","1","4","4","2","2","1","4","4","3","4","2","4","3","3","2","3","2","5","3","1","1","4","1","5","3","2","5","4","3","1","3","1","4","2","4","5","5","3","3","4","5","5","3","2","2","4","2","2","4","2","3","3","3","2","4","4","2","1","3","3","3","4","4","3","4","5","4","2","2","4","4","3","2","1","3","4","3","3","4","3","2","2","1","5","5","4","2","4","1","2","2","3","2","2","3","1","3","4","3","1","1","1","4","4","1","5","1","2","2","1","3","1","1","3","2","1","2","4","4","3","3","2","3","2","5","4","4","3","5","2","3","2","3","2","4","4","2","5","5","3","3","3","3","1","4","4","2","2","1","2","2","2","2","4","1","1","4","2","2","4","2","3","2","1","4","2","2","2","5","5","2","5","4","4","5","5","4","2","2","3","2","5","5","4","2","4","2","1","3","1","5","4","1","5","2","2","5","4","2","2","3","4","5","2","2","5","4","3","3","1","1","4","2","3","3","1","2","2","4","4","4","4","3","1","1","4","4","3","2","3","3","4","2","1","1","4","3","4","4","4","3","3","3","4","3","4","4","4","3","3","3","2","4","4","4","4","3","4","4","3","3","4","4","4","4","3","3","3","4","1","4","2","2","2","3","3","3","5","2","3","4","4","2","2","5","4","2","2","4","3","4","4","1","1","4","4","3","3","3","4","2","2","2","3","3","1","3","4","3","1","1","3","2","2","2","4","4","4","5","2","4","4","3","2","1","1","1","4","3","1","1","2","1","1","4","2","2","3","1","2","2","4","4","2","4","2","2","2","2","1","2","2","2","2","3","2","1","1","1","2","2","2","1","3","1","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","2","2","2","1","4","2","2","1","4","2","2","3","2","4","2","2","2","2","2","2","2","1","2","2","1","4","1","3","2","4","4","1","2","2","1","3","1","3","1","1","2","3","1","2","4","1","5","2","3","2","1","2","2","2","2","4","4","2","3","1","2","3","2","2","2","4","2","2","2","1","2","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","2","2","1","4","4","4","4","2","2","1","1","4","2","2","2","3","2","1","2","4","1","2","2","2","1","1","3","2","3","1","4","2","4","2","2","2","1","4","2","3","2","2","2","2","3","2","2","2","2","1","3","3","1","2","3","4","2","2","2","2","4","1","2","4","2","2","2","2","4","4","4","4","1","2","1","1","1","3","2","2","1","2","2","2","1","1","2","1","2","1","1","2","2","2","3","2","2","1","1","4","3","4","1","2","4","4","4","1","1","2","2","2","4","3","4","2","5","3","2","2","2","2","1","2","2","2","1","3","1","1","2","5","2","2","3","2","1","3","2","1","2","2","3","3","3","1","2","2","2","3","2","4","2","2","1","4","1","3","2","3","3","2","2","4","2","2","1","2","2","4","4","1","2","1","4","1","2","2","1","1","2","2","2","2","5","4","1","2","2","4","2","1","4","2","2","1","3","2","2","1","2","2","2","1","4","1","2","1","1","4","5","3","1","2","1","1","2","3","2","4","3","4","1","4","1","1","1","1","2","4","3","2","2","4","4","3","4","2","1","2","2","3","1","2","1","1","2","4","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","2","4","4","1","2","1","1","1","2","4","2","1","1","2","3","2","1","2","4","2","1","4","3","2","2","2","2","1","2","2","1","3","1","1","2","2","2","3","2","2","3","2","2","4","2","4","4","2","2","2","1","2","2","3","2","4","4","1","2","2","2","4","1","3","2","4","1","3","2","1","2","2","1","2","2","2","2","2","4","2","2","2","3","2","1","1","3","3","2","1","1","1","2","3","2","3","1","1","3","4","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","2","4","2","1","3","2","2","1","5","2","1","2","1","4","1","1","3","1","2","4","3","2","3","3","2","2","2","1","4","3","2","4","2","4","2","1","3","4","4","2","1","3","3","1","2","1","2","2","3","2","4","2","4","4","2","1","1","1","2","5","4","5","4","4","2","1","2","1","1","3","3","2","2","4","2","2","2","2","2","2","2","2","1","2","1","1","1","2","4","1","4","2","1","1","4","2","1","1","1","1","2","4","2","1","2","2","1","4","3","1","2","4","1","2","1","3","4","1","1","1","1","2","3","4","2","1","1","2","2","2","2","1","1","1","2","2","2","2","1","3","2","2","4","1","1","1","1","2","3","1","1","2","4","5","1","3","2","1","3","3","2","1","4","3","4","3","2","1","4","2","1","4","3","4","1","1","1","1","4","1","2","3","4","2","1","1","1","2","2","2","2","3","2","2","5","3","3","5","1","2","2","1","1","1","1","1","2","1","2","3","2","1","1","2","1","2","1","1","3","2","1","3","3","1","2","1","1","1","1","1","4","3","4","1","4","4","4","1","1","2","1","1","2","2","1","3","1","1","2","1","4","2","1","1","2","4","2","2","2","2","2","2","3","4","2","2","1","1","2","2","2","1","4","1","3","4","2","4","3","4","1","4","1","2","4","3","4","2","4","2","1","2","4","2","2","2","2","5","3","1","2","3","3","2","4","2","4","1","3","1","1","4","2","2","1","4","3","2","1","4","4","2","2","2","1","3","2","4","2","4","2","3","2","1","1","3","1","1","1","2","1","2","4","1","4","4","1","2","2","2","1","2","2","5","1","2","2","3","4","1","3","1","1","2","2","2","2","2","2","3","2","2","2","1","4","2","2","1","4","2","3","1","3","1","2","4","2","2","2","3","1","3","2","2","3","4","3","1","3","2","1","4","3","2","1","1","2","1","1","1","2","1","3","1","4","3","2","1","3","2","2","1","2","1","2","1","4","2","2","3","2","4","2","2","3","2","3","3","3","2","4","3","1","1","1","4","2","3","1","2","2","1","1","3","4","2","1","5","4","1","4","4","2","2","4","2","1","2","2","2","4","2","4","2","1","2","1","3","3","2","1","3","3","1","4","1","2","2","1","1","2","1","2","3","2","3","4","3","2","2","3","4","2","1","3","1","5","3","1","2","2","3","1","1","2","3","3","1","4","3","2","3","5","2","3","2","1","1","2","2","4","1","2","4","1","2","1","1","4","3","1","1","1","2","1","1","1","4","2","1","2","3","1","3","2","2","1","4","3","2","5","2","2","2","2","4","5","2","2","1","1","2","5","4","4","4","2","1","2","1","1","1","5","2","3","1","2","1","2","4","4","4","1","5","2","2","3","2","4","4","4","2","5","1","4","2","3","3","3","1","2","3","2","1","4","4","4","3","1","2","2","4","4","1","2","4","2","3","2","5","2","3","4","3","2","2","2","4","3","4","2","4","3","3","5","3","1","2","2","1","2","2","2","1","4","4","5","1","1","2","2","2","2","3","1","2","4","5","4","1","2","2","2","5","1","4","4","1","2","1","4","1","4","4","3","4","1","3","1","2","4","2","4","1","3","2","4","3","1","4","2","1","4","1","2","2","2","1","4","2","3","1","3","1","1","1","3","2","2","1","2","2","4","4","4","4","1","1","1","1","3","2","4","2","4","3","2","2","2","2","4","4","3","1","3","5","1","1","4","2","3","2","4","1","1","1","2","4","2","3","2","2","2","4","3","4","4","1","1","4","4","3","2","2","2","3","2","4","1","2","4","2","1","2","1","2","3","3","1","2","4","3","2","2","4","1","1","2","1","4","2","4","4","1","3","1","3","2","2","4","4","3","2","5","2","1","4","1","2","1","1","2","2","1","1","1","3","4","4","2","1","2","2","2","1","2","1","2","2","2","4","2","4","3","2","2","4","1","3","3","5","3","3","2","1","1","4","2","3","5","2","1","1","2","1","4","2","2","1","4","2","3","4","3","2","2","3","3","2","3","5","4","3","2","2","2","2","2","3","4","4","3","2","2","4","2","1","2","2","1","2","4","2","2","3","2","2","2","4","3","2","1","1","1","2","4","1","2","1","3","4","4","4","3","2","3","1","1","2","1","2","3","3","1","2","4","1","2","3","3","4","4","1","1","3","4","1","2","4","2","2","2","3","2","3","2","1","3","3","2","2","1","4","1","4","2","3","4","2","1","2","4","2","2","3","2","3","2","4","2","5","4","1","1","1","3","2","4","3","2","4","2","1","3","1","2","4","1","1","3","3","3","2","2","2","2","1","3","1","2","4","4","4","2","1","2","4","3","1","1","4","4","2","2","2","1","2","2","3","3","2","2","1","2","4","2","2","1","1","1","2","4","1","4","2","2","5","4","1","3","2","2","2","4","4","2","2","4","2","2","2","2","1","2","4","5","1","2","2","1","2","4","5","2","4","3","4","1","2","3","5","3","1","4","3","4","2","4","4","2","1","2","4","2","2","4","5","4","4","4","5","1","2","1","4","3","2","2","2","1","2","2","2","1","1","2","2","4","3","4","1","1","2","4","1","3","2","4","2","4","2","3","1","1","1","1","2","2","3","4","3","1","1","2","1","5","2","2","1","2","2","2","5","2","1","4","1","1","1","2","2","2","3","1","4","3","3","2","4","1","3","2","2","4","2","2","3","2","2","5","3","4","3","3","4","2","2","4","4","3","2","1","4","1","4","3","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","1","4","2","2","4","1","4","2","2","4","2","2","4","2","4","4","1","5","3","3","1","2","1","2","1","1","4","2","1","2","4","1","1","2","1","2","2","4","2","2","1","1","2","2","4","4","4","1","2","4","4","2","1","2","5","2","2","1","3","2","1","3","1","2","2","1","4","2","5","4","2","3","1","4","4","2","3","2","2","2","2","4","3","2","2","4","4","3","2","1","2","1","1","1","2","4","1","1","1","2","4","4","4","4","3","3","1","2","3","1","5","1","5","4","3","3","2","1","4","5","5","5","1","4","2","3","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","3","3","1","4","4","4","3","2","2","2","2","1","3","1","2","2","1","1","1","3","2","1","4","2","2","3","2","2","2","1","2","2","2","4","4","1","2","1","1","1","1","2","3","2","4","2","4","2","4","1","1","2","2","1","3","4","4","2","4","3","2","1","3","3","1","2","1","2","1","1","2","1","3","4","2","1","1","4","1","4","4","2","1","3","2","2","3","4","2","2","4","5","4","4","2","2","4","2","1","3","2","2","1","2","1","1","4","2","5","2","5","2","2","1","2","3","3","4","1","3","3","2","1","5","2","1","1","2","1","2","4","4","2","2","4","2","2","2","2","4","3","4","3","3","3","2","3","4","1","2","2","2","4","1","2","3","1","2","4","2","3","2","2","2","2","2","4","4","2","2","1","1","3","1","3","1","4","4","5","1","4","1","4","3","3","2","1","1","4","3","5","4","4","2","4","4","4","5","5","1","4","4","2","4","4","2","2","2","2","4","3","3","3","1","4","1","1","2","2","2","1","2","3","4","3","4","2","2","2","2","1","1","4","2","4","2","1","5","3","2","1","1","3","3","1","2","1","3","3","1","1","3","4","4","2","3","2","3","2","3","1","2","2","1","4","2","1","4","4","4","2","5","4","1","2","5","1","2","1","1","4","2","3","2","2","5","2","4","1","2","4","3","1","4","2","2","1","4","4","2","4","1","1","2","2","1","1","4","3","1","2","1","2","2","2","1","1","3","1","2","2","1","1","1","5","1","4","4","2","2","2","5","2","1","4","2","2","2","3","2","3","1","2","2","2","1","5","4","2","3","2","2","2","4","4","2","2","2","4","2","2","4","1","3","2","4","2","2","1","2","3","2","4","2","4","2","4","2","2","4","1","4","2","1","3","3","2","3","2","4","4","2","2","1","2","2","2","3","2","1","2","2","1","2","1","2","4","4","2","2","4","4","3","4","1","4","2","1","4","4","1","3","2","2","4","3","2","4","4","1","1","4","1","2","4","1","2","2","4","3","3","4","2","2","2","2","2","3","2","1","3","3","1","3","3","1","2","4","2","1","4","3","2","1","2","2","2","2","4","3","1","2","2","2","2","1","2","4","3","2","1","3","4","3","5","1","2","2","4","4","4","1","3","2","3","2","4","1","3","1","4","2","4","2","4","2","2","2","4","3","1","4","2","1","3","2","2","4","1","3","3","3","1","2","5","2","2","3","3","1","3","1","3","4","2","2","4","1","2","2","1","4","2","3","1","2","5","3","3","4","2","2","2","2","2","2","2","2","2","2","4","2","3","1","1","1","4","2","3","1","4","2","1","2","2","2","4","1","3","4","2","3","3","1","2","4","1","4","1","2","1","4","1","2","4","5","3","4","3","3","2","2","3","4","2","2","3","2","4","1","4","4","3","2","3","3","2","2","4","1","2","1","3","1","2","1","3","4","1","1","2","4","2","2","1","2","4","2","2","1","2","2","1","4","2","2","4","2","4","4","2","1","2","1","4","1","4","2","2","2","1","2","1","4","1","3","2","1","3","2","3","2","4","1","5","2","1","3","1","4","4","3","4","3","2","1","3","2","2","1","2","3","2","5","3","3","3","2","4","2","1","1","3","2","4","1","2","2","4","3","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","1","2","3","2","2","1","1","4","4","4","2","4","1","4","2","1","1","2","1","1","2","2","2","3","1","1","2","3","2","2","2","4","1","1","2","1","4","2","4","2","4","2","4","1","1","3","4","2","2","2","3","3","2","4","1","2","4","1","4","2","4","4","2","4","2","5","2","2","3","2","2","3","3","2","3","2","3","2","2","1","1","2","3","1","5","2","5","2","4","3","2","4","2","1","3","2","3","2","1","1","2","3","4","4","3","2","4","1","3","1","3","2","2","2","2","2","1","4","1","1","4","1","2","1","3","3","4","2","3","2","2","2","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","1","2","3","4","2","3","4","4","3","4","1","4","2","2","3","3","3","3","4","1","4","2","1","4","5","3","2","2","2","1","2","1","2","2","4","2","1","1","4","1","2","1","3","5","4","2","1","3","4","4","2","1","2","1","2","4","1","2","2","4","1","2","2","3","3","5","4","4","1","1","4","3","1","2","1","3","2","2","1","2","2","4","2","1","3","3","2","1","4","2","2","2","2","2","2","2","2","3","3","1","1","1","2","4","2","4","2","3","4","4","3","2","2","4","1","4","1","2","2","2","2","5","1","1","2","3","1","2","2","2","4","3","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","5","2","1","1","4","4","2","2","2","2","1","1","2","2","1","1","4","2","2","2","2","3","2","2","1","2","1","2","3","1","2","1","1","4","2","2","3","2","2","4","4","1","3","1","5","1","1","2","1","1","4","3","2","2","2","3","3","3","1","2","2","2","2","4","3","2","4","2","1","2","3","2","4","2","4","3","1","4","2","3","5","2","4","2","2","1","2","2","2","2","4","2","4","2","1","1","3","2","4","1","2","2","3","2","2","2","4","4","2","1","3","4","2","1","2","1","1","1","4","1","3","2","1","2","2","2","3","2","2","1","1","4","1","1","2","3","1","1","4","4","2","1","4","2","1","2","2","2","4","1","3","4","2","4","2","3","2","2","3","1","1","2","4","2","2","5","3","4","1","3","4","2","2","1","4","1","1","4","1","2","2","4","1","2","1","2","2","4","2","2","1","3","2","2","3","2","2","4","4","1","2","3","5","2","1","1","3","4","2","2","2","1","1","2","1","2","3","4","4","5","3","4","1","4","4","4","3","4","2","3","4","2","2","3","1","1","4","2","2","4","2","3","3","3","5","4","2","4","4","4","4","1","3","2","2","4","1","4","3","4","3","3","2","4","4","1","2","2","3","2","2","4","1","2","2","4","1","1","2","3","2","2","2","2","1","2","2","2","4","1","2","2","2","1","1","2","1","2","2","2","1","3","1","4","4","4","1","4","2","1","1","2","2","3","1","2","1","2","1","2","1","3","4","2","3","4","1","4","1","2","4","2","2","4","1","1","1","1","4","1","5","4","2","3","4","4","4","4","4","3","4","1","2","2","2","1","3","1","3","4","4","2","1","5","2","2","1","3","3","3","1","2","2","3","4","4","2","2","3","1","2","4","2","2","4","2","3","2","4","3","3","3","2","2","4","5","2","4","2","1","2","1","4","4","2","1","2","4","4","1","2","2","3","2","2","1","1","2","1","2","3","1","1","4","2","2","4","3","1","4","1","1","4","2","2","2","3","3","1","4","3","2","4","2","2","4","4","1","4","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","1","2","4","2","1","2","1","4","4","2","1","1","2","3","1","1","5","1","2","2","1","2","4","2","4","1","3","1","1","1","2","1","5","4","3","4","2","1","2","1","2","2","2","2","4","4","2","2","2","2","3","2","2","3","3","3","1","4","1","1","3","2","2","3","1","2","3","2","2","4","3","3","1","4","2","1","4","1","4","2","1","2","4","2","4","4","4","2","3","4","1","1","1","3","2","3","2","2","1","1","1","2","2","2","2","1","4","2","4","2","4","1","2","4","2","1","2","1","2","2","2","1","1","2","3","2","1","4","3","1","3","2","1","1","3","3","5","2","2","4","3","2","4","2","4","3","2","3","4","2","1","4","4","2","2","1","2","2","1","4","3","2","4","2","2","2","2","2","4","1","4","2","2","2","1","3","4","1","5","3","2","4","2","4","2","1","2","2","2","1","2","4","2","1","2","2","2","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","2","4","1","3","2","1","3","2","2","4","2","3","2","1","2","4","4","3","4","2","4","1","1","3","2","2","2","2","1","2","4","2","2","4","2","2","1","2","3","3","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","1","2","2","3","2","3","2","1","2","2","1","3","2","2","2","4","4","2","2","2","1","2","1","1","4","2","2","3","1","2","2","1","2","1","1","2","2","4","2","1","4","4","3","4","1","4","1","2","4","2","2","2","2","1","2","1","2","1","3","2","2","1","4","1","2","4","3","2","1","1","4","2","4","2","2","2","1","3","2","2","2","1","3","1","2","2","3","1","4","2","4","2","2","1","3","2","2","1","3","3","1","2","2","2","2","1","2","1","2","2","4","4","2","4","4","1","2","2","2","1","2","2","3","1","4","4","3","3","1","1","3","1","5","4","1","1","2","2","1","2","2","2","2","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","2","4","4","3","1","2","4","2","2","2","2","2","2","1","2","2","2","4","1","1","2","2","4","4","1","4","2","3","1","3","2","4","3","2","2","4","2","2","2","2","1","2","2","1","3","1","2","1","2","3","2","2","2","1","3","3","1","1","2","2","1","2","2","2","1","2","1","2","2","4","2","4","2","2","4","4","2","4","2","1","1","1","1","2","1","4","1","1","1","3","1","5","2","2","2","4","2","2","4","1","4","2","1","1","1","4","3","3","2","4","1","1","1","2","2","2","1","2","2","4","4","1","1","1","1","1","3","2","1","2","1","4","3","2","1","2","1","3","2","2","1","1","2","4","2","2","3","1","2","2","1","3","2","5","3","2","4","4","3","2","4","1","2","2","2","3","2","2","1","4","2","4","4","4","1","4","1","1","4","2","1","1","2","2","2","4","2","3","2","1","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","1","3","2","2","1","3","2","2","3","2","1","5","1","2","2","4","2","1","5","1","1","3","2","2","3","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","4","4","2","2","4","2","5","3","4","4","2","2","2","1","4","5","2","3","2","2","4","3","2","1","4","4","1","2","1","2","1","1","1","2","1","4","2","2","1","1","2","3","2","1","4","4","2","2","4","2","2","2","2","2","2","3","1","1","1","3","1","1","1","2","4","2","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","2","5","2","2","2","2","4","2","3","2","2","1","3","1","1","1","2","1","1","1","4","1","2","4","2","3","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","2","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","3","1","2","5","2","1","1","1","4","3","5","5","3","4","3","2","4","4","2","2","3","3","3","2","1","1","2","2","1","3","2","2","2","1","3","4","2","2","2","1","3","2","2","2","2","2","2","2","1","1","1","2","2","3","4","4","1","2","1","4","3","4","1","2","4","1","4","4","2","4","2","2","4","1","5","2","4","4","2","2","1","4","2","5","2","4","2","2","1","3","3","1","1","2","4","2","1","1","1","3","2","1","2","3","1","2","1","3","4","4","1","2","1","1","1","1","1","2","1","1","4","2","4","2","4","3","1","4","3","4","1","4","3","1","4","1","4","4","1","2","2","4","4","1","4","1","1","2","2","1","4","4","1","3","3","2","2","4","3","1","4","2","1","2","2","3","1","1","1","4","1","5","1","2","3","4","3","2","1","4","1","1","2","1","1","1","1","1","2","2","2","4","4","2","4","2","1","1","2","5","2","1","2","3","4","2","4","2","1","1","5","1","3","4","4","2","2","1","3","2","5","4","3","1","4","1","2","3","3","4","4","1","2","2","1","2","2","3","1","4","1","2","2","4","2","1","2","2","4","1","2","2","2","4","4","3","3","2","2","4","1","4","1","2","1","4","2","3","4","3","4","2","4","1","2","4","4","2","4","1","1","4","2","5","1","3","2","3","3","3","1","1","2","2","2","1","1","2","1","2","2","4","1","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","4","5","1","1","4","1","1","1","2","2","2","1","3","2","2","4","2","2","2","4","1","1","2","3","1","2","2","3","5","5","2","4","2","1","1","1","2","3","1","4","4","4","1","3","3","2","2","2","2","1","1","4","1","2","4","2","4","3","2","1","1","4","2","1","3","2","4","4","2","2","2","1","3","3","2","1","1","2","2","2","2","2","1","1","4","2","1","2","2","4","4","2","1","2","2","2","4","2","2","4","2","2","4","4","4","1","4","4","3","2","3","2","4","2","2","2","4","2","4","4","3","4","3","4","1","1","3","2","1","3","2","2","4","2","5","4","1","1","3","4","1","2","3","2","3","2","1","1","1","2","1","2","4","1","2","1","1","1","1","2","2","2","2","3","3","1","3","4","2","1","2","2","1","2","5","4","3","4","2","1","1","1","3","3","2","1","1","2","2","3","1","1","1","1","1","1","2","2","2","2","4","1","1","1","1","3","1","4","4","4","2","4","2","2","3","1","4","1","1","2","2","3","2","1","2","4","3","2","2","5","4","5","4","4","4","2","4","2","4","2","5","3","1","2","2","2","3","3","4","2","2","1","4","2","2","1","4","4","1","2","2","3","2","3","5","3","2","1","4","1","3","2","2","4","2","2","4","2","2","1","1","4","2","1","2","4","4","2","2","3","2","1","2","1","4","2","2","4","4","1","4","1","2","1","2","2","4","1","4","4","3","2","1","2","5","3","4","4","2","3","4","2","1","4","3","1","4","5","2","2","4","1","2","4","1","1","2","1","1","2","2","5","2","1","1","4","4","1","3","4","5","4","5","2","1","1","2","1","1","3","2","4","3","4","1","2","1","2","2","1","3","2","2","2","1","3","1","4","2","3","2","1","3","4","2","4","4","4","4","2","1","3","2","2","1","3","2","1","2","2","2","2","2","2","1","4","2","3","3","2","2","4","3","2","1","2","4","4","4","2","1","1","1","4","1","2","4"],"marker":{"color":"#2A768EFF","line":{"color":"rgba(31,119,180,1)"}},"type":"histogram","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-a06ab27ea35c1ec04eb1" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-a06ab27ea35c1ec04eb1">{"x":{"visdat":{"13b512396a5fc":["function () ","plotlyVisDat"]},"cur_data":"13b512396a5fc","attrs":{"13b512396a5fc":{"x":{},"y":{},"mode":"markers","error_x":{"type":"data","symmetric":false,"array":[0.21613052486299977,0.02255526635006274,0.18579160881198925,0.24672105356905283,0.079234011911017643,0.090755316171302614,0.092422122365940607,0.12454861018491292],"arrayminus":[0.16275905375919747,0.0071897473178177433,0.12271043498209747,0.18271445572580924,0.068992923398910777,0.079911455003504717,0.081784843761247394,0.11226160641388372]},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Significant Predictor Effects on Satisfaction (ORs with 95% CI)","xaxis":{"domain":[0,1],"automargin":true,"title":"Odds Ratio"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Predictor","type":"category","categoryorder":"array","categoryarray":["frequency_of_delays.L","approximate_delay_duration.L","frequency_of_rerouting.L","average_length_subway_ride.L","frequency_of_rerouting.Q","approximate_delay_duration^4","frequency_of_rerouting.C","borough"]},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0.65910118247938776,0.010553933479416924,0.36141637431831547,0.70429462802210618,0.53378955839535391,0.66880138470314077,0.7105885930679996,1.1379525323286848],"y":["average_length_subway_ride.L","frequency_of_delays.L","approximate_delay_duration.L","approximate_delay_duration^4","frequency_of_rerouting.L","frequency_of_rerouting.Q","frequency_of_rerouting.C","borough"],"mode":"markers","error_x":{"color":"rgba(31,119,180,1)","type":"data","symmetric":false,"array":[0.21613052486299977,0.02255526635006274,0.18579160881198925,0.24672105356905283,0.079234011911017643,0.090755316171302614,0.092422122365940607,0.12454861018491292],"arrayminus":[0.16275905375919747,0.0071897473178177433,0.12271043498209747,0.18271445572580924,0.068992923398910777,0.079911455003504717,0.081784843761247394,0.11226160641388372]},"type":"scatter","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <p>Predicted probabilities with average subway length and
 satisfaction</p>
 <pre class="r"><code>#Create grid of predicted probabilities 
@@ -987,7 +1012,7 @@ plot_ly(pred_long,
     text = ~paste(&quot;Satisfaction:&quot;, Satisfaction, &quot;&lt;br&gt;Probability:&quot;, round(Probability, 3)),
     hoverinfo = &quot;text&quot;) %&gt;%
        layout(
-          title = &quot;Predicted Probability Heatmap&quot;,
+          title = &quot;Predicting Probability of Satisfaction by Avg Subway Ride Length&quot;,
           xaxis = list(
             title = &quot;Average Length of Subway Ride&quot;,
             tickvals = 0:5,                 
@@ -999,8 +1024,77 @@ plot_ly(pred_long,
             ticktext = c(&quot;Manhattan&quot;, &quot;Other Boroughs in NYC&quot;, &quot;Outside NY&quot;)  # custom labels
           )
         )</code></pre>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-996222a9690259b02514" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-996222a9690259b02514">{"x":{"visdat":{"4a6c8eb3885":["function () ","plotlyVisDat"]},"cur_data":"4a6c8eb3885","attrs":{"4a6c8eb3885":{"x":{},"y":{},"z":{},"colorscale":"Viridis","text":{},"hoverinfo":"text","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Predicted Probability Heatmap","xaxis":{"domain":[0,1],"automargin":true,"title":"Average Length of Subway Ride","tickvals":[0,1,2,3,4,5],"ticktext":["< 20 min","20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Borough","tickvals":[0,1,2,3,4,5],"ticktext":["Manhattan","Other Boroughs in NYC","Outside NY"]},"scene":{"zaxis":{"title":"Probability"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"Probability","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":"Viridis","showscale":true,"x":["0","0","0","0","0","1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4","0","0","0","0","0","1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4","0","0","0","0","0","1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4"],"y":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"z":[0.00089570901785186632,0.0070754105490462805,0.013220013810956088,0.2315133147309042,0.74729555189124164,0.0011287134831106677,0.0088974958123032594,0.016537093098729565,0.27228487809436741,0.70115181951148908,0.0013201419748654704,0.010388811901574193,0.019225860083371529,0.30177900893621235,0.66728617710397642,0.0015749410703598695,0.012365954330074555,0.022754586935604726,0.33634324345005684,0.62696127421390402,0.0014519639633836781,0.011412817348305231,0.021058560820885391,0.32027704047288302,0.64579961739454261,0.00078059043980640587,0.0061723908998199744,0.011562959504311143,0.20908273981275435,0.77240131934330813,0.00098367812049412833,0.0077642143699763709,0.014478121345921897,0.24759344471147932,0.72918054145212829,0.0011505371164133621,0.0090677686939446001,0.01684527276940799,0.2758173480438072,0.69711907337642687,0.0013726459650916516,0.010796955385743065,0.019957645605328679,0.30931295893316868,0.6585597941106679,0.0012654447727170252,0.0099632137766037937,0.018460916732755073,0.29368496374334735,0.67662546097457676,0.0010277873934585215,0.0081091865597015724,0.015106318008363784,0.25533388163006399,0.72042282640841215,0.001295105411734531,0.010194054165198366,0.018876050959694773,0.29810581300020778,0.67152897646316456,0.0015147109874735314,0.011899399837596919,0.021925575054647976,0.32861138288385566,0.63604893123642592,0.0018069956771794599,0.01415883995840319,0.025919338003473891,0.36387460912777148,0.594240217233172,0.0016659291391399262,0.013069820765373191,0.024000996483022986,0.34755037840741049,0.61371287520505335],"text":["Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.007","Satisfaction: Neutral <br>Probability: 0.013","Satisfaction: Somewhat satisfied <br>Probability: 0.232","Satisfaction: Very satisfied <br>Probability: 0.747","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.009","Satisfaction: Neutral <br>Probability: 0.017","Satisfaction: Somewhat satisfied <br>Probability: 0.272","Satisfaction: Very satisfied <br>Probability: 0.701","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.01","Satisfaction: Neutral <br>Probability: 0.019","Satisfaction: Somewhat satisfied <br>Probability: 0.302","Satisfaction: Very satisfied <br>Probability: 0.667","Satisfaction: Highly Unsatisfied <br>Probability: 0.002","Satisfaction: Not satisfied <br>Probability: 0.012","Satisfaction: Neutral <br>Probability: 0.023","Satisfaction: Somewhat satisfied <br>Probability: 0.336","Satisfaction: Very satisfied <br>Probability: 0.627","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.011","Satisfaction: Neutral <br>Probability: 0.021","Satisfaction: Somewhat satisfied <br>Probability: 0.32","Satisfaction: Very satisfied <br>Probability: 0.646","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.006","Satisfaction: Neutral <br>Probability: 0.012","Satisfaction: Somewhat satisfied <br>Probability: 0.209","Satisfaction: Very satisfied <br>Probability: 0.772","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.008","Satisfaction: Neutral <br>Probability: 0.014","Satisfaction: Somewhat satisfied <br>Probability: 0.248","Satisfaction: Very satisfied <br>Probability: 0.729","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.009","Satisfaction: Neutral <br>Probability: 0.017","Satisfaction: Somewhat satisfied <br>Probability: 0.276","Satisfaction: Very satisfied <br>Probability: 0.697","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.011","Satisfaction: Neutral <br>Probability: 0.02","Satisfaction: Somewhat satisfied <br>Probability: 0.309","Satisfaction: Very satisfied <br>Probability: 0.659","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.01","Satisfaction: Neutral <br>Probability: 0.018","Satisfaction: Somewhat satisfied <br>Probability: 0.294","Satisfaction: Very satisfied <br>Probability: 0.677","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.008","Satisfaction: Neutral <br>Probability: 0.015","Satisfaction: Somewhat satisfied <br>Probability: 0.255","Satisfaction: Very satisfied <br>Probability: 0.72","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.01","Satisfaction: Neutral <br>Probability: 0.019","Satisfaction: Somewhat satisfied <br>Probability: 0.298","Satisfaction: Very satisfied <br>Probability: 0.672","Satisfaction: Highly Unsatisfied <br>Probability: 0.002","Satisfaction: Not satisfied <br>Probability: 0.012","Satisfaction: Neutral <br>Probability: 0.022","Satisfaction: Somewhat satisfied <br>Probability: 0.329","Satisfaction: Very satisfied <br>Probability: 0.636","Satisfaction: Highly Unsatisfied <br>Probability: 0.002","Satisfaction: Not satisfied <br>Probability: 0.014","Satisfaction: Neutral <br>Probability: 0.026","Satisfaction: Somewhat satisfied <br>Probability: 0.364","Satisfaction: Very satisfied <br>Probability: 0.594","Satisfaction: Highly Unsatisfied <br>Probability: 0.002","Satisfaction: Not satisfied <br>Probability: 0.013","Satisfaction: Neutral <br>Probability: 0.024","Satisfaction: Somewhat satisfied <br>Probability: 0.348","Satisfaction: Very satisfied <br>Probability: 0.614"],"hoverinfo":"text","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-404421488ae45912d037" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-404421488ae45912d037">{"x":{"visdat":{"13b5124401089":["function () ","plotlyVisDat"]},"cur_data":"13b5124401089","attrs":{"13b5124401089":{"x":{},"y":{},"z":{},"colorscale":"Viridis","text":{},"hoverinfo":"text","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Predicting Probability of Satisfaction by Avg Subway Ride Length","xaxis":{"domain":[0,1],"automargin":true,"title":"Average Length of Subway Ride","tickvals":[0,1,2,3,4,5],"ticktext":["< 20 min","20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Borough","tickvals":[0,1,2,3,4,5],"ticktext":["Manhattan","Other Boroughs in NYC","Outside NY"]},"scene":{"zaxis":{"title":"Probability"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"Probability","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":"Viridis","showscale":true,"x":["0","0","0","0","0","1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4","0","0","0","0","0","1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4","0","0","0","0","0","1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4"],"y":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"z":[0.0009059062177237063,0.0071469769808032791,0.013360482087914667,0.22897301072844017,0.7496136239851181,0.0011545213882179406,0.0090882712224821301,0.016894348636965161,0.27149951454937604,0.70136334420295876,0.0013581775633430889,0.01067212247442834,0.019747982235248162,0.3020019901145567,0.66621972761242376,0.0016105999721611338,0.01262729795412257,0.023234352985063982,0.33528158122787094,0.62724616786078136,0.0014815039598480048,0.011628460024932043,0.02145826162476917,0.31883821054178435,0.6465935638486664,0.00079617180085463026,0.0062873859087149032,0.011782868284959259,0.20805387282928944,0.77307970117618174,0.001014702253546169,0.0079975604018120792,0.014913789563004461,0.24836511290048438,0.7277088348811529,0.0011937239785420946,0.0093935988896441964,0.017446517530083402,0.27765186776947171,0.69431429183225868,0.0014156253965153939,0.01111786367681316,0.020546320798613404,0.30998827335547741,0.65693191677258067,0.0013021369915649571,0.010236861779889951,0.018966402813627489,0.29395905800841798,0.67553554040649955,0.0010307494596309902,0.0081228804581350081,0.015141993384908996,0.2511189721002916,0.72458540459703347,0.0013135813243703857,0.010325783818917205,0.019126238197729198,0.29562230962429414,0.67361208703468911,0.0015452520728960141,0.012121976046450421,0.02233710944839824,0.32710222423437191,0.63689343819788347,0.0018323791872554996,0.014337911869939131,0.026252054032121778,0.36100846769272726,0.59656918721795638,0.0016855366974546624,0.013206047801956687,0.024258716423733853,0.34431427940105874,0.61653541967579606],"text":["Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.007","Satisfaction: Neutral <br>Probability: 0.013","Satisfaction: Somewhat satisfied <br>Probability: 0.229","Satisfaction: Very satisfied <br>Probability: 0.75","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.009","Satisfaction: Neutral <br>Probability: 0.017","Satisfaction: Somewhat satisfied <br>Probability: 0.271","Satisfaction: Very satisfied <br>Probability: 0.701","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.011","Satisfaction: Neutral <br>Probability: 0.02","Satisfaction: Somewhat satisfied <br>Probability: 0.302","Satisfaction: Very satisfied <br>Probability: 0.666","Satisfaction: Highly Unsatisfied <br>Probability: 0.002","Satisfaction: Not satisfied <br>Probability: 0.013","Satisfaction: Neutral <br>Probability: 0.023","Satisfaction: Somewhat satisfied <br>Probability: 0.335","Satisfaction: Very satisfied <br>Probability: 0.627","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.012","Satisfaction: Neutral <br>Probability: 0.021","Satisfaction: Somewhat satisfied <br>Probability: 0.319","Satisfaction: Very satisfied <br>Probability: 0.647","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.006","Satisfaction: Neutral <br>Probability: 0.012","Satisfaction: Somewhat satisfied <br>Probability: 0.208","Satisfaction: Very satisfied <br>Probability: 0.773","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.008","Satisfaction: Neutral <br>Probability: 0.015","Satisfaction: Somewhat satisfied <br>Probability: 0.248","Satisfaction: Very satisfied <br>Probability: 0.728","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.009","Satisfaction: Neutral <br>Probability: 0.017","Satisfaction: Somewhat satisfied <br>Probability: 0.278","Satisfaction: Very satisfied <br>Probability: 0.694","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.011","Satisfaction: Neutral <br>Probability: 0.021","Satisfaction: Somewhat satisfied <br>Probability: 0.31","Satisfaction: Very satisfied <br>Probability: 0.657","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.01","Satisfaction: Neutral <br>Probability: 0.019","Satisfaction: Somewhat satisfied <br>Probability: 0.294","Satisfaction: Very satisfied <br>Probability: 0.676","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.008","Satisfaction: Neutral <br>Probability: 0.015","Satisfaction: Somewhat satisfied <br>Probability: 0.251","Satisfaction: Very satisfied <br>Probability: 0.725","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.01","Satisfaction: Neutral <br>Probability: 0.019","Satisfaction: Somewhat satisfied <br>Probability: 0.296","Satisfaction: Very satisfied <br>Probability: 0.674","Satisfaction: Highly Unsatisfied <br>Probability: 0.002","Satisfaction: Not satisfied <br>Probability: 0.012","Satisfaction: Neutral <br>Probability: 0.022","Satisfaction: Somewhat satisfied <br>Probability: 0.327","Satisfaction: Very satisfied <br>Probability: 0.637","Satisfaction: Highly Unsatisfied <br>Probability: 0.002","Satisfaction: Not satisfied <br>Probability: 0.014","Satisfaction: Neutral <br>Probability: 0.026","Satisfaction: Somewhat satisfied <br>Probability: 0.361","Satisfaction: Very satisfied <br>Probability: 0.597","Satisfaction: Highly Unsatisfied <br>Probability: 0.002","Satisfaction: Not satisfied <br>Probability: 0.013","Satisfaction: Neutral <br>Probability: 0.024","Satisfaction: Somewhat satisfied <br>Probability: 0.344","Satisfaction: Very satisfied <br>Probability: 0.617"],"hoverinfo":"text","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>#Create grid of predicted probabilities with frequency of delay as variable now
+grid_delays &lt;- expand.grid(
+  frequency_of_delays = levels(regression_rider_data$frequency_of_delays), 
+  borough = unique(regression_rider_data$borough),
+  average_length_subway_ride = levels(regression_rider_data$average_length_subway_ride) [1], #fix at reference level
+  approximate_delay_duration = levels(regression_rider_data$approximate_delay_duration)[1],
+  frequency_of_rerouting = levels(regression_rider_data$frequency_of_rerouting)[1]
+)
+
+grid_delays$average_length_subway_ride &lt;- factor(grid_delays$average_length_subway_ride, 
+                                          ordered = TRUE,
+                                          levels = levels(regression_rider_data$average_length_subway_ride))
+grid_delays$frequency_of_delays &lt;- factor(grid_delays$frequency_of_delays, 
+                                   ordered = TRUE,
+                                   levels = levels(regression_rider_data$frequency_of_delays))
+grid_delays$approximate_delay_duration &lt;- factor(grid_delays$approximate_delay_duration, 
+                                         ordered = TRUE,
+                                         levels = levels(regression_rider_data$approximate_delay_duration))
+grid_delays$frequency_of_rerouting &lt;- factor(grid_delays$frequency_of_rerouting, 
+                                      ordered = TRUE,
+                                      levels = levels(regression_rider_data$frequency_of_rerouting))
+
+#Get probabilities 
+pred_probs &lt;- predict(model, newdata = grid_delays, type = &quot;prob&quot;)
+pred_df &lt;- cbind(grid_delays, pred_probs)
+
+pred_long &lt;- pred_df %&gt;%
+  pivot_longer(
+    cols = starts_with(&quot;fit&quot;), 
+    names_to = &quot;Satisfaction&quot;, 
+    values_to = &quot;Probability&quot;
+  )
+
+#Recode names
+pred_long &lt;- pred_long %&gt;%
+  mutate(Satisfaction = recode(
+    Satisfaction,
+    &quot;fit.1&quot; = &quot;Highly Unsatisfied&quot;,
+    &quot;fit.2&quot; = &quot;Not satisfied&quot;,
+    &quot;fit.3&quot; = &quot;Neutral&quot;,
+    &quot;fit.4&quot; = &quot;Somewhat satisfied&quot;,
+    &quot;fit.5&quot; = &quot;Very satisfied&quot;
+  ))
+
+
+#Produce plot
+plot_ly(pred_long, 
+    x = ~frequency_of_delays, 
+    y = ~borough, 
+    z = ~Probability, 
+    type = &quot;heatmap&quot;, 
+    colorscale = &quot;Viridis&quot;, 
+    text = ~paste(&quot;Satisfaction:&quot;, Satisfaction, &quot;&lt;br&gt;Probability:&quot;, round(Probability, 3)),
+    hoverinfo = &quot;text&quot;) %&gt;%
+       layout(
+          title = &quot;Predicting Probability of Satisfaction by Frequency Delays&quot;,
+          xaxis = list(
+            title = &quot;Frequency of Delays&quot;,
+            tickvals = 0:5,                 
+            ticktext = c(&quot;Never&quot;, &quot;Almost Never&quot;, &quot;Rarely&quot;, &quot;A few times a week&quot;, &quot;Everyday&quot;)  #Putting labels back 
+          ),
+          yaxis = list(
+            title = &quot;Borough&quot;,
+            tickvals = 0:5,                           # positions along y-axis
+            ticktext = c(&quot;Manhattan&quot;, &quot;Other Boroughs in NYC&quot;, &quot;Outside NY&quot;)  # custom labels
+          )
+        )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-ededc4adee00799daef4" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-ededc4adee00799daef4">{"x":{"visdat":{"13b5112bd2113":["function () ","plotlyVisDat"]},"cur_data":"13b5112bd2113","attrs":{"13b5112bd2113":{"x":{},"y":{},"z":{},"colorscale":"Viridis","text":{},"hoverinfo":"text","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Predicting Probability of Satisfaction by Frequency Delays","xaxis":{"domain":[0,1],"automargin":true,"title":"Frequency of Delays","tickvals":[0,1,2,3,4,5],"ticktext":["Never","Almost Never","Rarely","A few times a week","Everyday"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Borough","tickvals":[0,1,2,3,4,5],"ticktext":["Manhattan","Other Boroughs in NYC","Outside NY"]},"scene":{"zaxis":{"title":"Probability"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"Probability","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":"Viridis","showscale":true,"x":["0","0","0","0","0","1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4","0","0","0","0","0","1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4","0","0","0","0","0","1","1","1","1","1","2","2","2","2","2","3","3","3","3","3","4","4","4","4","4"],"y":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"z":[0.0009059062177237063,0.0071469769808032791,0.013360482087914667,0.22897301072844017,0.7496136239851181,0.0031638141152277154,0.02446766212650564,0.043513447798761318,0.46785261525455157,0.46100246070495371,0.013078939508449664,0.092988241795394902,0.13625090548824054,0.58766804554750129,0.17001386766041354,0.059003257517190995,0.30054665654465118,0.24255117710384527,0.35640259279324077,0.041496316041071846,0.2139580143379062,0.49509690043453625,0.15882521621781384,0.12224546035634991,0.0098744086533937743,0.00079617180085463026,0.0062873859087149032,0.011782868284959259,0.20805387282928944,0.77307970117618174,0.0027813357380486077,0.021582022561885045,0.038700672627914962,0.44370480589610217,0.4932311631760492,0.01151164858903826,0.082911270390389091,0.1249639448453639,0.5915790019543512,0.18903413422085757,0.052223919886976507,0.27813795703814609,0.24040894077317693,0.38227712247425294,0.046952059827447525,0.19302686056233123,0.48866716605479488,0.17065103276086246,0.13643361797174564,0.01122132265026575,0.0010307494596309902,0.0081228804581350081,0.015141993384908996,0.2511189721002916,0.72458540459703347,0.0035986996095955836,0.027725207277284291,0.048848774985259302,0.49073079116350166,0.42909652696435913,0.014856407321800711,0.1041023771998103,0.14786810176733589,0.58062572233592524,0.15254739137512779,0.066600799192757423,0.32321476398441529,0.24280090735153959,0.33073338863557922,0.036650140835708521,0.2364937042544096,0.49848455608225894,0.14702873234199798,0.10930526084862345,0.0086877464727100426],"text":["Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.007","Satisfaction: Neutral <br>Probability: 0.013","Satisfaction: Somewhat satisfied <br>Probability: 0.229","Satisfaction: Very satisfied <br>Probability: 0.75","Satisfaction: Highly Unsatisfied <br>Probability: 0.003","Satisfaction: Not satisfied <br>Probability: 0.024","Satisfaction: Neutral <br>Probability: 0.044","Satisfaction: Somewhat satisfied <br>Probability: 0.468","Satisfaction: Very satisfied <br>Probability: 0.461","Satisfaction: Highly Unsatisfied <br>Probability: 0.013","Satisfaction: Not satisfied <br>Probability: 0.093","Satisfaction: Neutral <br>Probability: 0.136","Satisfaction: Somewhat satisfied <br>Probability: 0.588","Satisfaction: Very satisfied <br>Probability: 0.17","Satisfaction: Highly Unsatisfied <br>Probability: 0.059","Satisfaction: Not satisfied <br>Probability: 0.301","Satisfaction: Neutral <br>Probability: 0.243","Satisfaction: Somewhat satisfied <br>Probability: 0.356","Satisfaction: Very satisfied <br>Probability: 0.041","Satisfaction: Highly Unsatisfied <br>Probability: 0.214","Satisfaction: Not satisfied <br>Probability: 0.495","Satisfaction: Neutral <br>Probability: 0.159","Satisfaction: Somewhat satisfied <br>Probability: 0.122","Satisfaction: Very satisfied <br>Probability: 0.01","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.006","Satisfaction: Neutral <br>Probability: 0.012","Satisfaction: Somewhat satisfied <br>Probability: 0.208","Satisfaction: Very satisfied <br>Probability: 0.773","Satisfaction: Highly Unsatisfied <br>Probability: 0.003","Satisfaction: Not satisfied <br>Probability: 0.022","Satisfaction: Neutral <br>Probability: 0.039","Satisfaction: Somewhat satisfied <br>Probability: 0.444","Satisfaction: Very satisfied <br>Probability: 0.493","Satisfaction: Highly Unsatisfied <br>Probability: 0.012","Satisfaction: Not satisfied <br>Probability: 0.083","Satisfaction: Neutral <br>Probability: 0.125","Satisfaction: Somewhat satisfied <br>Probability: 0.592","Satisfaction: Very satisfied <br>Probability: 0.189","Satisfaction: Highly Unsatisfied <br>Probability: 0.052","Satisfaction: Not satisfied <br>Probability: 0.278","Satisfaction: Neutral <br>Probability: 0.24","Satisfaction: Somewhat satisfied <br>Probability: 0.382","Satisfaction: Very satisfied <br>Probability: 0.047","Satisfaction: Highly Unsatisfied <br>Probability: 0.193","Satisfaction: Not satisfied <br>Probability: 0.489","Satisfaction: Neutral <br>Probability: 0.171","Satisfaction: Somewhat satisfied <br>Probability: 0.136","Satisfaction: Very satisfied <br>Probability: 0.011","Satisfaction: Highly Unsatisfied <br>Probability: 0.001","Satisfaction: Not satisfied <br>Probability: 0.008","Satisfaction: Neutral <br>Probability: 0.015","Satisfaction: Somewhat satisfied <br>Probability: 0.251","Satisfaction: Very satisfied <br>Probability: 0.725","Satisfaction: Highly Unsatisfied <br>Probability: 0.004","Satisfaction: Not satisfied <br>Probability: 0.028","Satisfaction: Neutral <br>Probability: 0.049","Satisfaction: Somewhat satisfied <br>Probability: 0.491","Satisfaction: Very satisfied <br>Probability: 0.429","Satisfaction: Highly Unsatisfied <br>Probability: 0.015","Satisfaction: Not satisfied <br>Probability: 0.104","Satisfaction: Neutral <br>Probability: 0.148","Satisfaction: Somewhat satisfied <br>Probability: 0.581","Satisfaction: Very satisfied <br>Probability: 0.153","Satisfaction: Highly Unsatisfied <br>Probability: 0.067","Satisfaction: Not satisfied <br>Probability: 0.323","Satisfaction: Neutral <br>Probability: 0.243","Satisfaction: Somewhat satisfied <br>Probability: 0.331","Satisfaction: Very satisfied <br>Probability: 0.037","Satisfaction: Highly Unsatisfied <br>Probability: 0.236","Satisfaction: Not satisfied <br>Probability: 0.498","Satisfaction: Neutral <br>Probability: 0.147","Satisfaction: Somewhat satisfied <br>Probability: 0.109","Satisfaction: Very satisfied <br>Probability: 0.009"],"hoverinfo":"text","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 
 
 
@@ -1035,11 +1129,6 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
-});
-</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
