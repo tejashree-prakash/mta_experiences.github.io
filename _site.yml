@@ -3,6 +3,7 @@ output_dir: "."   # keep this since your repo is <name>.github.io
 
 exclude:
   - nyc_subway_routes.Rmd
+  - Composite_score.Rmd
 
 navbar:
   title: "Home"

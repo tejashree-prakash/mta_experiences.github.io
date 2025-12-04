@@ -1,30 +1,22 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+
+<html>
+
 <head>
 
-<meta charset="utf-8">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
 
 
 
 <title>Frequency of Delays by Subway Line</title>
 
-<meta property="og:title" content="Frequency of Delays by Subway Line" />
-
-<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
-
-<link rel="icon" href="data:image/x-icon;" type="image/x-icon">
-
-
-<script type="text/javascript">
-window.FlexDashboardComponents = [];
-</script>
-
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -37,10 +29,9 @@ window.FlexDashboardComponents = [];
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/stickytableheaders-0.1.19/jquery.stickytableheaders.min.js"></script>
-<link href="site_libs/value-box-accent-static-0.6.2/theme-flatly-value-box.css" rel="stylesheet" />
-<link href="site_libs/flexdashboard-css-0.6.2/flexdashboard.min.css" rel="stylesheet" />
-<link href="site_libs/flexdashboard-css-0.6.2/theme-flatly.css" rel="stylesheet" />
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
 <script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <script src="site_libs/plotly-binding-4.11.0/plotly.js"></script>
@@ -49,104 +40,191 @@ window.FlexDashboardComponents = [];
 <script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
 <link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
 <script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
 <style type="text/css">
-/*
-  CSS for flexdashboard.js' use of Sly(). The sizing/position of this CSS needs to be
-  applied _before_ flexdashboard.js initializes, which is why this CSS has been pulled
-  out from flexdashboard.scss and inlined in the document's head.
-*/
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
-.storyboard-nav button {
-  background: transparent;
-  border: 0;
-  opacity: .3;
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
   padding: 0;
-}
-
-.storyboard-nav button:hover,
-.storyboard-nav button:hover {
-  opacity: .5;
-}
-
-.storyboard-nav button:disabled,
-.storyboard-nav button:disabled {
-  opacity: .1;
-}
-
-.storyboard-nav .sbnext,
-.storyboard-nav .sbprev {
-  float: left;
-  width: 2%;
-  height: 120px;
-}
-
-.storyboard-nav .sbprev {
-  text-align: left;
-  width: 2%;
-}
-
-.storyboard-nav .sbnext {
-  float: right;
-  text-align: right;
-  margin-right: 8px;
-}
-
-.storyboard-nav .sbframelist {
-  margin: 0 auto;
-  width: 94%;
-  height: 120px;
-  overflow: hidden;
-  text-shadow: none;
-  margin-bottom: 8px;
-}
-
-.storyboard-nav .sbframelist ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-.storyboard-nav .sbframelist ul li {
-  float: left;
-  width: 270px;
-  height: 100%;
-  padding: 10px 10px 10px 10px;
-  margin-right: 8px;
-  text-align: left;
-  cursor: pointer;
-}
-
-.storyboard-nav .sbframelist ul li:last-child {
-  margin-right: 0px;
-}
-
-.sbframe-commentary {
-  width: 300px;
-}
-
-.sbframe-commentary ul {
-  padding-left: 22px;
-}
-
-.sbframe.active {
-  display: flex;
-}
-
-.sbframe:not(.active) {
-  display: none;
-}
-@media only screen and (min-width: 768px) {
-html, body {
-  height: 100%;
-}
-
-#dashboard-container {
-  height: 100%;
-}
 }
 </style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
 
 
 
@@ -154,1752 +232,222 @@ html, body {
 
 <body>
 
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-<div class="container-fluid">
-<div class="navbar-header">
 
-<span class="navbar-logo pull-left">
-  
-</span>
-<span class="navbar-brand">
-  Frequency of Delays by Subway Line
-  <span class="navbar-author">
-        </span>
-</span>
+<div class="container-fluid main-container">
 
-<button id="navbar-button" type="button" class="navbar-toggle collapsed pull-right" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-</button>
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    About
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="proposal.html">Report</a>
+    </li>
+    <li>
+      <a href="ranking_regression_analysis.html">Regression analysis</a>
+    </li>
+    <li>
+      <a href="https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd">Data source</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="index.html">Welcome</a>
+</li>
+<li>
+  <a href="borough_demographics_dashboard.html">Borough dashboard</a>
+</li>
+<li>
+  <a href="Frequency_of_delays.html">Delay frequency</a>
+</li>
+<li>
+  <a href="Updated-Dashboard-complaint-types-II.html">Complaint types</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Frequency of Delays by Subway Line</h1>
 
 </div>
-<div id="navbar" class="navbar-collapse collapse">
-<ul class="nav navbar-nav navbar-left">
-</ul>
-<ul class="nav navbar-nav navbar-right">
-</ul>
-</div><!--/.nav-collapse-->
-</div><!--/.container-->
-</div><!--/.navbar-->
 
-<script type="text/javascript">
-
-
-var FlexDashboard = (function () {
-
-  // initialize options
-  var _options = {};
-
-  var FlexDashboard = function() {
-
-    // default options
-    _options = $.extend(_options, {
-      theme: "cosmo",
-      fillPage: false,
-      orientation: 'columns',
-      storyboard: false,
-      defaultFigWidth: 576,
-      defaultFigHeight: 461,
-      defaultFigWidthMobile: 360,
-      defaultFigHeightMobile: 461,
-      isMobile: false,
-      isPortrait: false,
-      resize_reload: true
-    });
-  };
-
-  function init(options) {
-
-    // extend default options
-    $.extend(true, _options, options);
-
-    // add ids to sections that don't have them (pandoc won't assign ids
-    // to e.g. sections with titles consisting of only chinese characters)
-    var nextId = 1;
-    $('.level1:not([id]),.level2:not([id]),.level3:not([id])').each(function() {
-      $(this).attr('id', 'dashboard-' + nextId++);
-    });
-
-    // find navbar items
-    var navbarItems = $('#flexdashboard-navbar');
-    if (navbarItems.length)
-      navbarItems = JSON.parse(navbarItems.html());
-    addNavbarItems(navbarItems);
-
-    // find the main dashboard container
-    var dashboardContainer = $('#dashboard-container');
-
-    // resolve mobile classes
-    resolveMobileClasses(dashboardContainer);
-
-    // one time global initialization for components
-    componentsInit(dashboardContainer);
-
-    // look for a global sidebar
-    var globalSidebar = dashboardContainer.find(".section.level1.sidebar");
-    if (globalSidebar.length > 0) {
-
-      // global layout for fullscreen displays
-      if (!isMobilePhone()) {
-
-         // hoist it up to the top level
-         globalSidebar.insertBefore(dashboardContainer);
-
-         // lay it out (set width/positions)
-         layoutSidebar(globalSidebar, dashboardContainer);
-
-      // tuck sidebar into first page for mobile phones
-      } else {
-
-        // convert it into a level3 section
-        globalSidebar.removeClass('sidebar');
-        globalSidebar.removeClass('level1');
-        globalSidebar.addClass('level3');
-        var h1 = globalSidebar.children('h1');
-        var h3 = $('<h3></h3>');
-        h3.append(h1.contents());
-        h3.insertBefore(h1);
-        h1.detach();
-
-        // move it into the first page
-        var page = dashboardContainer.find('.section.level1').first();
-        if (page.length > 0)
-          page.prepend(globalSidebar);
-      }
-    }
-
-    // look for pages to layout
-    var pages = $('div.section.level1');
-    if (pages.length > 0) {
-
-        // find the navbar and collapse on clicked
-        var navbar = $('#navbar');
-        navbar.on("click", "a[data-toggle!=dropdown]", null, function () {
-           navbar.collapse('hide');
-        });
-
-        // envelop the dashboard container in a tab content div
-        dashboardContainer.wrapInner('<div class="tab-content"></div>');
-
-        pages.each(function(index) {
-
-          // lay it out
-          layoutDashboardPage($(this));
-
-          // add it to the navbar
-          addToNavbar($(this), index === 0);
-
-        });
-
-    } else {
-
-      // remove the navbar and navbar button if we don't
-      // have any navbuttons
-      if (navbarItems.length === 0) {
-        $('#navbar').remove();
-        $('#navbar-button').remove();
-      }
-
-      // add the storyboard class if requested
-      if (_options.storyboard)
-        dashboardContainer.addClass('storyboard');
-
-      // layout the entire page
-      layoutDashboardPage(dashboardContainer);
-    }
-
-    // if we are in shiny we need to trigger a window resize event to
-    // force correct layout of shiny-bound-output elements
-    if (isShinyDoc())
-      $(window).trigger('resize');
-
-    // make main components visible
-    $('.section.sidebar').css('visibility', 'visible');
-    dashboardContainer.css('visibility', 'visible');
-
-    // handle location hash
-    handleLocationHash();
-
-    // intialize prism highlighting
-    initPrismHighlighting();
-
-    // record mobile and orientation state then register a handler
-    // to refresh if resize_reload is set to true and it changes
-    _options.isMobile = isMobilePhone();
-    _options.isPortrait = isPortrait();
-    if (_options.resize_reload) {
-      $(window).on('resize', function() {
-        if (_options.isMobile !== isMobilePhone() ||
-            _options.isPortrait !== isPortrait()) {
-          window.location.reload();
-        }
-      });
-    } else {
-      // if in desktop mode and resizing to mobile, make sure the heights are 100%
-      // This enforces what `fillpage.css` does for "wider" pages.
-      // Since we are not reloading once the page becomes small, we need to force the height to 100%
-      // This is a new situation introduced when `_options.resize_reload` is `false`
-      if (! _options.isMobile) {
-        // only add if `fillpage.css` was added in the first place
-        if (_options.fillPage) {
-          // fillpage.css
-          $("html,body,#dashboard").css("height", "100%");
-        }
-      }
-    }
-    // trigger layoutcomplete event
-    dashboardContainer.trigger('flexdashboard:layoutcomplete');
-  }
-
-  function resolveMobileClasses(dashboardContainer) {
-     // add top level layout class
-    dashboardContainer.addClass(isMobilePhone() ? 'mobile-layout' :
-                                                  'desktop-layout');
-
-    // look for .mobile sections and add .no-mobile to their peers
-    var mobileSections = $('.section.mobile');
-    mobileSections.each(function() {
-       var id = $(this).attr('id');
-       var nomobileId = id.replace(/-\d+$/, '');
-       $('#' + nomobileId).addClass('no-mobile');
-    });
-  }
-
-  function addNavbarItems(navbarItems) {
-
-    var navbarLeft = $('ul.navbar-left');
-    var navbarRight = $('ul.navbar-right');
-
-    for (var i = 0; i<navbarItems.length; i++) {
-
-      // get the item
-      var item = navbarItems[i];
-
-      // determine the container
-      var container = null;
-      if (item.align === "left")
-        container = navbarLeft;
-      else
-        container = navbarRight;
-
-      // navbar menu if we have multiple items
-      if (item.items) {
-        var menu = navbarMenu(null, item.icon, item.title, container);
-        for (var j = 0; j<item.items.length; j++) {
-          var subItem = item.items[j];
-          var li = $('<li></li>');
-          var a = navbarLink(subItem.icon, subItem.title, subItem.href, subItem.target);
-          a.removeClass("nav-link").addClass("dropdown-item");
-          li.append(a);
-          menu.append(li);
-        }
-      } else {
-        var li = $('<li class="nav-item"></li>');
-        li.append(navbarLink(item.icon, item.title, item.href, item.target));
-        container.append(li);
-      }
-    }
-  }
-
-  // create or get a reference to an existing dropdown menu
-  function navbarMenu(id, icon, title, container) {
-    var existingMenu = [];
-    if (id)
-      existingMenu = container.children('#' + id);
-    if (existingMenu.length > 0) {
-      return existingMenu.children('ul');
-    } else {
-      var li = $('<li class="nav-item"></li>');
-      if (id)
-        li.attr('id', id);
-      li.addClass('dropdown');
-      // auto add "Share" title on mobile if necessary
-      if (!title && icon && (icon === "fa-share-alt") && isMobilePhone())
-        title = "Share";
-      if (title) {
-        title = title + ' <span class="caret"></span>';
-      }
-      var a = navbarLink(icon, title, "#");
-      a.addClass('dropdown-toggle');
-      a.attr('data-toggle', 'dropdown');
-      a.attr('data-bs-toggle', 'dropdown');
-      a.attr('role', 'button');
-      a.attr('aria-expanded', 'false');
-      li.append(a);
-      var ul = $('<ul class="dropdown-menu"></ul>');
-      ul.attr('role', 'menu');
-      li.append(ul);
-      container.append(li);
-      return ul;
-    }
-  }
-
-  function addToNavbar(page, active) {
-
-    // capture the id and data-icon attribute (if any)
-    var id = page.attr('id');
-    var icon = page.attr('data-icon');
-    var navmenu = page.attr('data-navmenu');
-    var navmenuIcon = page.attr('data-navmenu-icon');
-
-    // get hidden state (transfer this to navbar)
-    var hidden = page.hasClass('hidden');
-    page.removeClass('hidden');
-
-    // sanitize the id for use with bootstrap tabs
-    id = id.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_');
-    page.attr('id', id);
-
-    // get the wrapper
-    var wrapper = page.closest('.dashboard-page-wrapper');
-
-    // move the id to the wrapper
-    page.removeAttr('id');
-    wrapper.attr('id', id);
-
-    // add the tab-pane class to the wrapper
-    wrapper.addClass('tab-pane');
-
-    // get a reference to the h1, discover its inner contens, then detach it
-    var h1 = wrapper.find('h1').first();
-    var title = h1.contents();
-    h1.detach();
-
-    // create a navbar item
-    var li = $('<li></li>');
-    var a = navbarLink(icon, title, '#' + id);
-    a.attr('data-toggle', 'tab');
-    a.attr('data-bs-toggle', 'tab');
-    li.append(a);
-
-    // add it to the navbar (or navbar menu if specified)
-    var container = $('ul.navbar-left');
-    if (navmenu) {
-      var menuId = navmenu.replace(/\s+/g, '');
-      var menu = navbarMenu(menuId, navmenuIcon, navmenu, container);
-      li.find("> a").removeClass("nav-link").addClass("dropdown-item");
-      menu.append(li);
-    } else {
-      li.addClass("nav-item")
-      container.append(li);
-    }
-
-    // mark active tab and corresponding nav menu item
-    if (active)
-      $(a).tab("show");
-
-    // hide it if requested
-    if (hidden)
-      li.addClass('hidden');
-  }
-
-  function navbarLink(icon, title, href, target) {
-
-    var a = $('<a class="nav-link"></a>');
-    if (icon) {
-
-      // get the name of the icon set and icon
-      var dashPos = icon.indexOf("-");
-      var iconSet = null;
-      var iconSplit = icon.split(" ");
-      if (iconSplit.length > 1) {
-        iconSet = iconSplit[0];
-        icon = iconSplit.slice(1).join(" ");
-      } else {
-        iconSet = icon.substring(0, dashPos);
-      }
-      var iconName = icon.substring(dashPos + 1);
-
-      // create the icon
-      var iconElement = $('<span class="' + iconSet + ' ' + icon + '"></span>');
-      if (title)
-        iconElement.css('margin-right', '7px');
-      a.append(iconElement);
-      // if href is null see if we can auto-generate based on icon (e.g. social)
-      if (!href)
-        maybeGenerateLinkFromIcon(iconName, a);
-    }
-    if (title)
-      a.append(title);
-
-    // add the href.
-    if (href) {
-      if (href === "source_embed") {
-        a.attr('href', '#');
-        a.attr('data-featherlight', "#flexdashboard-source-code");
-        a.featherlight({
-            beforeOpen: function(event){
-              $('body').addClass('unselectable');
-            },
-            afterClose: function(event){
-              $('body').removeClass('unselectable');
-            }
-        });
-      } else {
-        a.attr('href', href);
-      }
-    }
-
-    // add the arget
-    if (target)
-      a.attr('target', target);
-
-    return a;
-  }
-
-  // auto generate a link from an icon name (e.g. twitter) when possible
-  function maybeGenerateLinkFromIcon(iconName, a) {
-
-     var serviceLinks = {
-      "twitter": "https://twitter.com/share?text=" + encodeURIComponent(document.title) + "&url="+encodeURIComponent(location.href),
-      "facebook": "https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(location.href),
-      "linkedin": "https://www.linkedin.com/shareArticle?mini=true&url="+encodeURIComponent(location.href) + "&title=" + encodeURIComponent(document.title),
-      "pinterest": "https://pinterest.com/pin/create/link/?url="+encodeURIComponent(location.href) + "&description=" + encodeURIComponent(document.title)
-    };
-
-    var makeSocialLink = function(a, href) {
-      a.attr('href', '#');
-      a.on('click', function(e) {
-        e.preventDefault();
-        window.open(href);
-      });
-    };
-
-    $.each(serviceLinks, function(key, value) {
-      if (iconName.indexOf(key) !== -1)
-        makeSocialLink(a, value);
-    });
-  }
-
-  // layout a dashboard page
-  function layoutDashboardPage(page) {
-
-    // use a page wrapper so that free form content above the
-    // dashboard appears at the top rather than the side (as it
-    // would without the wrapper in a column orientation)
-    var wrapper = $('<div class="dashboard-page-wrapper"></div>');
-    page.wrap(wrapper);
-
-    // if there are no level2 or level3 headers synthesize a level3
-    // header to contain the (e.g. frame it, scroll container, etc.)
-    var headers = page.find('h2,h3');
-    if (headers.length === 0)
-      page.wrapInner('<div class="section level3"></div>');
-
-    // hoist up any content before level 2 or level 3 headers
-    var children = page.children();
-    children.each(function(index) {
-      if ($(this).hasClass('level2') || $(this).hasClass('level3'))
-        return false;
-      $(this).insertBefore(page);
-    });
-
-    // determine orientation and fillPage behavior for distinct media
-    var orientation, fillPage, storyboard;
-
-    // media: mobile phone
-    if (isMobilePhone()) {
-
-      // if there is a sidebar we need to ensure it's content
-      // is properly framed as an h3
-      var sidebar = page.find('.section.sidebar');
-      sidebar.removeClass('sidebar');
-      sidebar.wrapInner('<div class="section level3"></div>');
-      var h2 = sidebar.find('h2');
-      var h3 = $('<h3></h3>');
-      h3.append(h2.contents());
-      h3.insertBefore(h2);
-      h2.detach();
-
-      // wipeout h2 elements then enclose them in a single h2
-      var level2 = page.find('div.section.level2');
-      level2.each(function() {
-        level2.children('h2').remove();
-        level2.children().unwrap();
-      });
-      page.wrapInner('<div class="section level2"></div>');
-
-      // substitute mobile images
-      if (isPortrait()) {
-        var mobileFigures = $('img.mobile-figure');
-        mobileFigures.each(function() {
-          // get the src (might be base64 encoded)
-          var src = $(this).attr('src');
-
-          // find it's peer
-          var id = $(this).attr('data-mobile-figure-id');
-          var img = $('img[data-figure-id=' + id + "]");
-          img.attr('src', src)
-             .attr('width', _options.defaultFigWidthMobile)
-             .attr('height', _options.defaultFigHeightMobile);
-        });
-      }
-
-      // hoist storyboard commentary into it's own section
-      if (page.hasClass('storyboard')) {
-        var commentaryHR = page.find('div.section.level3 hr');
-        commentaryHR.each(function() {
-          var commentary = $(this).nextAll().detach();
-          var commentarySection = $('<div class="section level3"></div>');
-          commentarySection.append(commentary);
-          commentarySection.insertAfter($(this).closest('div.section.level3'));
-          $(this).remove();
-        });
-      }
-
-      // force a non full screen layout by columns
-      orientation = _options.orientation = 'columns';
-      fillPage = _options.fillPage = false;
-      storyboard = _options.storyboard = false;
-
-    // media: desktop
-    } else {
-
-      // determine orientation
-      orientation = page.attr('data-orientation');
-      if (orientation !== 'rows' && orientation != 'columns')
-        orientation = _options.orientation;
-
-      // determine storyboard mode
-      storyboard = page.hasClass('storyboard');
-
-      // fillPage based on options (force for storyboard)
-      fillPage = _options.fillPage || storyboard;
-
-      // handle sidebar
-      var sidebar = page.find('.section.level2.sidebar');
-      if (sidebar.length > 0)
-        layoutSidebar(sidebar, page);
-    }
-
-    // give it and it's parent divs height: 100% if we are in fillPage mode
-    if (fillPage) {
-      page.addClass('vertical-layout-fill');
-      page.css('height', '100%');
-      page.parents('div').css('height', '100%');
-    } else {
-      page.addClass('vertical-layout-scroll');
-    }
-
-    // perform the layout
-    if (storyboard)
-      layoutPageAsStoryboard(page);
-    else if (orientation === 'rows')
-      layoutPageByRows(page, fillPage);
-    else if (orientation === 'columns')
-      layoutPageByColumns(page, fillPage);
-  }
-
-  function layoutSidebar(sidebar, content) {
-
-    // get it out of the header hierarchy
-    sidebar = sidebar.first();
-    if (sidebar.hasClass('level1')) {
-      sidebar.removeClass('level1');
-      sidebar.children('h1').remove();
-    } else if (sidebar.hasClass('level2')) {
-      sidebar.removeClass('level2');
-      sidebar.children('h2').remove();
-    }
-
-    // determine width
-    var sidebarWidth = isTablet() ? 220 : 250;
-    var dataWidth = parseInt(sidebar.attr('data-width'));
-    if (dataWidth)
-      sidebarWidth = dataWidth;
-
-    // set the width and shift the page right to accomodate the sidebar
-    sidebar.css('width', sidebarWidth + 'px');
-    content.css('padding-left', sidebarWidth + 'px');
-
-    // wrap it's contents in a form
-    sidebar.wrapInner($('<form></form>'));
-  }
-
-  function layoutPageAsStoryboard(page) {
-
-    // create storyboard navigation
-    var nav = $('<div class="storyboard-nav"></div>');
-
-    // add navigation buttons
-    var prev = $('<button class="sbprev"><i class="fa fa-angle-left"></i></button>');
-    nav.append(prev);
-    var next= $('<button class="sbnext"><i class="fa fa-angle-right"></i></button>');
-    nav.append(next);
-
-    // add navigation frame
-    var frameList = $('<div class="sbframelist"></div>');
-    nav.append(frameList);
-    var ul = $('<ul></ul>');
-    frameList.append(ul);
-
-     // find all the level3 sections (those are the storyboard frames)
-    var frames = page.find('div.section.level3');
-    frames.each(function() {
-
-      // mark it
-      $(this).addClass('sbframe');
-
-      // divide it into chart content and (optional) commentary
-      $(this).addClass('dashboard-column-orientation');
-
-      // stuff the chart into it's own div w/ flex
-      $(this).wrapInner('<div class="sbframe-component"></div>');
-      setFlex($(this), 1);
-      var frame = $(this).children('.sbframe-component');
-
-      // extract the title from the h3
-      var li = $('<li></li>');
-      var h3 = frame.children('h3');
-      li.append(h3.contents());
-      h3.detach();
-      ul.append(li);
-
-      // extract commentary
-      var hr = frame.children('hr');
-      if (hr.length) {
-        var commentary = hr.nextAll().detach();
-        hr.remove();
-        var commentaryFrame = $('<div class="sbframe-commentary"></div>');
-        commentaryFrame.addClass('flowing-content-shim');
-        commentaryFrame.addClass('flowing-content-container');
-        commentaryFrame.append(commentary);
-        $(this).append(commentaryFrame);
-
-        // look for a data-commentary-width attribute
-        var commentaryWidth = $(this).attr('data-commentary-width');
-        if (commentaryWidth)
-          commentaryFrame.css('width', commentaryWidth + 'px');
-      }
-
-      // layout the chart (force flex)
-      var result = layoutChart(frame, true);
-
-      // ice the notes if there are none
-      if (!result.notes)
-        frame.find('.chart-notes').remove();
-
-      // set flex on chart
-      setFlex(frame, 1);
-    });
-
-    // create a div to hold all the frames
-    var frameContent = $('<div class="sbframe-content"></div>');
-    frameContent.addClass('dashboard-row-orientation');
-    frameContent.append(frames.detach());
-
-    // row orientation to stack nav and frame content
-    page.addClass('dashboard-row-orientation');
-    page.append(nav);
-    page.append(frameContent);
-    setFlex(frameContent, 1);
-
-    // initialize sly
-    var sly = new Sly(frameList, {
-    		horizontal: true,
-    		itemNav: 'basic',
-    		smart: true,
-    		activateOn: 'click',
-    		startAt: 0,
-    		scrollBy: 1,
-    		activatePageOn: 'click',
-    		speed: 200,
-    		moveBy: 600,
-    		dragHandle: true,
-    		dynamicHandle: true,
-    		clickBar: true,
-    		keyboardNavBy: 'items',
-    		next: next,
-    		prev: prev
-    	}).init();
-
-    // make first frame active
-    frames.removeClass('active');
-    frames.first().addClass('active');
-
-    // subscribe to frame changed events
-    sly.on('active', function (eventName, itemIndex) {
-      frames.removeClass('active');
-      frames.eq(itemIndex).addClass('active')
-                          .trigger('shown');
-    });
-  }
-
-  function layoutPageByRows(page, fillPage) {
-
-    // row orientation
-    page.addClass('dashboard-row-orientation');
-
-    // find all the level2 sections (those are the rows)
-    var rows = page.find('div.section.level2');
-
-    // if there are no level2 sections then treat the
-    // entire page as if it's a level 2 section
-    if (rows.length === 0) {
-      page.wrapInner('<div class="section level2"></div>');
-      rows = page.find('div.section.level2');
-    }
-
-    rows.each(function () {
-
-      // flags
-      var haveNotes = false;
-      var haveFlexHeight = true;
-
-      // remove the h2
-      $(this).children('h2').remove();
-
-      // check for a tabset
-      var isTabset = $(this).hasClass('tabset');
-      if (isTabset)
-        layoutTabset($(this));
-
-      // give it row layout semantics if it's not a tabset
-      if (!isTabset)
-        $(this).addClass('dashboard-row');
-
-      // find all of the level 3 subheads
-      var columns = $(this).find('div.section.level3');
-
-      // determine figureSizes sizes
-      var figureSizes = chartFigureSizes(columns);
-
-      // fixup the columns
-      columns.each(function(index) {
-
-        // layout the chart (force flex if we are in a tabset)
-        var result = layoutChart($(this), isTabset);
-
-        // update flexHeight state
-        if (!result.flex)
-          haveFlexHeight = false;
-
-        // update state
-        if (result.notes)
-          haveNotes = true;
-
-        // set the column flex based on the figure width
-        // (value boxes will just get the default figure width)
-        var chartWidth = figureSizes[index].width;
-        setFlex($(this), chartWidth + ' ' + chartWidth + ' 0px');
-
-      });
-
-      // remove empty chart note divs
-      if (isTabset)
-        $(this).find('.chart-notes').filter(function() {
-            return $(this).html() === "&nbsp;";
-        }).remove();
-      if (!haveNotes)
-        $(this).find('.chart-notes').remove();
-
-       // make it a flexbox row
-      if (haveFlexHeight)
-        $(this).addClass('dashboard-row-flex');
-
-      // now we can set the height on all the wrappers (based on maximum
-      // figure height + room for title and notes, or data-height on the
-      // container if specified). However, don't do this if there is
-      // no flex on any of the constituent columns
-      var flexHeight = null;
-      var dataHeight = parseInt($(this).attr('data-height'));
-      if (dataHeight)
-        flexHeight = adjustedHeight(dataHeight, columns.first());
-      else if (haveFlexHeight)
-        flexHeight = maxChartHeight(figureSizes, columns);
-      if (flexHeight) {
-        if (fillPage)
-          setFlex($(this), flexHeight + ' ' + flexHeight + ' 0px');
-        else {
-          $(this).css('height', flexHeight + 'px');
-          setFlex($(this), '0 0 ' + flexHeight + 'px');
-        }
-      }
-
-    });
-  }
-
-  function layoutPageByColumns(page, fillPage) {
-
-    // column orientation
-    page.addClass('dashboard-column-orientation');
-
-    // find all the level2 sections (those are the columns)
-    var columns = page.find('div.section.level2');
-
-    // if there are no level2 sections then treat the
-    // entire page as if it's a level 2 section
-    if (columns.length === 0) {
-      page.wrapInner('<div class="section level2"></div>');
-      columns = page.find('div.section.level2');
-    }
-
-    // layout each column
-    columns.each(function (index) {
-
-      // remove the h2
-      $(this).children('h2').remove();
-
-      // make it a flexbox column
-      $(this).addClass('dashboard-column');
-
-      // check for a tabset
-      var isTabset = $(this).hasClass('tabset');
-      if (isTabset)
-        layoutTabset($(this));
-
-      // find all the h3 elements
-      var rows = $(this).find('div.section.level3');
-
-      // get the figure sizes for the rows
-      var figureSizes = chartFigureSizes(rows);
-
-      // column flex is the max row width (or data-width if specified)
-      var flexWidth;
-      var dataWidth = parseInt($(this).attr('data-width'));
-      if (dataWidth)
-        flexWidth = dataWidth;
-      else
-        flexWidth = maxChartWidth(figureSizes);
-      setFlex($(this), flexWidth + ' ' + flexWidth + ' 0px');
-
-      // layout each chart
-      rows.each(function(index) {
-
-        // perform the layout
-        var result = layoutChart($(this), false);
-
-        // ice the notes if there are none
-        if (!result.notes)
-          $(this).find('.chart-notes').remove();
-
-        // set flex height based on figHeight, then adjust
-        if (result.flex) {
-          var chartHeight = figureSizes[index].height;
-          chartHeight = adjustedHeight(chartHeight, $(this));
-          if (fillPage)
-            setFlex($(this), chartHeight + ' ' + chartHeight + ' 0px');
-          else {
-            $(this).css('height', chartHeight + 'px');
-            setFlex($(this), chartHeight + ' ' + chartHeight + ' ' + chartHeight + 'px');
-          }
-        }
-      });
-    });
-  }
-
-  function chartFigureSizes(charts) {
-
-    // sizes
-    var figureSizes = new Array(charts.length);
-
-    // check each chart
-    charts.each(function(index) {
-
-      // start with default
-      figureSizes[index] = {
-        width: _options.defaultFigWidth,
-        height: _options.defaultFigHeight
-      };
-
-      // look for data-height or data-width then knit options
-      var dataWidth = parseInt($(this).attr('data-width'));
-      var dataHeight = parseInt($(this).attr('data-height'));
-      var knitrOptions = $(this).find('.knitr-options:first');
-      var knitrWidth, knitrHeight;
-      if (knitrOptions) {
-        knitrWidth = parseInt(knitrOptions.attr('data-fig-width'));
-        knitrHeight =  parseInt(knitrOptions.attr('data-fig-height'));
-      }
-
-      // width
-      if (dataWidth)
-        figureSizes[index].width = dataWidth;
-      else if (knitrWidth)
-        figureSizes[index].width = knitrWidth;
-
-      // height
-      if (dataHeight)
-        figureSizes[index].height = dataHeight;
-      else if (knitrHeight)
-        figureSizes[index].height = knitrHeight;
-    });
-
-    // return sizes
-    return figureSizes;
-  }
-
-  function maxChartHeight(figureSizes, charts) {
-
-    // first compute the maximum height
-    var maxHeight = _options.defaultFigHeight;
-    for (var i = 0; i<figureSizes.length; i++)
-      if (figureSizes[i].height > maxHeight)
-        maxHeight = figureSizes[i].height;
-
-    // now add offests for chart title and chart notes
-    if (charts.length)
-      maxHeight = adjustedHeight(maxHeight, charts.first());
-
-    return maxHeight;
-  }
-
-  function adjustedHeight(height, chart) {
-    if (chart.length > 0) {
-      var chartTitle = chart.find('.chart-title');
-      if (chartTitle.length)
-        height += chartTitle.first().outerHeight();
-      var chartNotes = chart.find('.chart-notes');
-      if (chartNotes.length)
-        height += chartNotes.first().outerHeight();
-    }
-    return height;
-  }
-
-  function maxChartWidth(figureSizes) {
-    var maxWidth = _options.defaultFigWidth;
-    for (var i = 0; i<figureSizes.length; i++)
-      if (figureSizes[i].width > maxWidth)
-        maxWidth = figureSizes[i].width;
-    return maxWidth;
-  }
-
-  // layout a chart
-  function layoutChart(chart, forceFlex) {
-
-    // state to return
-    var result = {
-      notes: false,
-      flex: false
-    };
-
-    // extract the title
-    var title = extractTitle(chart);
-
-    // find components that apply to this container
-    var components = componentsFind(chart);
-
-    // if it's a custom component then call it and return
-    var customComponents = componentsCustom(components);
-    if (customComponents.length) {
-      componentsLayout(customComponents, title, chart);
-      result.notes = false;
-      result.flex = forceFlex || componentsFlex(customComponents);
-      return result;
-    }
-
-    // put all the content in a chart wrapper div
-    chart.addClass('chart-wrapper');
-    chart.wrapInner('<div class="chart-stage"></div>');
-    var chartContent = chart.children('.chart-stage');
-
-    // flex the content if appropriate
-    result.flex = forceFlex || componentsFlex(components);
-    if (result.flex) {
-      // add flex classes
-      chart.addClass('chart-wrapper-flex');
-      chartContent.addClass('chart-stage-flex');
-
-      // additional shim to break out of flexbox sizing
-      chartContent.wrapInner('<div class="chart-shim"></div>');
-      chartContent = chartContent.children('.chart-shim');
-    }
-
-    // set custom data-padding attribute
-    var pad = chart.attr('data-padding');
-    if (pad) {
-      if (pad === "0")
-        chart.addClass('no-padding');
-      else {
-        pad = pad + 'px';
-        chartContent.css('left', pad)
-                    .css('top', pad)
-                    .css('right', pad)
-                    .css('bottom', pad)
-      }
-    }
-
-    // call compoents
-    componentsLayout(components, title, chartContent);
-
-    // also activate components on shiny output
-    findShinyOutput(chartContent).on('shiny:value',
-      function(event) {
-        var element = $(event.target);
-        setTimeout(function() {
-
-          // see if we opted out of flex based on our output (for shiny
-          // we can't tell what type of output we have until after the
-          // value is bound)
-          var components = componentsFind(element);
-          var flex = forceFlex || componentsFlex(components);
-          if (!flex) {
-            chart.css('height', "");
-            setFlex(chart, "");
-            chart.removeClass('chart-wrapper-flex');
-            chartContent.removeClass('chart-stage-flex');
-            chartContent.children().unwrap();
-          }
-
-          // perform layout
-          componentsLayout(components, title, element.parent());
-        }, 10);
-      });
-
-    // add the title
-    var chartTitle = $('<div class="chart-title"></div>');
-    chartTitle.append(title);
-    chart.prepend(chartTitle);
-
-    // add the notes section
-    var chartNotes = $('<div class="chart-notes"></div>');
-    chartNotes.html('&nbsp;');
-    chart.append(chartNotes);
-
-    // attempt to extract notes if we have a component
-    if (components.length)
-      result.notes = extractChartNotes(chartContent, chartNotes);
-
-    // return result
-    return result;
-  }
-
-  // build a tabset from a section div with the .tabset class
-  function layoutTabset(tabset) {
-
-    // check for fade option
-    var fade = tabset.hasClass("tabset-fade");
-    var pills = tabset.hasClass("tabset-pills");
-    var navClass = pills ? "nav-pills" : "nav-tabs";
-
-    // determine the heading level of the tabset and tabs
-    var match = tabset.attr('class').match(/level(\d) /);
-    if (match === null)
-      return;
-    var tabsetLevel = Number(match[1]);
-    var tabLevel = tabsetLevel + 1;
-
-    // find all subheadings immediately below
-    var tabs = tabset.find("div.section.level" + tabLevel);
-    if (!tabs.length)
-      return;
-
-    // create tablist and tab-content elements
-    var tabList = $('<ul class="nav ' + navClass + '" role="tablist"></ul>');
-    $(tabs[0]).before(tabList);
-    var tabContent = $('<div class="tab-content"></div>');
-    $(tabs[0]).before(tabContent);
-
-    // build the tabset
-    var activeTab = 0;
-    tabs.each(function(i) {
-
-      // get the tab div
-      var tab = $(tabs[i]);
-
-      // get the id then sanitize it for use with bootstrap tabs
-      var id = tab.attr('id');
-
-      // see if this is marked as the active tab
-      if (tab.hasClass('active'))
-        activeTab = i;
-
-      // sanitize the id for use with bootstrap tabs
-      id = id.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_');
-      tab.attr('id', id);
-
-      // get the heading element within it and grab it's text
-      var heading = tab.find('h' + tabLevel + ':first');
-      var headingDom = heading.contents();
-
-      // build and append the tab list item
-      var a = $('<a role="tab" data-toggle="tab" data-bs-toggle="tab" class="nav-link"></a>');
-      a.append(headingDom);
-      a.attr('href', '#' + id);
-      a.attr('aria-controls', id);
-      var li = $('<li role="presentation" class="nav-item"></li>');
-      li.append(a);
-      tabList.append(li);
-
-      // set it's attributes
-      tab.attr('role', 'tabpanel');
-      tab.addClass('tab-pane');
-      tab.addClass('tabbed-pane');
-      tab.addClass('no-title');
-      if (fade)
-        tab.addClass('fade');
-
-      // move it into the tab content div
-      tab.detach().appendTo(tabContent);
-    });
-
-    // set active tab
-    $(tabList.children()[activeTab]).tab("show");
-    var active = $(tabContent.children('div.section')[activeTab]);
-    active.addClass('active');
-    if (fade)
-      active.addClass('in');
-
-    // add nav-tabs-custom
-    tabset.addClass('nav-tabs-custom');
-
-    // internal layout is dashboard-column with tab-content flexing
-    tabset.addClass('dashboard-column');
-    setFlex(tabContent, 1);
-  }
-
-  // one time global initialization for components
-  function componentsInit(dashboardContainer) {
-    for (var i=0; i<window.FlexDashboardComponents.length; i++) {
-      var component = window.FlexDashboardComponents[i];
-      if (component.init)
-        component.init(dashboardContainer);
-    }
-  }
-
-  // find components that apply within a container
-  function componentsFind(container) {
-
-    // look for components
-    var components = [];
-    for (var i=0; i<window.FlexDashboardComponents.length; i++) {
-      var component = window.FlexDashboardComponents[i];
-      if (component.find(container).length)
-        components.push(component);
-    }
-
-    // if there were none then use a special flowing content component
-    // that just adds a scrollbar in fillPage mode
-    if (components.length == 0) {
-      components.push({
-        find: function(container) {
-          return container;
-        },
-
-        flex: function(fillPage) {
-          return fillPage;
-        },
-
-        layout: function(title, container, element, fillPage) {
-          if (fillPage) {
-            container.addClass('flowing-content-shim');
-            container.addClass('flowing-content-container');
-          }
-        }
-      });
-    }
-
-    return components;
-  }
-
-  // if there is a custom component then pick it out
-  function componentsCustom(components) {
-    var customComponent = [];
-    for (var i=0; i<components.length; i++)
-      if (components[i].type === "custom") {
-        customComponent.push(components[i]);
-        break;
-      }
-    return customComponent;
-  }
-
-  // query all components for flex
-  function componentsFlex(components) {
-
-    // no components at all means no flex
-    if (components.length === 0)
-      return false;
-
-    // otherwise query components (assume true unless we see false)
-    var isMobile = isMobilePhone();
-    for (var i=0; i<components.length; i++)
-      if (components[i].flex && !components[i].flex(_options.fillPage))
-        return false;
-    return true;
-  }
-
-  // layout all components
-  function componentsLayout(components, title, container) {
-    var isMobile = isMobilePhone();
-    for (var i=0; i<components.length; i++) {
-      var element = components[i].find(container);
-      if (components[i].layout) {
-        // call layout (don't call other components if it returns false)
-        var result = components[i].layout(title, container, element, _options.fillPage);
-        if (result === false)
-          return;
-      }
-    }
-  }
-
-  // get a reference to the h3, discover it's inner html, and remove it
-  function extractTitle(container) {
-    var h3 = container.children('h3').first();
-    var title = '';
-    if (!container.hasClass('no-title'))
-      title = h3.contents();
-    h3.detach();
-    return title;
-  }
-
-  // extract chart notes
-  function extractChartNotes(chartContent, chartNotes) {
-    // look for a terminating blockquote or image caption
-    var blockquote = chartContent.children('blockquote:last-child');
-    var caption = chartContent.children('div.image-container')
-                              .children('p.caption');
-    if (blockquote.length) {
-      chartNotes.empty().append(blockquote.children('p:first-child').contents());
-      blockquote.remove();
-      return true;
-    } else if (caption.length) {
-      chartNotes.empty().append(caption.contents());
-      caption.remove();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  function findShinyOutput(chartContent) {
-    return chartContent.find('.shiny-text-output, .shiny-html-output');
-  }
-
-  // safely detect rendering on a mobile phone
-  function isMobilePhone() {
-    try
-    {
-      return ! window.matchMedia("only screen and (min-width: 768px)").matches;
-    }
-    catch(e) {
-      return false;
-    }
-  }
-
-  function isFillPage() {
-    return _options.fillPage;
-  }
-
-  // detect portrait mode
-  function isPortrait() {
-    return ($(window).width() < $(window).height());
-  }
-
-  // safely detect rendering on a tablet
-  function isTablet() {
-    try
-    {
-      return window.matchMedia("only screen and (min-width: 769px) and (max-width: 992px)").matches;
-    }
-    catch(e) {
-      return false;
-    }
-  }
-
-  // test whether this is a shiny doc
-  function isShinyDoc() {
-    return (typeof(window.Shiny) !== "undefined" && !!window.Shiny.outputBindings);
-  }
-
-  // set flex using vendor specific prefixes
-  function setFlex(el, flex) {
-    el.css('-webkit-box-flex', flex)
-      .css('-webkit-flex', flex)
-      .css('-ms-flex', flex)
-      .css('flex', flex);
-  }
-
-  // support bookmarking of pages
-  function handleLocationHash() {
-
-    // restore tab/page from bookmark
-    var hash = window.decodeURIComponent(window.location.hash);
-    if (hash.length > 0) {
-      // Update the tab without .showPage() so that we don't change page history
-      $('ul.nav a[href="' + hash + '"]').tab('show');
-    }
-
-    // navigate to a tab when the history changes
-    window.addEventListener("popstate", function(e) {
-      var hash = window.decodeURIComponent(window.location.hash);
-      var activeTab = $('ul.nav a[href="' + hash + '"]');
-      if (activeTab.length) {
-        activeTab.tab('show');
-      } else {
-        // returning to the base page URL without a hash activates first tab
-        $('ul.nav a:first').tab('show');
-      }
-    });
-
-    // add a hash to the URL when the user clicks on a tab/page
-    $('.navbar-nav a[data-toggle="tab"]').on('click', function(e) {
-      var baseUrl = FlexDashboardUtils.urlWithoutHash(window.location.href);
-      var hash = FlexDashboardUtils.urlHash($(this).attr('href'));
-      var href = baseUrl + hash;
-      FlexDashboardUtils.setLocation(href);
-    });
-
-    // handle clicks of other links that should activate pages
-    var navPages = $('ul.navbar-nav li a[data-toggle=tab]');
-    navPages.each(function() {
-      var href =  $(this).attr('href');
-      var links = $('a[href="' + href + '"][data-toggle!=tab]');
-      links.each(function() {
-        $(this).on('click', function(e) {
-          window.FlexDashboardUtils.showPage(href);
-        });
-      });
-    });
-  }
-
-  // tweak Prism highlighting
-  function initPrismHighlighting() {
-
-    if (window.Prism) {
-      Prism.languages.insertBefore('r', 'comment', {
-        'heading': [
-          {
-            // title 1
-        	  // =======
-
-        	  // title 2
-        	  // -------
-        	  pattern: /\w+.*(?:\r?\n|\r)(?:====+|----+)/,
-            alias: 'operator'
-          },
-          {
-            // ### title 3
-            pattern: /(^\s*)###[^#].+/m,
-            lookbehind: true,
-            alias: 'operator'
-          }
-        ]
-      });
-
-      // prism highlight
-      Prism.highlightAll();
-    }
-  }
-
-  FlexDashboard.prototype = {
-    constructor: FlexDashboard,
-    init: init,
-    isMobilePhone: isMobilePhone,
-    isFillPage: isFillPage
-  };
-
-  return FlexDashboard;
-
-})();
-
-// utils
-window.FlexDashboardUtils = {
-  resizableImage: function(img) {
-    var src = img.attr('src');
-    var url = 'url("' + src + '")';
-    img.parent().css('background', url)
-                .css('background-size', 'contain')
-                .css('background-repeat', 'no-repeat')
-                .css('background-position', 'center')
-                .addClass('image-container');
-  },
-  setLocation: function(href) {
-    if (history && history.pushState) {
-      history.pushState(null, null, href);
-    } else {
-      window.location.replace(href);
-    }
-    setTimeout(function() {
-        window.scrollTo(0, 0);
-    }, 10);
-  },
-  showPage: function(href) {
-    $('ul.navbar-nav li a[href="' + href + '"]').tab('show');
-    var baseUrl = this.urlWithoutHash(window.location.href);
-    var loc = baseUrl + href;
-    this.setLocation(loc);
-  },
-  showLinkedValue: function(href) {
-    // check for a page link
-    if ($('ul.navbar-nav li a[data-toggle=tab][href="' + href + '"]').length > 0)
-      this.showPage(href);
-    else
-      window.open(href);
-  },
-  urlWithoutHash: function(url) {
-    var hashLoc = url.indexOf('#');
-    if (hashLoc != -1)
-      return url.substring(0, hashLoc);
-    else
-      return url;
-  },
-  urlHash: function(url) {
-    var hashLoc = url.indexOf('#');
-    if (hashLoc != -1)
-      return url.substring(hashLoc);
-    else
-      return "";
-  }
-};
-
-window.FlexDashboard = new FlexDashboard();
-
-// empty content
-window.FlexDashboardComponents.push({
-  find: function(container) {
-    if (container.find('p').length == 0)
-      return container;
-    else
-      return $();
-  }
-})
-
-// plot image
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    return container.children('p')
-                    .children('img:only-child');
-  },
-
-  layout: function(title, container, element, fillPage) {
-    FlexDashboardUtils.resizableImage(element);
-  }
-});
-
-// plot image (figure style)
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    return container.children('div.figure').children('img');
-  },
-
-  layout: function(title, container, element, fillPage) {
-    FlexDashboardUtils.resizableImage(element);
-  }
-});
-
-// htmlwidget
-window.FlexDashboardComponents.push({
-
-  init: function(dashboardContainer) {
-    // trigger "shown" after initial layout to force static htmlwidgets
-    // in runtime: shiny to be resized after the dom has been transformed
-    dashboardContainer.on('flexdashboard:layoutcomplete', function(event) {
-      setTimeout(function() {
-        dashboardContainer.trigger('shown');
-      }, 200);
-    });
-  },
-
-  find: function(container) {
-    return container.children('div[id^="htmlwidget-"],div.html-widget');
-  }
-});
-
-// gauge
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    return container.children('div.html-widget.gauge');
-  },
-
-  flex: function(fillPage) {
-    return false;
-  },
-
-  layout: function(title, container, element, fillPage) {
-
-
-  }
-
-});
-
-// shiny output
-window.FlexDashboardComponents.push({
-  find: function(container) {
-    return container.children('div[class^="shiny-"]');
-  }
-});
-
-// bootstrap table
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    var bsTable = container.find('table.table');
-    if (bsTable.length !== 0)
-      return bsTable;
-    else
-      return container.find('tr.header').parent('thead').parent('table');
-  },
-
-  flex: function(fillPage) {
-    return fillPage;
-  },
-
-  layout: function(title, container, element, fillPage) {
-
-    // alias variables
-    var bsTable = element;
-
-    // fixup xtable generated tables with a proper thead
-    var headerRow = bsTable.find('tbody > tr:first-child > th').parent();
-    if (headerRow.length > 0) {
-      var thead = $('<thead></thead>');
-      bsTable.prepend(thead);
-      headerRow.detach().appendTo(thead);
-    }
-
-    // improve appearance
-    container.addClass('bootstrap-table');
-
-    // for fill page provide scrolling w/ sticky headers
-    if (fillPage) {
-      // force scrollbar on overflow
-      container.addClass('flowing-content-shim');
-
-      // stable table headers when scrolling
-      bsTable.stickyTableHeaders({
-        scrollableArea: container
-      });
-    }
-  }
-});
-
-// embedded shiny app
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    return container.find('iframe.shiny-frame');
-  },
-
-  flex: function(fillPage) {
-    return fillPage;
-  },
-
-  layout: function(title, container, element, fillPage) {
-    if (fillPage) {
-      element.attr('height', '100%');
-    } else {
-      // provide default height if necessary
-      var height = element.get(0).style.height;
-      if (!height)
-        height = element.attr('height');
-      if (!height)
-        element.attr('height', 500);
-    }
-  }
-});
-
-// shiny fillRow or fillCol
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    return container.find('.flexfill-container');
-  },
-
-  flex: function(fillPage) {
-    return fillPage;
-  },
-
-  layout: function(title, container, element, fillPage) {
-    if (fillPage)
-      element.css('height', '100%');
-    else {
-      // provide default height if necessary
-      var height = element.get(0).style.height;
-      if (height === "100%" || height === "auto" || height === "initial" ||
-          height === "inherit" || !height) {
-        element.css('height', 500);
-      }
-    }
-  }
-});
-
-// valueBox
-window.FlexDashboardComponents.push({
-
-  type: "custom",
-
-  find: function(container) {
-    if (container.find('span.value-output, .shiny-valuebox-output').length)
-      return container;
-    else
-      return $();
-  },
-
-  flex: function(fillPage) {
-    return false;
-  },
-
-  layout: function(title, container, element, fillPage) {
-
-    // alias variables
-    var chartTitle = title;
-    var valueBox = element;
-
-    // add value-box class to container
-    container.addClass('value-box');
-
-    // value paragraph
-    var value = $('<p class="value"></p>');
-
-    // if we have shiny-text-output then just move it in
-    var valueOutputSpan = [];
-    var shinyOutput = valueBox.find('.shiny-valuebox-output').detach();
-    if (shinyOutput.length) {
-      valueBox.children().remove();
-      shinyOutput.html("&mdash;");
-      value.append(shinyOutput);
-    } else {
-      // extract the value (remove leading vector index)
-      var chartValue = valueBox.text().trim();
-      chartValue = chartValue.replace("[1] ", "");
-      valueOutputSpan = valueBox.find('span.value-output').detach();
-      valueBox.children().remove();
-      value.text(chartValue);
-    }
-
-    // caption
-    var caption = $('<p class="caption"></p>');
-    caption.append(chartTitle);
-
-    // build inner div for value box and add it
-    var inner = $('<div class="inner"></div>');
-    inner.append(value);
-    inner.append(caption);
-    valueBox.append(inner);
-
-    // add icon if specified
-    var icon = $('<div class="icon"><i></i></div>');
-    valueBox.append(icon);
-    function setIcon(chartIcon) {
-      var iconLib = "";
-      var iconSplit = chartIcon.split(" ");
-      if (iconSplit.length > 1) {
-        iconLib = iconSplit[0];
-        chartIcon = iconSplit.slice(1).join(" ");
-      } else {
-        var components = chartIcon.split("-");
-        if (components.length > 1)
-          iconLib = components[0];
-      }
-      icon.children('i').attr('class', iconLib + ' ' + chartIcon);
-    }
-    var chartIcon = valueBox.attr('data-icon');
-    if (chartIcon)
-      setIcon(chartIcon);
-
-    // handle data attributes in valueOutputSpan
-    function handleValueOutput(valueOutput) {
-
-      // caption
-      var dataCaption = valueOutput.attr('data-caption');
-      if (dataCaption)
-        caption.html(dataCaption);
-
-      // icon
-      var dataIcon = valueOutput.attr('data-icon');
-      if (dataIcon)
-        setIcon(dataIcon);
-
-      // If valueBox(color=) was an accent color, this attr should
-      // be populated with the accent color and the relevant CSS comes
-      // in through HTML dependencies
-      var dataColorAccent = valueOutput.attr('data-color-accent');
-      var valueBoxClasses = "value-box-" + (["primary", "info", "danger", "warning", "success"].join(" value-box-"));
-      if (dataColorAccent) {
-        valueBox.removeClass(valueBoxClasses);
-        valueBox.addClass('value-box-' + dataColorAccent);
-      }
-
-      // If valueBox(color=) was a CSS color, these other data-color-*
-      // attrs will be populated
-      var dataColor = valueOutput.attr('data-color');
-      if (dataColor) {
-        valueBox.removeClass(valueBoxClasses);
-        valueBox.css('background-color', dataColor);
-      }
-      var dataColorText = valueOutput.attr('data-color-text');
-      if (dataColorText) {
-        valueBox.find(".inner").css('color', dataColorText);
-      }
-      var dataColorIcon = valueOutput.attr('data-color-icon');
-      if (dataColorIcon) {
-        valueBox.find(".icon").css('color', dataColorIcon);
-      }
-
-      // url
-      var dataHref = valueOutput.attr('data-href');
-      if (dataHref) {
-        valueBox.addClass('linked-value');
-        valueBox.off('click.value-box');
-        valueBox.on('click.value-box', function(e) {
-          window.FlexDashboardUtils.showLinkedValue(dataHref);
-        });
-      }
-    }
-
-    // check for a valueOutputSpan
-    if (valueOutputSpan.length > 0) {
-      handleValueOutput(valueOutputSpan);
-    }
-
-    // if we have a shinyOutput then bind a listener to handle
-    // new valueOutputSpan values
-    shinyOutput.on('shiny:value',
-      function(event) {
-        var element = $(event.target);
-        setTimeout(function() {
-          var valueOutputSpan = element.find('span.value-output');
-          if (valueOutputSpan.length > 0)
-            handleValueOutput(valueOutputSpan);
-        }, 10);
-      }
-    );
-  }
-});
-</script>
-
-<div id="dashboard-container">
 
 <p>This is an interactive visualization representing the frequency of
 delays by subway line.</p>
-Packages (need to install gt package to use gt library first)
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+<p>Packages (need to install gt package to use gt library first)</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.2     ✔ tibble    3.3.0
+## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+## ✔ purrr     1.1.0     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(janitor)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;janitor&#39;
+## 
+## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     chisq.test, fisher.test</code></pre>
+<pre class="r"><code>library(viridis)</code></pre>
+<pre><code>## Loading required package: viridisLite</code></pre>
+<pre class="r"><code>library(plotly)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;
+## 
+## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot
+## 
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter
+## 
+## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<pre class="r"><code>library(knitr)
+library(gt)</code></pre>
+<pre><code>## Warning: package &#39;gt&#39; was built under R version 4.5.2</code></pre>
+<p>Load data.</p>
+<pre class="r"><code>raw &lt;- read_csv(&quot;data/2019_subway_rider_data.csv&quot;) |&gt; 
+  clean_names()</code></pre>
+<pre><code>## Rows: 10704 Columns: 19
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
+## lgl  (1): is_subway_affordable
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<p>Clean dataset.</p>
+<pre class="r"><code># split multi-line answers (e.g., &quot;A/C&quot; → &quot;A&quot;, &quot;C&quot;)
+cleaned &lt;- raw |&gt; 
+  mutate(
+    subway_line = subway_line_used_most_often |&gt; 
+      str_replace_all(&quot;[^A-Za-z0-9]&quot;, &quot;/&quot;) |&gt;   # normalize separators
+      str_split(&quot;/&quot;)                            # split into multiple lines
+  ) |&gt; 
+  unnest(subway_line) |&gt; 
+  mutate(
+    subway_line = str_trim(subway_line),
+    subway_line = str_to_upper(subway_line)
+  ) |&gt; 
+  filter(subway_line %in% c(
+    &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,&quot;5&quot;,&quot;6&quot;,&quot;7&quot;,
+    &quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;,&quot;F&quot;,&quot;M&quot;,
+    &quot;G&quot;,&quot;J&quot;,&quot;Z&quot;,&quot;N&quot;,&quot;Q&quot;,&quot;R&quot;,&quot;W&quot;,&quot;L&quot;,&quot;S&quot;
+  ))
 
-</div>
-Load data.
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+# Convert column naming to an ordered factor for plotting:
+cleaned &lt;- cleaned |&gt; 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c(
+        &quot;Never&quot;,
+        &quot;Rarely&quot;,
+        &quot;Once a month&quot;,
+        &quot;A few times a month&quot;,
+        &quot;A few times a week&quot;,
+        &quot;Everyday&quot;
+      ),
+      ordered = TRUE
+    )
+  )
 
-</div>
-Clean dataset.
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
-
-</div>
+#convert to a numeric midpoint in minutes (for average delay per line):
+cleaned &lt;- cleaned |&gt; 
+  mutate(
+    delay_min = case_when(
+      approximate_delay_duration == &quot;&lt; 10 min&quot; ~ 5,
+      approximate_delay_duration == &quot;10 - 20 min&quot; ~ 15,
+      approximate_delay_duration == &quot;20 - 40 min&quot; ~ 30,
+      approximate_delay_duration == &quot;40 - 60 min&quot; ~ 50,
+      approximate_delay_duration == &quot;Over 60 min&quot; ~ 70,
+      approximate_delay_duration == &quot;Over 40 min&quot; ~ 50,
+      TRUE ~ NA_real_
+    )
+  )</code></pre>
 <div id="subway-line-directory" class="section level3">
 <h3>1. Subway Line Directory:</h3>
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+<pre class="r"><code>subway_directory_display &lt;- tribble(
+  ~`Line Family`, ~Lines, ~Color,
+  &quot;Red Line&quot;, &quot;1, 2, 3&quot;, &quot;#EE352E&quot;,
+  &quot;Green Line&quot;, &quot;4, 5, 6&quot;, &quot;#00933C&quot;,
+  &quot;Purple Line&quot;, &quot;7&quot;, &quot;#B933AD&quot;,
+  &quot;Blue Line&quot;, &quot;A, C, E&quot;, &quot;#0039A6&quot;,
+  &quot;Orange Line&quot;, &quot;B, D, F, M&quot;, &quot;#FF6319&quot;,
+  &quot;Yellow Line&quot;, &quot;N, Q, R, W&quot;, &quot;#FCCC0A&quot;,
+  &quot;Light Green Line&quot;, &quot;G&quot;, &quot;#6CBE45&quot;,
+  &quot;Brown Line&quot;, &quot;J, Z&quot;, &quot;#996633&quot;,
+  &quot;Gray Line&quot;, &quot;L&quot;, &quot;#A7A9AC&quot;,
+  &quot;Shuttle&quot;, &quot;S&quot;, &quot;#808183&quot;
+)
 
-</div>
-<div id="jfchcuxxms" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#jfchcuxxms table {
+subway_directory_display |&gt;
+  gt() |&gt;
+  tab_header(
+    title = &quot;NYC Subway Line Directory&quot;
+  ) |&gt;
+  text_transform(
+    locations = cells_body(columns = Color),
+    fn = function(color) {
+      paste0(
+        &quot;&lt;div style=&#39;background-color:&quot;, color,
+        &quot;; width: 60px; height: 20px; border-radius: 4px&#39;&gt;&lt;/div&gt;&quot;
+      )
+    }
+  ) |&gt;
+  cols_width(
+    everything() ~ px(180)
+  ) |&gt;
+  opt_table_outline()</code></pre>
+<div id="whdwfvnkjc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#whdwfvnkjc table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#jfchcuxxms thead, #jfchcuxxms tbody, #jfchcuxxms tfoot, #jfchcuxxms tr, #jfchcuxxms td, #jfchcuxxms th {
+#whdwfvnkjc thead, #whdwfvnkjc tbody, #whdwfvnkjc tfoot, #whdwfvnkjc tr, #whdwfvnkjc td, #whdwfvnkjc th {
   border-style: none;
 }
 
-#jfchcuxxms p {
+#whdwfvnkjc p {
   margin: 0;
   padding: 0;
 }
 
-#jfchcuxxms .gt_table {
+#whdwfvnkjc .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1925,12 +473,12 @@ Clean dataset.
   border-left-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_caption {
+#whdwfvnkjc .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#jfchcuxxms .gt_title {
+#whdwfvnkjc .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1942,7 +490,7 @@ Clean dataset.
   border-bottom-width: 0;
 }
 
-#jfchcuxxms .gt_subtitle {
+#whdwfvnkjc .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1954,7 +502,7 @@ Clean dataset.
   border-top-width: 0;
 }
 
-#jfchcuxxms .gt_heading {
+#whdwfvnkjc .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1966,13 +514,13 @@ Clean dataset.
   border-right-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_bottom_border {
+#whdwfvnkjc .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_col_headings {
+#whdwfvnkjc .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1987,7 +535,7 @@ Clean dataset.
   border-right-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_col_heading {
+#whdwfvnkjc .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2007,7 +555,7 @@ Clean dataset.
   overflow-x: hidden;
 }
 
-#jfchcuxxms .gt_column_spanner_outer {
+#whdwfvnkjc .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2019,15 +567,15 @@ Clean dataset.
   padding-right: 4px;
 }
 
-#jfchcuxxms .gt_column_spanner_outer:first-child {
+#whdwfvnkjc .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#jfchcuxxms .gt_column_spanner_outer:last-child {
+#whdwfvnkjc .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#jfchcuxxms .gt_column_spanner {
+#whdwfvnkjc .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2039,11 +587,11 @@ Clean dataset.
   width: 100%;
 }
 
-#jfchcuxxms .gt_spanner_row {
+#whdwfvnkjc .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#jfchcuxxms .gt_group_heading {
+#whdwfvnkjc .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2069,7 +617,7 @@ Clean dataset.
   text-align: left;
 }
 
-#jfchcuxxms .gt_empty_group_heading {
+#whdwfvnkjc .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2084,15 +632,15 @@ Clean dataset.
   vertical-align: middle;
 }
 
-#jfchcuxxms .gt_from_md > :first-child {
+#whdwfvnkjc .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#jfchcuxxms .gt_from_md > :last-child {
+#whdwfvnkjc .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#jfchcuxxms .gt_row {
+#whdwfvnkjc .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2111,7 +659,7 @@ Clean dataset.
   overflow-x: hidden;
 }
 
-#jfchcuxxms .gt_stub {
+#whdwfvnkjc .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2124,7 +672,7 @@ Clean dataset.
   padding-right: 5px;
 }
 
-#jfchcuxxms .gt_stub_row_group {
+#whdwfvnkjc .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2138,15 +686,15 @@ Clean dataset.
   vertical-align: top;
 }
 
-#jfchcuxxms .gt_row_group_first td {
+#whdwfvnkjc .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#jfchcuxxms .gt_row_group_first th {
+#whdwfvnkjc .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#jfchcuxxms .gt_summary_row {
+#whdwfvnkjc .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2156,16 +704,16 @@ Clean dataset.
   padding-right: 5px;
 }
 
-#jfchcuxxms .gt_first_summary_row {
+#whdwfvnkjc .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_first_summary_row.thick {
+#whdwfvnkjc .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#jfchcuxxms .gt_last_summary_row {
+#whdwfvnkjc .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2175,7 +723,7 @@ Clean dataset.
   border-bottom-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_grand_summary_row {
+#whdwfvnkjc .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2185,7 +733,7 @@ Clean dataset.
   padding-right: 5px;
 }
 
-#jfchcuxxms .gt_first_grand_summary_row {
+#whdwfvnkjc .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2195,7 +743,7 @@ Clean dataset.
   border-top-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_last_grand_summary_row_top {
+#whdwfvnkjc .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2205,11 +753,11 @@ Clean dataset.
   border-bottom-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_striped {
+#whdwfvnkjc .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#jfchcuxxms .gt_table_body {
+#whdwfvnkjc .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2218,7 +766,7 @@ Clean dataset.
   border-bottom-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_footnotes {
+#whdwfvnkjc .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2232,7 +780,7 @@ Clean dataset.
   border-right-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_footnote {
+#whdwfvnkjc .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2241,7 +789,7 @@ Clean dataset.
   padding-right: 5px;
 }
 
-#jfchcuxxms .gt_sourcenotes {
+#whdwfvnkjc .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2255,7 +803,7 @@ Clean dataset.
   border-right-color: #D3D3D3;
 }
 
-#jfchcuxxms .gt_sourcenote {
+#whdwfvnkjc .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2263,72 +811,72 @@ Clean dataset.
   padding-right: 5px;
 }
 
-#jfchcuxxms .gt_left {
+#whdwfvnkjc .gt_left {
   text-align: left;
 }
 
-#jfchcuxxms .gt_center {
+#whdwfvnkjc .gt_center {
   text-align: center;
 }
 
-#jfchcuxxms .gt_right {
+#whdwfvnkjc .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#jfchcuxxms .gt_font_normal {
+#whdwfvnkjc .gt_font_normal {
   font-weight: normal;
 }
 
-#jfchcuxxms .gt_font_bold {
+#whdwfvnkjc .gt_font_bold {
   font-weight: bold;
 }
 
-#jfchcuxxms .gt_font_italic {
+#whdwfvnkjc .gt_font_italic {
   font-style: italic;
 }
 
-#jfchcuxxms .gt_super {
+#whdwfvnkjc .gt_super {
   font-size: 65%;
 }
 
-#jfchcuxxms .gt_footnote_marks {
+#whdwfvnkjc .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#jfchcuxxms .gt_asterisk {
+#whdwfvnkjc .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#jfchcuxxms .gt_indent_1 {
+#whdwfvnkjc .gt_indent_1 {
   text-indent: 5px;
 }
 
-#jfchcuxxms .gt_indent_2 {
+#whdwfvnkjc .gt_indent_2 {
   text-indent: 10px;
 }
 
-#jfchcuxxms .gt_indent_3 {
+#whdwfvnkjc .gt_indent_3 {
   text-indent: 15px;
 }
 
-#jfchcuxxms .gt_indent_4 {
+#whdwfvnkjc .gt_indent_4 {
   text-indent: 20px;
 }
 
-#jfchcuxxms .gt_indent_5 {
+#whdwfvnkjc .gt_indent_5 {
   text-indent: 25px;
 }
 
-#jfchcuxxms .katex-display {
+#whdwfvnkjc .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#jfchcuxxms div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#whdwfvnkjc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -2384,87 +932,266 @@ Clean dataset.
   
 </table>
 </div>
-Join-ready Subway Line Directory for analysis:
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+<p>Join-ready Subway Line Directory for analysis:</p>
+<pre class="r"><code>subway_directory &lt;- tribble(
+  ~subway_line, ~group_color, ~hex_color,
+  &quot;1&quot;,&quot;Red Line&quot;,&quot;#EE352E&quot;,
+  &quot;2&quot;,&quot;Red Line&quot;,&quot;#EE352E&quot;,
+  &quot;3&quot;,&quot;Red Line&quot;,&quot;#EE352E&quot;,
+  &quot;4&quot;,&quot;Green Line&quot;,&quot;#00933C&quot;,
+  &quot;5&quot;,&quot;Green Line&quot;,&quot;#00933C&quot;,
+  &quot;6&quot;,&quot;Green Line&quot;,&quot;#00933C&quot;,
+  &quot;7&quot;,&quot;Purple Line&quot;,&quot;#B933AD&quot;,
+  &quot;A&quot;,&quot;Blue Line&quot;,&quot;#0039A6&quot;,
+  &quot;C&quot;,&quot;Blue Line&quot;,&quot;#0039A6&quot;,
+  &quot;E&quot;,&quot;Blue Line&quot;,&quot;#0039A6&quot;,
+  &quot;B&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
+  &quot;D&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
+  &quot;F&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
+  &quot;M&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
+  &quot;N&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
+  &quot;Q&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
+  &quot;R&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
+  &quot;W&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
+  &quot;G&quot;,&quot;Light Green Line&quot;,&quot;#6CBE45&quot;,
+  &quot;J&quot;,&quot;Brown Line&quot;,&quot;#996633&quot;,
+  &quot;Z&quot;,&quot;Brown Line&quot;,&quot;#996633&quot;,
+  &quot;L&quot;,&quot;Gray Line&quot;,&quot;#A7A9AC&quot;,
+  &quot;S&quot;,&quot;Shuttle&quot;,&quot;#808183&quot;
+)
 
-</div>
+cleaned &lt;- cleaned |&gt; 
+  left_join(subway_directory, by = &quot;subway_line&quot;)</code></pre>
 </div>
 <div id="distribution-of-delay-frequency-responses-by-subway-line"
 class="section level3">
 <h3>2. Distribution of Delay Frequency Responses by Subway Line</h3>
-Interactive Plotly Stacked Bar Chart
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+<p>Interactive Plotly Stacked Bar Chart</p>
+<pre class="r"><code># Build distribution dataset
+dist_delay &lt;- cleaned |&gt;
+  filter(!is.na(frequency_of_delays)) |&gt;
+  count(subway_line, frequency_of_delays) |&gt;
+  group_by(subway_line) |&gt;
+  mutate(prop = n / sum(n)) |&gt;
+  ungroup() |&gt;
+  left_join(subway_directory, by=&quot;subway_line&quot;) |&gt;
+  arrange(group_color, subway_line) |&gt;
+  mutate(subway_line = factor(subway_line, levels = unique(subway_line)))
 
-</div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-595db31832bf8ed4d05b" style="width:576px;height:460.8px;"></div>
-<script type="application/json" data-for="htmlwidget-595db31832bf8ed4d05b">{"x":{"visdat":{"685825f5660d":["function () ","plotlyVisDat"]},"cur_data":"685825f5660d","attrs":{"685825f5660d":{"x":{},"y":{},"customdata":{},"hovertemplate":"<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","color":{},"colors":["#440154FF","#414487FF","#2A788EFF","#22A884FF","#7AD151FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":{"text":"<b>Distribution of Delay Frequency Responses by Subway Line<\/b>","x":0.5},"xaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","type":"category","categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion","tickformat":".0%"},"showlegend":true,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.29078014184397161,0.23901098901098902,0.26004228329809725,0.35833333333333334,0.5,0.19220055710306408,0.34293948126801155,0.35761589403973509,0.2299349240780911,0.21686746987951808,0.25301204819277107,0.27972027972027974,0.25862068965517243,0.28947368421052633,0.32723577235772355,0.2298050139275766,0.26492537313432835,0.21637426900584794,0.1111111111111111,0.25806451612903225,0.22268907563025211,0.3171021377672209,0.26415094339622641],"customdata":["Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Everyday","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.55082742316784872,0.53846153846153844,0.52642706131078221,0.5,0.5,0.59610027855153203,0.48126801152737753,0.50331125827814571,0.48590021691973967,0.57831325301204817,0.63253012048192769,0.61888111888111885,0.59946949602122013,0.61184210526315785,0.55691056910569103,0.5352831940575673,0.5149253731343284,0.55555555555555558,0.33333333333333331,0.59139784946236562,0.57773109243697474,0.55938242280285033,0.64150943396226412],"customdata":["A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"A few times a week","marker":{"color":"rgba(122,209,81,1)","line":{"color":"rgba(122,209,81,1)"}},"textfont":{"color":"rgba(122,209,81,1)"},"error_y":{"color":"rgba(122,209,81,1)"},"error_x":{"color":"rgba(122,209,81,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.15721040189125296,0.22252747252747251,0.21353065539112051,0.14166666666666666,0.20891364902506965,0.17002881844380405,0.13907284768211919,0.2841648590021692,0.20481927710843373,0.1144578313253012,0.097902097902097904,0.14058355437665782,0.098684210526315791,0.10975609756097561,0.23259052924791088,0.21828358208955223,0.22222222222222221,0.33333333333333331,0.14623655913978495,0.19957983193277312,0.11876484560570071,0.094339622641509441],"customdata":["Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Rarely","marker":{"color":"rgba(65,68,135,1)","line":{"color":"rgba(65,68,135,1)"}},"textfont":{"color":"rgba(65,68,135,1)"},"error_y":{"color":"rgba(65,68,135,1)"},"error_x":{"color":"rgba(65,68,135,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","L","4","D","F","7","1","2","3","S","N","R"],"y":[0.0011820330969267139,0.0027855153203342618,0.005763688760806916,0.0034965034965034965,0.0013262599469496021,0.0060975609756097563,0.002321262766945218,0.0018656716417910447,0.0058479532163742687,0.22222222222222221,0.0043010752688172043,0.0047505938242280287],"customdata":["Never","Never","Never","Never","Never","Never","Never","Never","Never","Never","Never","Never"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Never","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+# Plot
+plot_ly(
+  data = dist_delay,
+  x = ~subway_line,
+  y = ~prop,
+  type = &quot;bar&quot;,
+  color = ~frequency_of_delays,
+  colors = viridisLite::viridis(6),
+  customdata = ~frequency_of_delays,
+  hovertemplate = paste(
+    &quot;&lt;b&gt;Subway Line:&lt;/b&gt; %{x}&lt;br&gt;&quot;,
+    &quot;&lt;b&gt;Delay Frequency:&lt;/b&gt; %{customdata}&lt;br&gt;&quot;,
+    &quot;&lt;b&gt;Proportion of Riders:&lt;/b&gt; %{y:.1%}&lt;br&gt;&quot;,
+    &quot;&lt;extra&gt;&lt;/extra&gt;&quot;
+  )
+) |&gt;
+  layout(
+    barmode = &quot;stack&quot;,
+    title = list(
+      text = &quot;&lt;b&gt;Distribution of Delay Frequency Responses by Subway Line&lt;/b&gt;&quot;,
+      x = 0.5
+    ),
+    xaxis = list(title = &quot;Subway Line&quot;),
+    yaxis = list(title = &quot;Proportion&quot;, tickformat=&quot;.0%&quot;),
+    showlegend = TRUE
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-1f95bad168da7f54e4ce" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-1f95bad168da7f54e4ce">{"x":{"visdat":{"5774da31862":["function () ","plotlyVisDat"]},"cur_data":"5774da31862","attrs":{"5774da31862":{"x":{},"y":{},"customdata":{},"hovertemplate":"<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","color":{},"colors":["#440154FF","#414487FF","#2A788EFF","#22A884FF","#7AD151FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":{"text":"<b>Distribution of Delay Frequency Responses by Subway Line<\/b>","x":0.5},"xaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","type":"category","categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion","tickformat":".0%"},"showlegend":true,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.29078014184397161,0.23901098901098902,0.26004228329809725,0.35833333333333334,0.5,0.19220055710306408,0.34293948126801155,0.35761589403973509,0.2299349240780911,0.21686746987951808,0.25301204819277107,0.27972027972027974,0.25862068965517243,0.28947368421052633,0.32723577235772355,0.2298050139275766,0.26492537313432835,0.21637426900584794,0.1111111111111111,0.25806451612903225,0.22268907563025211,0.3171021377672209,0.26415094339622641],"customdata":["Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Everyday","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.55082742316784872,0.53846153846153844,0.52642706131078221,0.5,0.5,0.59610027855153203,0.48126801152737753,0.50331125827814571,0.48590021691973967,0.57831325301204817,0.63253012048192769,0.61888111888111885,0.59946949602122013,0.61184210526315785,0.55691056910569103,0.5352831940575673,0.5149253731343284,0.55555555555555558,0.33333333333333331,0.59139784946236562,0.57773109243697474,0.55938242280285033,0.64150943396226412],"customdata":["A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"A few times a week","marker":{"color":"rgba(122,209,81,1)","line":{"color":"rgba(122,209,81,1)"}},"textfont":{"color":"rgba(122,209,81,1)"},"error_y":{"color":"rgba(122,209,81,1)"},"error_x":{"color":"rgba(122,209,81,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.15721040189125296,0.22252747252747251,0.21353065539112051,0.14166666666666666,0.20891364902506965,0.17002881844380405,0.13907284768211919,0.2841648590021692,0.20481927710843373,0.1144578313253012,0.097902097902097904,0.14058355437665782,0.098684210526315791,0.10975609756097561,0.23259052924791088,0.21828358208955223,0.22222222222222221,0.33333333333333331,0.14623655913978495,0.19957983193277312,0.11876484560570071,0.094339622641509441],"customdata":["Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Rarely","marker":{"color":"rgba(65,68,135,1)","line":{"color":"rgba(65,68,135,1)"}},"textfont":{"color":"rgba(65,68,135,1)"},"error_y":{"color":"rgba(65,68,135,1)"},"error_x":{"color":"rgba(65,68,135,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","L","4","D","F","7","1","2","3","S","N","R"],"y":[0.0011820330969267139,0.0027855153203342618,0.005763688760806916,0.0034965034965034965,0.0013262599469496021,0.0060975609756097563,0.002321262766945218,0.0018656716417910447,0.0058479532163742687,0.22222222222222221,0.0043010752688172043,0.0047505938242280287],"customdata":["Never","Never","Never","Never","Never","Never","Never","Never","Never","Never","Never","Never"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Never","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div
 id="proportion-of-riders-reporting-long-delays-20-min-by-individual-line"
 class="section level3">
 <h3>3. Proportion of Riders Reporting Long Delays (≥20 min) by
 individual line</h3>
-Interactive plotly bar chart
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+<p>Interactive plotly bar chart</p>
+<pre class="r"><code># Define long-delay categories
+long_categories &lt;- c( 
+  &quot;20 - 40 min&quot;, &quot;20 - 45 min&quot;,
+  &quot;40 - 60 min&quot;, &quot;45 - 60 min&quot;,
+  &quot;&gt; 60 min&quot;
+)
 
-</div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-a8718bc2b08643e259bd" style="width:576px;height:460.8px;"></div>
-<script type="application/json" data-for="htmlwidget-a8718bc2b08643e259bd">{"x":{"visdat":{"685833be5c2a":["function () ","plotlyVisDat"]},"cur_data":"685833be5c2a","attrs":{"685833be5c2a":{"x":{},"y":{},"marker":{"color":{}},"customdata":{},"hovertemplate":"<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"Proportion of Riders Reporting Long Delays (≥ 20 min)","y":0.94999999999999996},"xaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","tickangle":0,"categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"type":"category"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion of Long Delays","tickformat":".0%","range":[0,0.55000000000000004]},"bargap":0.20000000000000001,"bargroupgap":0.050000000000000003,"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["1","2","3","4","5","6","7","A","B","C","D","E","F","G","J","L","M","N","Q","R","W","Z"],"y":[0.092328892971979784,0.083333333333333329,0.056818181818181816,0.097982708933717577,0.13907284768211919,0.081896551724137928,0.16837782340862423,0.1163895486935867,0.1377245508982036,0.11699164345403899,0.16723549488054607,0.14791666666666667,0.12666666666666668,0.089285714285714288,0.1864406779661017,0.096418732782369149,0.13636363636363635,0.18354430379746836,0.11134453781512606,0.16018845700824499,0.14814814814814814,0.5],"marker":{"color":["#EE352E","#EE352E","#EE352E","#00933C","#00933C","#00933C","#B933AD","#0039A6","#FF6319","#0039A6","#FF6319","#0039A6","#FF6319","#6CBE45","#996633","#A7A9AC","#FF6319","#FCCC0A","#FCCC0A","#FCCC0A","#FCCC0A","#996633"],"line":{"color":"rgba(31,119,180,1)"}},"customdata":["Red Line","Red Line","Red Line","Green Line","Green Line","Green Line","Purple Line","Blue Line","Orange Line","Blue Line","Orange Line","Blue Line","Orange Line","Light Green Line","Brown Line","Gray Line","Orange Line","Yellow Line","Yellow Line","Yellow Line","Yellow Line","Brown Line"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>"],"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+# Create an ordering by line family
+line_order &lt;- subway_directory |&gt; 
+  arrange(group_color, subway_line) |&gt; 
+  pull(subway_line)
+
+# Build long delay dataset
+long_delay_by_line &lt;- cleaned |&gt; 
+  filter(!is.na(approximate_delay_duration)) |&gt; 
+  mutate(
+    long_delay = approximate_delay_duration %in% long_categories
+  ) |&gt; 
+  count(subway_line, long_delay) |&gt; 
+  group_by(subway_line) |&gt; 
+  mutate(prop = n / sum(n)) |&gt; 
+  filter(long_delay == TRUE) |&gt; 
+  select(subway_line, prop) |&gt; 
+  left_join(subway_directory, by = &quot;subway_line&quot;) |&gt; 
+  mutate(
+    subway_line = factor(subway_line, levels = line_order),
+    group_color = factor(group_color, levels = unique(subway_directory$group_color))
+  )
+
+# Now plot
+plot_ly(
+  data = long_delay_by_line,
+  x = ~subway_line,
+  y = ~prop,
+  type = &quot;bar&quot;,
+  marker = list(color = ~hex_color),
+  customdata = ~group_color,
+  hovertemplate = paste(
+    &quot;&lt;b&gt;Subway Line:&lt;/b&gt; %{x}&lt;br&gt;&quot;,
+    &quot;&lt;b&gt;Proportion Long Delays (≥20 min):&lt;/b&gt; %{y:.2f}&lt;br&gt;&quot;,
+    &quot;&lt;b&gt;Color Group:&lt;/b&gt; %{customdata}&quot;,
+    &quot;&lt;extra&gt;&lt;/extra&gt;&quot;
+  )
+) |&gt;
+  layout(
+    title = list(
+      text = &quot;Proportion of Riders Reporting Long Delays (≥ 20 min)&quot;,
+      y = 0.95
+    ),
+    xaxis = list(
+      title = &quot;Subway Line&quot;,
+      tickangle = 0,
+      categoryorder = &quot;array&quot;,
+      categoryarray = line_order
+    ),
+    yaxis = list(
+      title = &quot;Proportion of Long Delays&quot;,
+      tickformat = &quot;.0%&quot;,
+      range = c(0, max(long_delay_by_line$prop) * 1.1)
+    ),
+    bargap = 0.20,     # spacing between groups
+    bargroupgap = 0.05 # spacing within groups
+  )</code></pre>
+<pre><code>## Warning: &#39;layout&#39; objects don&#39;t have these attributes: &#39;bargroupgap&#39;
+## Valid attributes include:
+## &#39;_deprecated&#39;, &#39;activeshape&#39;, &#39;annotations&#39;, &#39;autosize&#39;, &#39;autotypenumbers&#39;, &#39;calendar&#39;, &#39;clickmode&#39;, &#39;coloraxis&#39;, &#39;colorscale&#39;, &#39;colorway&#39;, &#39;computed&#39;, &#39;datarevision&#39;, &#39;dragmode&#39;, &#39;editrevision&#39;, &#39;editType&#39;, &#39;font&#39;, &#39;geo&#39;, &#39;grid&#39;, &#39;height&#39;, &#39;hidesources&#39;, &#39;hoverdistance&#39;, &#39;hoverlabel&#39;, &#39;hovermode&#39;, &#39;images&#39;, &#39;legend&#39;, &#39;mapbox&#39;, &#39;margin&#39;, &#39;meta&#39;, &#39;metasrc&#39;, &#39;modebar&#39;, &#39;newshape&#39;, &#39;paper_bgcolor&#39;, &#39;plot_bgcolor&#39;, &#39;polar&#39;, &#39;scene&#39;, &#39;selectdirection&#39;, &#39;selectionrevision&#39;, &#39;separators&#39;, &#39;shapes&#39;, &#39;showlegend&#39;, &#39;sliders&#39;, &#39;smith&#39;, &#39;spikedistance&#39;, &#39;template&#39;, &#39;ternary&#39;, &#39;title&#39;, &#39;transition&#39;, &#39;uirevision&#39;, &#39;uniformtext&#39;, &#39;updatemenus&#39;, &#39;width&#39;, &#39;xaxis&#39;, &#39;yaxis&#39;, &#39;boxmode&#39;, &#39;barmode&#39;, &#39;bargap&#39;, &#39;mapType&#39;</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-42560df1ba648f878f23" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-42560df1ba648f878f23">{"x":{"visdat":{"57745d7e5355":["function () ","plotlyVisDat"]},"cur_data":"57745d7e5355","attrs":{"57745d7e5355":{"x":{},"y":{},"marker":{"color":{}},"customdata":{},"hovertemplate":"<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"Proportion of Riders Reporting Long Delays (≥ 20 min)","y":0.94999999999999996},"xaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","tickangle":0,"categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"type":"category"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion of Long Delays","tickformat":".0%","range":[0,0.55000000000000004]},"bargap":0.20000000000000001,"bargroupgap":0.050000000000000003,"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["1","2","3","4","5","6","7","A","B","C","D","E","F","G","J","L","M","N","Q","R","W","Z"],"y":[0.092328892971979784,0.083333333333333329,0.056818181818181816,0.097982708933717577,0.13907284768211919,0.081896551724137928,0.16837782340862423,0.1163895486935867,0.1377245508982036,0.11699164345403899,0.16723549488054607,0.14791666666666667,0.12666666666666668,0.089285714285714288,0.1864406779661017,0.096418732782369149,0.13636363636363635,0.18354430379746836,0.11134453781512606,0.16018845700824499,0.14814814814814814,0.5],"marker":{"color":["#EE352E","#EE352E","#EE352E","#00933C","#00933C","#00933C","#B933AD","#0039A6","#FF6319","#0039A6","#FF6319","#0039A6","#FF6319","#6CBE45","#996633","#A7A9AC","#FF6319","#FCCC0A","#FCCC0A","#FCCC0A","#FCCC0A","#996633"],"line":{"color":"rgba(31,119,180,1)"}},"customdata":["Red Line","Red Line","Red Line","Green Line","Green Line","Green Line","Purple Line","Blue Line","Orange Line","Blue Line","Orange Line","Blue Line","Orange Line","Light Green Line","Brown Line","Gray Line","Orange Line","Yellow Line","Yellow Line","Yellow Line","Yellow Line","Brown Line"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>"],"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="ordinal-frequency-of-delay-responses" class="section level3">
 <h3>4. Ordinal frequency of delay responses</h3>
-Interactive plotly heat map
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+<p>Interactive plotly heat map</p>
+<pre class="r"><code># keep only the meaningful delay levels
+keep_delays &lt;- c(
+  &quot;Rarely&quot;,
+  &quot;A few times a week&quot;,
+  &quot;Everyday&quot;
+)
 
+heat_data &lt;- cleaned |&gt; 
+  filter(!is.na(frequency_of_delays)) |&gt; 
+  filter(frequency_of_delays %in% keep_delays) |&gt; 
+  count(subway_line, frequency_of_delays) |&gt; 
+  tidyr::complete(
+    subway_line = unique(subway_directory$subway_line),
+    frequency_of_delays = keep_delays,
+    fill = list(n = 0)
+  ) |&gt;
+  group_by(subway_line) |&gt; 
+  mutate(prop = n / sum(n)) |&gt; 
+  ungroup() |&gt; 
+  left_join(subway_directory, by = &quot;subway_line&quot;) |&gt; 
+  arrange(group_color, subway_line) |&gt; 
+  mutate(
+    subway_line = factor(subway_line, levels = unique(subway_line)),
+    frequency_of_delays = factor(frequency_of_delays, levels = keep_delays)
+  )
+
+# Heatmap (now only 3 categories)
+plot_ly(
+  data = heat_data,
+  x = ~frequency_of_delays,
+  y = ~subway_line,
+  z = ~prop,
+  type = &quot;heatmap&quot;,
+  colors = viridisLite::viridis(100),
+  customdata = ~n,
+  hovertemplate = paste(
+    &quot;&lt;b&gt;Line:&lt;/b&gt; %{y}&lt;br&gt;&quot;,
+    &quot;&lt;b&gt;Delay Frequency:&lt;/b&gt; %{x}&lt;br&gt;&quot;,
+    &quot;&lt;b&gt;Proportion:&lt;/b&gt; %{z:.1%}&lt;br&gt;&quot;,
+    &quot;&lt;b&gt;Count:&lt;/b&gt; %{customdata}&lt;br&gt;&quot;,
+    &quot;&lt;extra&gt;&lt;/extra&gt;&quot;
+  )
+) |&gt;
+  layout(
+    title = &quot;Delay Frequency Distribution by Subway Line&quot;,
+    xaxis = list(
+      title = &quot;Delay Frequency&quot;,
+      tickangle = 0,
+      categoryorder = &quot;array&quot;,
+      categoryarray = keep_delays
+    ),
+    yaxis = list(
+      title = &quot;Subway Line&quot;,
+      categoryorder = &quot;array&quot;,
+      categoryarray = unique(heat_data$subway_line)
+    ),
+    margin = list(l = 90, r = 20, b = 80, t = 80),
+    paper_bgcolor = &quot;white&quot;,
+    plot_bgcolor = &quot;white&quot;
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-2739ed88049ca4057b0b" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-2739ed88049ca4057b0b">{"x":{"visdat":{"57746e3c3a95":["function () ","plotlyVisDat"]},"cur_data":"57746e3c3a95","attrs":{"57746e3c3a95":{"x":{},"y":{},"z":{},"customdata":{},"hovertemplate":"<b>Line:<\/b> %{y}<br> <b>Delay Frequency:<\/b> %{x}<br> <b>Proportion:<\/b> %{z:.1%}<br> <b>Count:<\/b> %{customdata}<br> <extra><\/extra>","colors":["#440154FF","#450558FF","#46085CFF","#470D60FF","#471063FF","#481467FF","#481769FF","#481B6DFF","#481E70FF","#482173FF","#482576FF","#482878FF","#472C7AFF","#472F7CFF","#46327EFF","#453581FF","#453882FF","#443B84FF","#433E85FF","#424186FF","#404587FF","#3F4788FF","#3E4A89FF","#3D4D8AFF","#3C508BFF","#3B528BFF","#39558CFF","#38598CFF","#375B8DFF","#355E8DFF","#34608DFF","#33638DFF","#32658EFF","#31688EFF","#2F6B8EFF","#2E6D8EFF","#2D708EFF","#2C718EFF","#2B748EFF","#2A768EFF","#29798EFF","#287C8EFF","#277E8EFF","#26818EFF","#26828EFF","#25858EFF","#24878EFF","#238A8DFF","#228D8DFF","#218F8DFF","#20928CFF","#20938CFF","#1F968BFF","#1F998AFF","#1E9B8AFF","#1F9E89FF","#1FA088FF","#1FA287FF","#20A486FF","#22A785FF","#24AA83FF","#25AC82FF","#28AE80FF","#2BB07FFF","#2EB37CFF","#31B67BFF","#35B779FF","#39BA76FF","#3DBC74FF","#41BE71FF","#47C06FFF","#4CC26CFF","#51C56AFF","#56C667FF","#5BC863FF","#61CA60FF","#67CC5CFF","#6DCD59FF","#73D056FF","#78D152FF","#7FD34EFF","#85D54AFF","#8CD646FF","#92D741FF","#99D83DFF","#A0DA39FF","#A7DB35FF","#ADDC30FF","#B4DE2CFF","#BBDE28FF","#C2DF23FF","#C9E020FF","#D0E11CFF","#D7E219FF","#DDE318FF","#E4E419FF","#EBE51AFF","#F1E51DFF","#F7E620FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":80,"l":90,"t":80,"r":20},"title":"Delay Frequency Distribution by Subway Line","xaxis":{"domain":[0,1],"automargin":true,"title":"Delay Frequency","tickangle":0,"categoryorder":"array","categoryarray":["Rarely","A few times a week","Everyday"],"type":"category"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"type":"category"},"paper_bgcolor":"white","plot_bgcolor":"white","scene":{"zaxis":{"title":"prop"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"prop","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(71,17,99,1)"],["0.0833333333333333","rgba(72,31,113,1)"],["0.125","rgba(71,45,123,1)"],["0.166666666666667","rgba(69,58,131,1)"],["0.208333333333333","rgba(63,70,136,1)"],["0.25","rgba(59,82,139,1)"],["0.291666666666667","rgba(53,94,141,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(44,113,142,1)"],["0.416666666666667","rgba(40,124,142,1)"],["0.458333333333333","rgba(37,134,142,1)"],["0.5","rgba(33,144,141,1)"],["0.541666666666667","rgba(30,154,138,1)"],["0.583333333333333","rgba(32,163,134,1)"],["0.625","rgba(40,174,128,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(72,192,111,1)"],["0.75","rgba(93,200,98,1)"],["0.791666666666667","rgba(117,208,85,1)"],["0.833333333333333","rgba(143,215,68,1)"],["0.875","rgba(171,220,50,1)"],["0.916666666666667","rgba(199,224,33,1)"],["0.958333333333333","rgba(227,228,25,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"x":["A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely"],"y":["A","A","A","C","C","C","E","E","E","J","J","J","Z","Z","Z","L","L","L","4","4","4","5","5","5","6","6","6","G","G","G","B","B","B","D","D","D","F","F","F","M","M","M","7","7","7","1","1","1","2","2","2","3","3","3","S","S","S","N","N","N","Q","Q","Q","R","R","R","W","W","W"],"z":[0.5514792899408284,0.29112426035502958,0.15739644970414202,0.53846153846153844,0.23901098901098902,0.22252747252747251,0.52642706131078221,0.26004228329809725,0.21353065539112051,0.5,0.35833333333333334,0.14166666666666666,0.5,0.5,0,0.5977653631284916,0.19273743016759776,0.20949720670391062,0.48405797101449277,0.34492753623188405,0.17101449275362318,0.50331125827814571,0.35761589403973509,0.13907284768211919,0.48590021691973967,0.2299349240780911,0.2841648590021692,0.57831325301204817,0.21686746987951808,0.20481927710843373,0.63253012048192769,0.25301204819277107,0.1144578313253012,0.62105263157894741,0.2807017543859649,0.098245614035087719,0.60026560424966802,0.25896414342629481,0.1407702523240372,0.61184210526315785,0.28947368421052633,0.098684210526315791,0.56032719836400813,0.32924335378323111,0.11042944785276074,0.5365286179618427,0.23033969288040948,0.23313168915774779,0.51588785046728969,0.26542056074766357,0.21869158878504674,0.55882352941176472,0.21764705882352942,0.22352941176470589,0.42857142857142855,0.14285714285714285,0.42857142857142855,0.59395248380129595,0.25917926565874733,0.14686825053995681,0.57773109243697474,0.22268907563025211,0.19957983193277312,0.56205250596658707,0.31861575178997614,0.11933174224343675,0.64150943396226412,0.26415094339622641,0.094339622641509441],"customdata":[466,246,133,196,87,81,249,123,101,60,43,17,1,1,0,214,69,75,167,119,59,76,54,21,224,106,131,96,36,34,105,42,19,177,80,28,452,195,106,93,44,15,274,161,54,1153,495,501,276,142,117,95,37,38,3,1,3,275,120,68,275,106,95,471,267,100,34,14,5],"hovertemplate":"<b>Line:<\/b> %{y}<br> <b>Delay Frequency:<\/b> %{x}<br> <b>Proportion:<\/b> %{z:.1%}<br> <b>Count:<\/b> %{customdata}<br> <extra><\/extra>","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-85487e5add04b636def4" style="width:576px;height:460.8px;"></div>
-<script type="application/json" data-for="htmlwidget-85487e5add04b636def4">{"x":{"visdat":{"6858428d5cae":["function () ","plotlyVisDat"]},"cur_data":"6858428d5cae","attrs":{"6858428d5cae":{"x":{},"y":{},"z":{},"customdata":{},"hovertemplate":"<b>Line:<\/b> %{y}<br> <b>Delay Frequency:<\/b> %{x}<br> <b>Proportion:<\/b> %{z:.1%}<br> <b>Count:<\/b> %{customdata}<br> <extra><\/extra>","colors":["#440154FF","#450558FF","#46085CFF","#470D60FF","#471063FF","#481467FF","#481769FF","#481B6DFF","#481E70FF","#482173FF","#482576FF","#482878FF","#472C7AFF","#472F7CFF","#46327EFF","#453581FF","#453882FF","#443B84FF","#433E85FF","#424186FF","#404587FF","#3F4788FF","#3E4A89FF","#3D4D8AFF","#3C508BFF","#3B528BFF","#39558CFF","#38598CFF","#375B8DFF","#355E8DFF","#34608DFF","#33638DFF","#32658EFF","#31688EFF","#2F6B8EFF","#2E6D8EFF","#2D708EFF","#2C718EFF","#2B748EFF","#2A768EFF","#29798EFF","#287C8EFF","#277E8EFF","#26818EFF","#26828EFF","#25858EFF","#24878EFF","#238A8DFF","#228D8DFF","#218F8DFF","#20928CFF","#20938CFF","#1F968BFF","#1F998AFF","#1E9B8AFF","#1F9E89FF","#1FA088FF","#1FA287FF","#20A486FF","#22A785FF","#24AA83FF","#25AC82FF","#28AE80FF","#2BB07FFF","#2EB37CFF","#31B67BFF","#35B779FF","#39BA76FF","#3DBC74FF","#41BE71FF","#47C06FFF","#4CC26CFF","#51C56AFF","#56C667FF","#5BC863FF","#61CA60FF","#67CC5CFF","#6DCD59FF","#73D056FF","#78D152FF","#7FD34EFF","#85D54AFF","#8CD646FF","#92D741FF","#99D83DFF","#A0DA39FF","#A7DB35FF","#ADDC30FF","#B4DE2CFF","#BBDE28FF","#C2DF23FF","#C9E020FF","#D0E11CFF","#D7E219FF","#DDE318FF","#E4E419FF","#EBE51AFF","#F1E51DFF","#F7E620FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":80,"l":90,"t":80,"r":20},"title":"Delay Frequency Distribution by Subway Line","xaxis":{"domain":[0,1],"automargin":true,"title":"Delay Frequency","tickangle":0,"categoryorder":"array","categoryarray":["Rarely","A few times a week","Everyday"],"type":"category"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"type":"category"},"paper_bgcolor":"white","plot_bgcolor":"white","scene":{"zaxis":{"title":"prop"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"prop","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(71,17,99,1)"],["0.0833333333333333","rgba(72,31,113,1)"],["0.125","rgba(71,45,123,1)"],["0.166666666666667","rgba(69,58,131,1)"],["0.208333333333333","rgba(63,70,136,1)"],["0.25","rgba(59,82,139,1)"],["0.291666666666667","rgba(53,94,141,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(44,113,142,1)"],["0.416666666666667","rgba(40,124,142,1)"],["0.458333333333333","rgba(37,134,142,1)"],["0.5","rgba(33,144,141,1)"],["0.541666666666667","rgba(30,154,138,1)"],["0.583333333333333","rgba(32,163,134,1)"],["0.625","rgba(40,174,128,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(72,192,111,1)"],["0.75","rgba(93,200,98,1)"],["0.791666666666667","rgba(117,208,85,1)"],["0.833333333333333","rgba(143,215,68,1)"],["0.875","rgba(171,220,50,1)"],["0.916666666666667","rgba(199,224,33,1)"],["0.958333333333333","rgba(227,228,25,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"x":["A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely"],"y":["A","A","A","C","C","C","E","E","E","J","J","J","Z","Z","Z","L","L","L","4","4","4","5","5","5","6","6","6","G","G","G","B","B","B","D","D","D","F","F","F","M","M","M","7","7","7","1","1","1","2","2","2","3","3","3","S","S","S","N","N","N","Q","Q","Q","R","R","R","W","W","W"],"z":[0.5514792899408284,0.29112426035502958,0.15739644970414202,0.53846153846153844,0.23901098901098902,0.22252747252747251,0.52642706131078221,0.26004228329809725,0.21353065539112051,0.5,0.35833333333333334,0.14166666666666666,0.5,0.5,0,0.5977653631284916,0.19273743016759776,0.20949720670391062,0.48405797101449277,0.34492753623188405,0.17101449275362318,0.50331125827814571,0.35761589403973509,0.13907284768211919,0.48590021691973967,0.2299349240780911,0.2841648590021692,0.57831325301204817,0.21686746987951808,0.20481927710843373,0.63253012048192769,0.25301204819277107,0.1144578313253012,0.62105263157894741,0.2807017543859649,0.098245614035087719,0.60026560424966802,0.25896414342629481,0.1407702523240372,0.61184210526315785,0.28947368421052633,0.098684210526315791,0.56032719836400813,0.32924335378323111,0.11042944785276074,0.5365286179618427,0.23033969288040948,0.23313168915774779,0.51588785046728969,0.26542056074766357,0.21869158878504674,0.55882352941176472,0.21764705882352942,0.22352941176470589,0.42857142857142855,0.14285714285714285,0.42857142857142855,0.59395248380129595,0.25917926565874733,0.14686825053995681,0.57773109243697474,0.22268907563025211,0.19957983193277312,0.56205250596658707,0.31861575178997614,0.11933174224343675,0.64150943396226412,0.26415094339622641,0.094339622641509441],"customdata":[466,246,133,196,87,81,249,123,101,60,43,17,1,1,0,214,69,75,167,119,59,76,54,21,224,106,131,96,36,34,105,42,19,177,80,28,452,195,106,93,44,15,274,161,54,1153,495,501,276,142,117,95,37,38,3,1,3,275,120,68,275,106,95,471,267,100,34,14,5],"hovertemplate":"<b>Line:<\/b> %{y}<br> <b>Delay Frequency:<\/b> %{x}<br> <b>Proportion:<\/b> %{z:.1%}<br> <b>Count:<\/b> %{customdata}<br> <extra><\/extra>","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
+
+
+
 
 </div>
 
 <script>
-$(document).ready(function() {
-  // add bootstrap table styles to pandoc tables
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed table-sm');
 
-  // initialize mathjax
-  var script = document.createElement("script");
-  script.type = "text/javascript";
-  script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-  document.getElementsByTagName("head")[0].appendChild(script);
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
 
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
 });
 </script>
 
-<script type="text/javascript">
-$(document).ready(function () {
-  FlexDashboard.init({
-    fillPage: true,
-    orientation: "rows",
-    storyboard: false,
-    defaultFigWidth: 576,
-    defaultFigHeight: 460,
-    defaultFigWidthMobile: 360,
-    defaultFigHeightMobile: 460,
-    resize_reload: true
-  });
-  var navbar = $(".navbar").first();
-  var body = $("body").first();
-  var sidebar = $(".section.sidebar").first();
-  function addNavbarPadding() {
-    var navHeight = navbar.outerHeight();
-    body.css("padding-top", (navHeight + 8) + "px");
-    sidebar.css("top", navHeight + "px");
-    var resizeEvent = window.document.createEvent("UIEvents");
-    resizeEvent.initUIEvent("resize", true, false, window, 0);
-    window.dispatchEvent(resizeEvent);
-  }
-  if (!window.Shiny) setTimeout(addNavbarPadding, 100);
-  $(document).on("shiny:idle", function() {
-    setTimeout(addNavbarPadding, 50);
-  });
-});
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
 </script>
 
 </body>

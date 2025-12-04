@@ -1,10 +1,5 @@
 ---
 title: "Regression Analysis"
-output: 
-  flexdashboard::flex_dashboard:
-    orientation: rows
-    vertical_layout: fill
-    theme: flatly
 ---
 
 Running regression to develop our subway line ranking system. overall_satisfaction = subway_line_used_most_often + approximate_delay_duration + most_common_reason_for_delay + primary_use_of_subway + frequency_of_delays
@@ -300,7 +295,7 @@ viridis_blue <- viridis(100)[40]
 plot_ly(regression_rider_data, 
         x = ~overall_satisfaction, 
         type = "histogram",
-        colors = vir_cols)
+         marker = list(color = viridis_blue))
 ```
 
 

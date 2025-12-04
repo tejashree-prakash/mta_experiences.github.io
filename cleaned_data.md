@@ -18,7 +18,7 @@ subway_rider_data =
 ```
 
     ## Rows: 10704 Columns: 19
-    ## ── Column specification ────────────────────────────────────────────────────────────
+    ## ── Column specification ────────────────────────────────────────────────────────────────────
     ## Delimiter: ","
     ## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
     ## lgl  (1): is_subway_affordable
@@ -155,7 +155,7 @@ zip_code_data =
 ```
 
     ## Rows: 343 Columns: 2
-    ## ── Column specification ────────────────────────────────────────────────────────────
+    ## ── Column specification ────────────────────────────────────────────────────────────────────
     ## Delimiter: ","
     ## chr (2): borough, zipcode
     ## 
@@ -177,8 +177,8 @@ rider_data_full <- rider_data %>%
     ## Warning in left_join(., zip_code_data, by = c(zip_code = "zipcode")): Detected an unexpected many-to-many relationship between `x` and `y`.
     ## ℹ Row 6 of `x` matches multiple rows in `y`.
     ## ℹ Row 109 of `y` matches multiple rows in `x`.
-    ## ℹ If a many-to-many relationship is expected, set `relationship = "many-to-many"`
-    ##   to silence this warning.
+    ## ℹ If a many-to-many relationship is expected, set `relationship = "many-to-many"` to
+    ##   silence this warning.
 
 ``` r
 #Fill borough where missing
