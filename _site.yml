@@ -9,9 +9,11 @@ navbar:
   title: "Home"
   
   right:
-    - text: "Welcome"
-      href: index.html
-
+    - text: "Data Exploration"
+    - text: "Borough Analysis"
+    - text: "Subway Line Analysis"
+    
+    
     - text: "Borough dashboard"
       href: borough_demographics_dashboard.html
 
@@ -20,17 +22,19 @@ navbar:
 
     - text: "Complaint types"
       href: Updated-Dashboard-complaint-types-II.html
+      
+    - text: "Regression analysis"
+      href: ranking_regression_analysis.html
 
   left:
     - text: "About"
       menu:
         - text: "Report"
           href: proposal.html
-        - text: "Regression analysis"
-          href: ranking_regression_analysis.html
         - text: "Data source"
           href: "https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd"
 
 output:
   html_document:
-    theme: cerulean
+    theme: sandstone
+    code_folding: hide

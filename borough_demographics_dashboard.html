@@ -1,30 +1,22 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+
+<html>
+
 <head>
 
-<meta charset="utf-8">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
 
 
 
 <title>Borough Demographics Dashboard</title>
 
-<meta property="og:title" content="Borough Demographics Dashboard" />
-
-<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
-
-<link rel="icon" href="data:image/x-icon;" type="image/x-icon">
-
-
-<script type="text/javascript">
-window.FlexDashboardComponents = [];
-</script>
-
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -37,10 +29,10 @@ window.FlexDashboardComponents = [];
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/stickytableheaders-0.1.19/jquery.stickytableheaders.min.js"></script>
-<link href="site_libs/value-box-accent-static-0.6.2/theme-flatly-value-box.css" rel="stylesheet" />
-<link href="site_libs/flexdashboard-css-0.6.2/flexdashboard.min.css" rel="stylesheet" />
-<link href="site_libs/flexdashboard-css-0.6.2/theme-flatly.css" rel="stylesheet" />
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
 <script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <script src="site_libs/plotly-binding-4.11.0/plotly.js"></script>
@@ -49,104 +41,194 @@ window.FlexDashboardComponents = [];
 <script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
 <link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
 <script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
 <style type="text/css">
-/*
-  CSS for flexdashboard.js' use of Sly(). The sizing/position of this CSS needs to be
-  applied _before_ flexdashboard.js initializes, which is why this CSS has been pulled
-  out from flexdashboard.scss and inlined in the document's head.
-*/
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
-.storyboard-nav button {
-  background: transparent;
-  border: 0;
-  opacity: .3;
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
   padding: 0;
-}
-
-.storyboard-nav button:hover,
-.storyboard-nav button:hover {
-  opacity: .5;
-}
-
-.storyboard-nav button:disabled,
-.storyboard-nav button:disabled {
-  opacity: .1;
-}
-
-.storyboard-nav .sbnext,
-.storyboard-nav .sbprev {
-  float: left;
-  width: 2%;
-  height: 120px;
-}
-
-.storyboard-nav .sbprev {
-  text-align: left;
-  width: 2%;
-}
-
-.storyboard-nav .sbnext {
-  float: right;
-  text-align: right;
-  margin-right: 8px;
-}
-
-.storyboard-nav .sbframelist {
-  margin: 0 auto;
-  width: 94%;
-  height: 120px;
-  overflow: hidden;
-  text-shadow: none;
-  margin-bottom: 8px;
-}
-
-.storyboard-nav .sbframelist ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-.storyboard-nav .sbframelist ul li {
-  float: left;
-  width: 270px;
-  height: 100%;
-  padding: 10px 10px 10px 10px;
-  margin-right: 8px;
-  text-align: left;
-  cursor: pointer;
-}
-
-.storyboard-nav .sbframelist ul li:last-child {
-  margin-right: 0px;
-}
-
-.sbframe-commentary {
-  width: 300px;
-}
-
-.sbframe-commentary ul {
-  padding-left: 22px;
-}
-
-.sbframe.active {
-  display: flex;
-}
-
-.sbframe:not(.active) {
-  display: none;
-}
-@media only screen and (min-width: 768px) {
-html, body {
-  height: 100%;
-}
-
-#dashboard-container {
-  height: 100%;
-}
 }
 </style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
 
 
 
@@ -154,1715 +236,74 @@ html, body {
 
 <body>
 
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-<div class="container-fluid">
-<div class="navbar-header">
 
-<span class="navbar-logo pull-left">
-  
-</span>
-<span class="navbar-brand">
-  Borough Demographics Dashboard
-  <span class="navbar-author">
-        </span>
-</span>
+<div class="container-fluid main-container">
 
-<button id="navbar-button" type="button" class="navbar-toggle collapsed pull-right" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-</button>
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    About
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="proposal.html">Report</a>
+    </li>
+    <li>
+      <a href="ranking_regression_analysis.html">Regression analysis</a>
+    </li>
+    <li>
+      <a href="https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd">Data source</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="borough_demographics_dashboard.html">Borough dashboard</a>
+</li>
+<li>
+  <a href="Frequency_of_delays.html">Delay frequency</a>
+</li>
+<li>
+  <a href="Updated-Dashboard-complaint-types-II.html">Complaint types</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Borough Demographics Dashboard</h1>
 
 </div>
-<div id="navbar" class="navbar-collapse collapse">
-<ul class="nav navbar-nav navbar-left">
-</ul>
-<ul class="nav navbar-nav navbar-right">
-</ul>
-</div><!--/.nav-collapse-->
-</div><!--/.container-->
-</div><!--/.navbar-->
 
-<script type="text/javascript">
-
-
-var FlexDashboard = (function () {
-
-  // initialize options
-  var _options = {};
-
-  var FlexDashboard = function() {
-
-    // default options
-    _options = $.extend(_options, {
-      theme: "cosmo",
-      fillPage: false,
-      orientation: 'columns',
-      storyboard: false,
-      defaultFigWidth: 576,
-      defaultFigHeight: 461,
-      defaultFigWidthMobile: 360,
-      defaultFigHeightMobile: 461,
-      isMobile: false,
-      isPortrait: false,
-      resize_reload: true
-    });
-  };
-
-  function init(options) {
-
-    // extend default options
-    $.extend(true, _options, options);
-
-    // add ids to sections that don't have them (pandoc won't assign ids
-    // to e.g. sections with titles consisting of only chinese characters)
-    var nextId = 1;
-    $('.level1:not([id]),.level2:not([id]),.level3:not([id])').each(function() {
-      $(this).attr('id', 'dashboard-' + nextId++);
-    });
-
-    // find navbar items
-    var navbarItems = $('#flexdashboard-navbar');
-    if (navbarItems.length)
-      navbarItems = JSON.parse(navbarItems.html());
-    addNavbarItems(navbarItems);
-
-    // find the main dashboard container
-    var dashboardContainer = $('#dashboard-container');
-
-    // resolve mobile classes
-    resolveMobileClasses(dashboardContainer);
-
-    // one time global initialization for components
-    componentsInit(dashboardContainer);
-
-    // look for a global sidebar
-    var globalSidebar = dashboardContainer.find(".section.level1.sidebar");
-    if (globalSidebar.length > 0) {
-
-      // global layout for fullscreen displays
-      if (!isMobilePhone()) {
-
-         // hoist it up to the top level
-         globalSidebar.insertBefore(dashboardContainer);
-
-         // lay it out (set width/positions)
-         layoutSidebar(globalSidebar, dashboardContainer);
-
-      // tuck sidebar into first page for mobile phones
-      } else {
-
-        // convert it into a level3 section
-        globalSidebar.removeClass('sidebar');
-        globalSidebar.removeClass('level1');
-        globalSidebar.addClass('level3');
-        var h1 = globalSidebar.children('h1');
-        var h3 = $('<h3></h3>');
-        h3.append(h1.contents());
-        h3.insertBefore(h1);
-        h1.detach();
-
-        // move it into the first page
-        var page = dashboardContainer.find('.section.level1').first();
-        if (page.length > 0)
-          page.prepend(globalSidebar);
-      }
-    }
-
-    // look for pages to layout
-    var pages = $('div.section.level1');
-    if (pages.length > 0) {
-
-        // find the navbar and collapse on clicked
-        var navbar = $('#navbar');
-        navbar.on("click", "a[data-toggle!=dropdown]", null, function () {
-           navbar.collapse('hide');
-        });
-
-        // envelop the dashboard container in a tab content div
-        dashboardContainer.wrapInner('<div class="tab-content"></div>');
-
-        pages.each(function(index) {
-
-          // lay it out
-          layoutDashboardPage($(this));
-
-          // add it to the navbar
-          addToNavbar($(this), index === 0);
-
-        });
-
-    } else {
-
-      // remove the navbar and navbar button if we don't
-      // have any navbuttons
-      if (navbarItems.length === 0) {
-        $('#navbar').remove();
-        $('#navbar-button').remove();
-      }
-
-      // add the storyboard class if requested
-      if (_options.storyboard)
-        dashboardContainer.addClass('storyboard');
-
-      // layout the entire page
-      layoutDashboardPage(dashboardContainer);
-    }
-
-    // if we are in shiny we need to trigger a window resize event to
-    // force correct layout of shiny-bound-output elements
-    if (isShinyDoc())
-      $(window).trigger('resize');
-
-    // make main components visible
-    $('.section.sidebar').css('visibility', 'visible');
-    dashboardContainer.css('visibility', 'visible');
-
-    // handle location hash
-    handleLocationHash();
-
-    // intialize prism highlighting
-    initPrismHighlighting();
-
-    // record mobile and orientation state then register a handler
-    // to refresh if resize_reload is set to true and it changes
-    _options.isMobile = isMobilePhone();
-    _options.isPortrait = isPortrait();
-    if (_options.resize_reload) {
-      $(window).on('resize', function() {
-        if (_options.isMobile !== isMobilePhone() ||
-            _options.isPortrait !== isPortrait()) {
-          window.location.reload();
-        }
-      });
-    } else {
-      // if in desktop mode and resizing to mobile, make sure the heights are 100%
-      // This enforces what `fillpage.css` does for "wider" pages.
-      // Since we are not reloading once the page becomes small, we need to force the height to 100%
-      // This is a new situation introduced when `_options.resize_reload` is `false`
-      if (! _options.isMobile) {
-        // only add if `fillpage.css` was added in the first place
-        if (_options.fillPage) {
-          // fillpage.css
-          $("html,body,#dashboard").css("height", "100%");
-        }
-      }
-    }
-    // trigger layoutcomplete event
-    dashboardContainer.trigger('flexdashboard:layoutcomplete');
-  }
-
-  function resolveMobileClasses(dashboardContainer) {
-     // add top level layout class
-    dashboardContainer.addClass(isMobilePhone() ? 'mobile-layout' :
-                                                  'desktop-layout');
-
-    // look for .mobile sections and add .no-mobile to their peers
-    var mobileSections = $('.section.mobile');
-    mobileSections.each(function() {
-       var id = $(this).attr('id');
-       var nomobileId = id.replace(/-\d+$/, '');
-       $('#' + nomobileId).addClass('no-mobile');
-    });
-  }
-
-  function addNavbarItems(navbarItems) {
-
-    var navbarLeft = $('ul.navbar-left');
-    var navbarRight = $('ul.navbar-right');
-
-    for (var i = 0; i<navbarItems.length; i++) {
-
-      // get the item
-      var item = navbarItems[i];
-
-      // determine the container
-      var container = null;
-      if (item.align === "left")
-        container = navbarLeft;
-      else
-        container = navbarRight;
-
-      // navbar menu if we have multiple items
-      if (item.items) {
-        var menu = navbarMenu(null, item.icon, item.title, container);
-        for (var j = 0; j<item.items.length; j++) {
-          var subItem = item.items[j];
-          var li = $('<li></li>');
-          var a = navbarLink(subItem.icon, subItem.title, subItem.href, subItem.target);
-          a.removeClass("nav-link").addClass("dropdown-item");
-          li.append(a);
-          menu.append(li);
-        }
-      } else {
-        var li = $('<li class="nav-item"></li>');
-        li.append(navbarLink(item.icon, item.title, item.href, item.target));
-        container.append(li);
-      }
-    }
-  }
-
-  // create or get a reference to an existing dropdown menu
-  function navbarMenu(id, icon, title, container) {
-    var existingMenu = [];
-    if (id)
-      existingMenu = container.children('#' + id);
-    if (existingMenu.length > 0) {
-      return existingMenu.children('ul');
-    } else {
-      var li = $('<li class="nav-item"></li>');
-      if (id)
-        li.attr('id', id);
-      li.addClass('dropdown');
-      // auto add "Share" title on mobile if necessary
-      if (!title && icon && (icon === "fa-share-alt") && isMobilePhone())
-        title = "Share";
-      if (title) {
-        title = title + ' <span class="caret"></span>';
-      }
-      var a = navbarLink(icon, title, "#");
-      a.addClass('dropdown-toggle');
-      a.attr('data-toggle', 'dropdown');
-      a.attr('data-bs-toggle', 'dropdown');
-      a.attr('role', 'button');
-      a.attr('aria-expanded', 'false');
-      li.append(a);
-      var ul = $('<ul class="dropdown-menu"></ul>');
-      ul.attr('role', 'menu');
-      li.append(ul);
-      container.append(li);
-      return ul;
-    }
-  }
-
-  function addToNavbar(page, active) {
-
-    // capture the id and data-icon attribute (if any)
-    var id = page.attr('id');
-    var icon = page.attr('data-icon');
-    var navmenu = page.attr('data-navmenu');
-    var navmenuIcon = page.attr('data-navmenu-icon');
-
-    // get hidden state (transfer this to navbar)
-    var hidden = page.hasClass('hidden');
-    page.removeClass('hidden');
-
-    // sanitize the id for use with bootstrap tabs
-    id = id.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_');
-    page.attr('id', id);
-
-    // get the wrapper
-    var wrapper = page.closest('.dashboard-page-wrapper');
-
-    // move the id to the wrapper
-    page.removeAttr('id');
-    wrapper.attr('id', id);
-
-    // add the tab-pane class to the wrapper
-    wrapper.addClass('tab-pane');
-
-    // get a reference to the h1, discover its inner contens, then detach it
-    var h1 = wrapper.find('h1').first();
-    var title = h1.contents();
-    h1.detach();
-
-    // create a navbar item
-    var li = $('<li></li>');
-    var a = navbarLink(icon, title, '#' + id);
-    a.attr('data-toggle', 'tab');
-    a.attr('data-bs-toggle', 'tab');
-    li.append(a);
-
-    // add it to the navbar (or navbar menu if specified)
-    var container = $('ul.navbar-left');
-    if (navmenu) {
-      var menuId = navmenu.replace(/\s+/g, '');
-      var menu = navbarMenu(menuId, navmenuIcon, navmenu, container);
-      li.find("> a").removeClass("nav-link").addClass("dropdown-item");
-      menu.append(li);
-    } else {
-      li.addClass("nav-item")
-      container.append(li);
-    }
-
-    // mark active tab and corresponding nav menu item
-    if (active)
-      $(a).tab("show");
-
-    // hide it if requested
-    if (hidden)
-      li.addClass('hidden');
-  }
-
-  function navbarLink(icon, title, href, target) {
-
-    var a = $('<a class="nav-link"></a>');
-    if (icon) {
-
-      // get the name of the icon set and icon
-      var dashPos = icon.indexOf("-");
-      var iconSet = null;
-      var iconSplit = icon.split(" ");
-      if (iconSplit.length > 1) {
-        iconSet = iconSplit[0];
-        icon = iconSplit.slice(1).join(" ");
-      } else {
-        iconSet = icon.substring(0, dashPos);
-      }
-      var iconName = icon.substring(dashPos + 1);
-
-      // create the icon
-      var iconElement = $('<span class="' + iconSet + ' ' + icon + '"></span>');
-      if (title)
-        iconElement.css('margin-right', '7px');
-      a.append(iconElement);
-      // if href is null see if we can auto-generate based on icon (e.g. social)
-      if (!href)
-        maybeGenerateLinkFromIcon(iconName, a);
-    }
-    if (title)
-      a.append(title);
-
-    // add the href.
-    if (href) {
-      if (href === "source_embed") {
-        a.attr('href', '#');
-        a.attr('data-featherlight', "#flexdashboard-source-code");
-        a.featherlight({
-            beforeOpen: function(event){
-              $('body').addClass('unselectable');
-            },
-            afterClose: function(event){
-              $('body').removeClass('unselectable');
-            }
-        });
-      } else {
-        a.attr('href', href);
-      }
-    }
-
-    // add the arget
-    if (target)
-      a.attr('target', target);
-
-    return a;
-  }
-
-  // auto generate a link from an icon name (e.g. twitter) when possible
-  function maybeGenerateLinkFromIcon(iconName, a) {
-
-     var serviceLinks = {
-      "twitter": "https://twitter.com/share?text=" + encodeURIComponent(document.title) + "&url="+encodeURIComponent(location.href),
-      "facebook": "https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(location.href),
-      "linkedin": "https://www.linkedin.com/shareArticle?mini=true&url="+encodeURIComponent(location.href) + "&title=" + encodeURIComponent(document.title),
-      "pinterest": "https://pinterest.com/pin/create/link/?url="+encodeURIComponent(location.href) + "&description=" + encodeURIComponent(document.title)
-    };
-
-    var makeSocialLink = function(a, href) {
-      a.attr('href', '#');
-      a.on('click', function(e) {
-        e.preventDefault();
-        window.open(href);
-      });
-    };
-
-    $.each(serviceLinks, function(key, value) {
-      if (iconName.indexOf(key) !== -1)
-        makeSocialLink(a, value);
-    });
-  }
-
-  // layout a dashboard page
-  function layoutDashboardPage(page) {
-
-    // use a page wrapper so that free form content above the
-    // dashboard appears at the top rather than the side (as it
-    // would without the wrapper in a column orientation)
-    var wrapper = $('<div class="dashboard-page-wrapper"></div>');
-    page.wrap(wrapper);
-
-    // if there are no level2 or level3 headers synthesize a level3
-    // header to contain the (e.g. frame it, scroll container, etc.)
-    var headers = page.find('h2,h3');
-    if (headers.length === 0)
-      page.wrapInner('<div class="section level3"></div>');
-
-    // hoist up any content before level 2 or level 3 headers
-    var children = page.children();
-    children.each(function(index) {
-      if ($(this).hasClass('level2') || $(this).hasClass('level3'))
-        return false;
-      $(this).insertBefore(page);
-    });
-
-    // determine orientation and fillPage behavior for distinct media
-    var orientation, fillPage, storyboard;
-
-    // media: mobile phone
-    if (isMobilePhone()) {
-
-      // if there is a sidebar we need to ensure it's content
-      // is properly framed as an h3
-      var sidebar = page.find('.section.sidebar');
-      sidebar.removeClass('sidebar');
-      sidebar.wrapInner('<div class="section level3"></div>');
-      var h2 = sidebar.find('h2');
-      var h3 = $('<h3></h3>');
-      h3.append(h2.contents());
-      h3.insertBefore(h2);
-      h2.detach();
-
-      // wipeout h2 elements then enclose them in a single h2
-      var level2 = page.find('div.section.level2');
-      level2.each(function() {
-        level2.children('h2').remove();
-        level2.children().unwrap();
-      });
-      page.wrapInner('<div class="section level2"></div>');
-
-      // substitute mobile images
-      if (isPortrait()) {
-        var mobileFigures = $('img.mobile-figure');
-        mobileFigures.each(function() {
-          // get the src (might be base64 encoded)
-          var src = $(this).attr('src');
-
-          // find it's peer
-          var id = $(this).attr('data-mobile-figure-id');
-          var img = $('img[data-figure-id=' + id + "]");
-          img.attr('src', src)
-             .attr('width', _options.defaultFigWidthMobile)
-             .attr('height', _options.defaultFigHeightMobile);
-        });
-      }
-
-      // hoist storyboard commentary into it's own section
-      if (page.hasClass('storyboard')) {
-        var commentaryHR = page.find('div.section.level3 hr');
-        commentaryHR.each(function() {
-          var commentary = $(this).nextAll().detach();
-          var commentarySection = $('<div class="section level3"></div>');
-          commentarySection.append(commentary);
-          commentarySection.insertAfter($(this).closest('div.section.level3'));
-          $(this).remove();
-        });
-      }
-
-      // force a non full screen layout by columns
-      orientation = _options.orientation = 'columns';
-      fillPage = _options.fillPage = false;
-      storyboard = _options.storyboard = false;
-
-    // media: desktop
-    } else {
-
-      // determine orientation
-      orientation = page.attr('data-orientation');
-      if (orientation !== 'rows' && orientation != 'columns')
-        orientation = _options.orientation;
-
-      // determine storyboard mode
-      storyboard = page.hasClass('storyboard');
-
-      // fillPage based on options (force for storyboard)
-      fillPage = _options.fillPage || storyboard;
-
-      // handle sidebar
-      var sidebar = page.find('.section.level2.sidebar');
-      if (sidebar.length > 0)
-        layoutSidebar(sidebar, page);
-    }
-
-    // give it and it's parent divs height: 100% if we are in fillPage mode
-    if (fillPage) {
-      page.addClass('vertical-layout-fill');
-      page.css('height', '100%');
-      page.parents('div').css('height', '100%');
-    } else {
-      page.addClass('vertical-layout-scroll');
-    }
-
-    // perform the layout
-    if (storyboard)
-      layoutPageAsStoryboard(page);
-    else if (orientation === 'rows')
-      layoutPageByRows(page, fillPage);
-    else if (orientation === 'columns')
-      layoutPageByColumns(page, fillPage);
-  }
-
-  function layoutSidebar(sidebar, content) {
-
-    // get it out of the header hierarchy
-    sidebar = sidebar.first();
-    if (sidebar.hasClass('level1')) {
-      sidebar.removeClass('level1');
-      sidebar.children('h1').remove();
-    } else if (sidebar.hasClass('level2')) {
-      sidebar.removeClass('level2');
-      sidebar.children('h2').remove();
-    }
-
-    // determine width
-    var sidebarWidth = isTablet() ? 220 : 250;
-    var dataWidth = parseInt(sidebar.attr('data-width'));
-    if (dataWidth)
-      sidebarWidth = dataWidth;
-
-    // set the width and shift the page right to accomodate the sidebar
-    sidebar.css('width', sidebarWidth + 'px');
-    content.css('padding-left', sidebarWidth + 'px');
-
-    // wrap it's contents in a form
-    sidebar.wrapInner($('<form></form>'));
-  }
-
-  function layoutPageAsStoryboard(page) {
-
-    // create storyboard navigation
-    var nav = $('<div class="storyboard-nav"></div>');
-
-    // add navigation buttons
-    var prev = $('<button class="sbprev"><i class="fa fa-angle-left"></i></button>');
-    nav.append(prev);
-    var next= $('<button class="sbnext"><i class="fa fa-angle-right"></i></button>');
-    nav.append(next);
-
-    // add navigation frame
-    var frameList = $('<div class="sbframelist"></div>');
-    nav.append(frameList);
-    var ul = $('<ul></ul>');
-    frameList.append(ul);
-
-     // find all the level3 sections (those are the storyboard frames)
-    var frames = page.find('div.section.level3');
-    frames.each(function() {
-
-      // mark it
-      $(this).addClass('sbframe');
-
-      // divide it into chart content and (optional) commentary
-      $(this).addClass('dashboard-column-orientation');
-
-      // stuff the chart into it's own div w/ flex
-      $(this).wrapInner('<div class="sbframe-component"></div>');
-      setFlex($(this), 1);
-      var frame = $(this).children('.sbframe-component');
-
-      // extract the title from the h3
-      var li = $('<li></li>');
-      var h3 = frame.children('h3');
-      li.append(h3.contents());
-      h3.detach();
-      ul.append(li);
-
-      // extract commentary
-      var hr = frame.children('hr');
-      if (hr.length) {
-        var commentary = hr.nextAll().detach();
-        hr.remove();
-        var commentaryFrame = $('<div class="sbframe-commentary"></div>');
-        commentaryFrame.addClass('flowing-content-shim');
-        commentaryFrame.addClass('flowing-content-container');
-        commentaryFrame.append(commentary);
-        $(this).append(commentaryFrame);
-
-        // look for a data-commentary-width attribute
-        var commentaryWidth = $(this).attr('data-commentary-width');
-        if (commentaryWidth)
-          commentaryFrame.css('width', commentaryWidth + 'px');
-      }
-
-      // layout the chart (force flex)
-      var result = layoutChart(frame, true);
-
-      // ice the notes if there are none
-      if (!result.notes)
-        frame.find('.chart-notes').remove();
-
-      // set flex on chart
-      setFlex(frame, 1);
-    });
-
-    // create a div to hold all the frames
-    var frameContent = $('<div class="sbframe-content"></div>');
-    frameContent.addClass('dashboard-row-orientation');
-    frameContent.append(frames.detach());
-
-    // row orientation to stack nav and frame content
-    page.addClass('dashboard-row-orientation');
-    page.append(nav);
-    page.append(frameContent);
-    setFlex(frameContent, 1);
-
-    // initialize sly
-    var sly = new Sly(frameList, {
-    		horizontal: true,
-    		itemNav: 'basic',
-    		smart: true,
-    		activateOn: 'click',
-    		startAt: 0,
-    		scrollBy: 1,
-    		activatePageOn: 'click',
-    		speed: 200,
-    		moveBy: 600,
-    		dragHandle: true,
-    		dynamicHandle: true,
-    		clickBar: true,
-    		keyboardNavBy: 'items',
-    		next: next,
-    		prev: prev
-    	}).init();
-
-    // make first frame active
-    frames.removeClass('active');
-    frames.first().addClass('active');
-
-    // subscribe to frame changed events
-    sly.on('active', function (eventName, itemIndex) {
-      frames.removeClass('active');
-      frames.eq(itemIndex).addClass('active')
-                          .trigger('shown');
-    });
-  }
-
-  function layoutPageByRows(page, fillPage) {
-
-    // row orientation
-    page.addClass('dashboard-row-orientation');
-
-    // find all the level2 sections (those are the rows)
-    var rows = page.find('div.section.level2');
-
-    // if there are no level2 sections then treat the
-    // entire page as if it's a level 2 section
-    if (rows.length === 0) {
-      page.wrapInner('<div class="section level2"></div>');
-      rows = page.find('div.section.level2');
-    }
-
-    rows.each(function () {
-
-      // flags
-      var haveNotes = false;
-      var haveFlexHeight = true;
-
-      // remove the h2
-      $(this).children('h2').remove();
-
-      // check for a tabset
-      var isTabset = $(this).hasClass('tabset');
-      if (isTabset)
-        layoutTabset($(this));
-
-      // give it row layout semantics if it's not a tabset
-      if (!isTabset)
-        $(this).addClass('dashboard-row');
-
-      // find all of the level 3 subheads
-      var columns = $(this).find('div.section.level3');
-
-      // determine figureSizes sizes
-      var figureSizes = chartFigureSizes(columns);
-
-      // fixup the columns
-      columns.each(function(index) {
-
-        // layout the chart (force flex if we are in a tabset)
-        var result = layoutChart($(this), isTabset);
-
-        // update flexHeight state
-        if (!result.flex)
-          haveFlexHeight = false;
-
-        // update state
-        if (result.notes)
-          haveNotes = true;
-
-        // set the column flex based on the figure width
-        // (value boxes will just get the default figure width)
-        var chartWidth = figureSizes[index].width;
-        setFlex($(this), chartWidth + ' ' + chartWidth + ' 0px');
-
-      });
-
-      // remove empty chart note divs
-      if (isTabset)
-        $(this).find('.chart-notes').filter(function() {
-            return $(this).html() === "&nbsp;";
-        }).remove();
-      if (!haveNotes)
-        $(this).find('.chart-notes').remove();
-
-       // make it a flexbox row
-      if (haveFlexHeight)
-        $(this).addClass('dashboard-row-flex');
-
-      // now we can set the height on all the wrappers (based on maximum
-      // figure height + room for title and notes, or data-height on the
-      // container if specified). However, don't do this if there is
-      // no flex on any of the constituent columns
-      var flexHeight = null;
-      var dataHeight = parseInt($(this).attr('data-height'));
-      if (dataHeight)
-        flexHeight = adjustedHeight(dataHeight, columns.first());
-      else if (haveFlexHeight)
-        flexHeight = maxChartHeight(figureSizes, columns);
-      if (flexHeight) {
-        if (fillPage)
-          setFlex($(this), flexHeight + ' ' + flexHeight + ' 0px');
-        else {
-          $(this).css('height', flexHeight + 'px');
-          setFlex($(this), '0 0 ' + flexHeight + 'px');
-        }
-      }
-
-    });
-  }
-
-  function layoutPageByColumns(page, fillPage) {
-
-    // column orientation
-    page.addClass('dashboard-column-orientation');
-
-    // find all the level2 sections (those are the columns)
-    var columns = page.find('div.section.level2');
-
-    // if there are no level2 sections then treat the
-    // entire page as if it's a level 2 section
-    if (columns.length === 0) {
-      page.wrapInner('<div class="section level2"></div>');
-      columns = page.find('div.section.level2');
-    }
-
-    // layout each column
-    columns.each(function (index) {
-
-      // remove the h2
-      $(this).children('h2').remove();
-
-      // make it a flexbox column
-      $(this).addClass('dashboard-column');
-
-      // check for a tabset
-      var isTabset = $(this).hasClass('tabset');
-      if (isTabset)
-        layoutTabset($(this));
-
-      // find all the h3 elements
-      var rows = $(this).find('div.section.level3');
-
-      // get the figure sizes for the rows
-      var figureSizes = chartFigureSizes(rows);
-
-      // column flex is the max row width (or data-width if specified)
-      var flexWidth;
-      var dataWidth = parseInt($(this).attr('data-width'));
-      if (dataWidth)
-        flexWidth = dataWidth;
-      else
-        flexWidth = maxChartWidth(figureSizes);
-      setFlex($(this), flexWidth + ' ' + flexWidth + ' 0px');
-
-      // layout each chart
-      rows.each(function(index) {
-
-        // perform the layout
-        var result = layoutChart($(this), false);
-
-        // ice the notes if there are none
-        if (!result.notes)
-          $(this).find('.chart-notes').remove();
-
-        // set flex height based on figHeight, then adjust
-        if (result.flex) {
-          var chartHeight = figureSizes[index].height;
-          chartHeight = adjustedHeight(chartHeight, $(this));
-          if (fillPage)
-            setFlex($(this), chartHeight + ' ' + chartHeight + ' 0px');
-          else {
-            $(this).css('height', chartHeight + 'px');
-            setFlex($(this), chartHeight + ' ' + chartHeight + ' ' + chartHeight + 'px');
-          }
-        }
-      });
-    });
-  }
-
-  function chartFigureSizes(charts) {
-
-    // sizes
-    var figureSizes = new Array(charts.length);
-
-    // check each chart
-    charts.each(function(index) {
-
-      // start with default
-      figureSizes[index] = {
-        width: _options.defaultFigWidth,
-        height: _options.defaultFigHeight
-      };
-
-      // look for data-height or data-width then knit options
-      var dataWidth = parseInt($(this).attr('data-width'));
-      var dataHeight = parseInt($(this).attr('data-height'));
-      var knitrOptions = $(this).find('.knitr-options:first');
-      var knitrWidth, knitrHeight;
-      if (knitrOptions) {
-        knitrWidth = parseInt(knitrOptions.attr('data-fig-width'));
-        knitrHeight =  parseInt(knitrOptions.attr('data-fig-height'));
-      }
-
-      // width
-      if (dataWidth)
-        figureSizes[index].width = dataWidth;
-      else if (knitrWidth)
-        figureSizes[index].width = knitrWidth;
-
-      // height
-      if (dataHeight)
-        figureSizes[index].height = dataHeight;
-      else if (knitrHeight)
-        figureSizes[index].height = knitrHeight;
-    });
-
-    // return sizes
-    return figureSizes;
-  }
-
-  function maxChartHeight(figureSizes, charts) {
-
-    // first compute the maximum height
-    var maxHeight = _options.defaultFigHeight;
-    for (var i = 0; i<figureSizes.length; i++)
-      if (figureSizes[i].height > maxHeight)
-        maxHeight = figureSizes[i].height;
-
-    // now add offests for chart title and chart notes
-    if (charts.length)
-      maxHeight = adjustedHeight(maxHeight, charts.first());
-
-    return maxHeight;
-  }
-
-  function adjustedHeight(height, chart) {
-    if (chart.length > 0) {
-      var chartTitle = chart.find('.chart-title');
-      if (chartTitle.length)
-        height += chartTitle.first().outerHeight();
-      var chartNotes = chart.find('.chart-notes');
-      if (chartNotes.length)
-        height += chartNotes.first().outerHeight();
-    }
-    return height;
-  }
-
-  function maxChartWidth(figureSizes) {
-    var maxWidth = _options.defaultFigWidth;
-    for (var i = 0; i<figureSizes.length; i++)
-      if (figureSizes[i].width > maxWidth)
-        maxWidth = figureSizes[i].width;
-    return maxWidth;
-  }
-
-  // layout a chart
-  function layoutChart(chart, forceFlex) {
-
-    // state to return
-    var result = {
-      notes: false,
-      flex: false
-    };
-
-    // extract the title
-    var title = extractTitle(chart);
-
-    // find components that apply to this container
-    var components = componentsFind(chart);
-
-    // if it's a custom component then call it and return
-    var customComponents = componentsCustom(components);
-    if (customComponents.length) {
-      componentsLayout(customComponents, title, chart);
-      result.notes = false;
-      result.flex = forceFlex || componentsFlex(customComponents);
-      return result;
-    }
-
-    // put all the content in a chart wrapper div
-    chart.addClass('chart-wrapper');
-    chart.wrapInner('<div class="chart-stage"></div>');
-    var chartContent = chart.children('.chart-stage');
-
-    // flex the content if appropriate
-    result.flex = forceFlex || componentsFlex(components);
-    if (result.flex) {
-      // add flex classes
-      chart.addClass('chart-wrapper-flex');
-      chartContent.addClass('chart-stage-flex');
-
-      // additional shim to break out of flexbox sizing
-      chartContent.wrapInner('<div class="chart-shim"></div>');
-      chartContent = chartContent.children('.chart-shim');
-    }
-
-    // set custom data-padding attribute
-    var pad = chart.attr('data-padding');
-    if (pad) {
-      if (pad === "0")
-        chart.addClass('no-padding');
-      else {
-        pad = pad + 'px';
-        chartContent.css('left', pad)
-                    .css('top', pad)
-                    .css('right', pad)
-                    .css('bottom', pad)
-      }
-    }
-
-    // call compoents
-    componentsLayout(components, title, chartContent);
-
-    // also activate components on shiny output
-    findShinyOutput(chartContent).on('shiny:value',
-      function(event) {
-        var element = $(event.target);
-        setTimeout(function() {
-
-          // see if we opted out of flex based on our output (for shiny
-          // we can't tell what type of output we have until after the
-          // value is bound)
-          var components = componentsFind(element);
-          var flex = forceFlex || componentsFlex(components);
-          if (!flex) {
-            chart.css('height', "");
-            setFlex(chart, "");
-            chart.removeClass('chart-wrapper-flex');
-            chartContent.removeClass('chart-stage-flex');
-            chartContent.children().unwrap();
-          }
-
-          // perform layout
-          componentsLayout(components, title, element.parent());
-        }, 10);
-      });
-
-    // add the title
-    var chartTitle = $('<div class="chart-title"></div>');
-    chartTitle.append(title);
-    chart.prepend(chartTitle);
-
-    // add the notes section
-    var chartNotes = $('<div class="chart-notes"></div>');
-    chartNotes.html('&nbsp;');
-    chart.append(chartNotes);
-
-    // attempt to extract notes if we have a component
-    if (components.length)
-      result.notes = extractChartNotes(chartContent, chartNotes);
-
-    // return result
-    return result;
-  }
-
-  // build a tabset from a section div with the .tabset class
-  function layoutTabset(tabset) {
-
-    // check for fade option
-    var fade = tabset.hasClass("tabset-fade");
-    var pills = tabset.hasClass("tabset-pills");
-    var navClass = pills ? "nav-pills" : "nav-tabs";
-
-    // determine the heading level of the tabset and tabs
-    var match = tabset.attr('class').match(/level(\d) /);
-    if (match === null)
-      return;
-    var tabsetLevel = Number(match[1]);
-    var tabLevel = tabsetLevel + 1;
-
-    // find all subheadings immediately below
-    var tabs = tabset.find("div.section.level" + tabLevel);
-    if (!tabs.length)
-      return;
-
-    // create tablist and tab-content elements
-    var tabList = $('<ul class="nav ' + navClass + '" role="tablist"></ul>');
-    $(tabs[0]).before(tabList);
-    var tabContent = $('<div class="tab-content"></div>');
-    $(tabs[0]).before(tabContent);
-
-    // build the tabset
-    var activeTab = 0;
-    tabs.each(function(i) {
-
-      // get the tab div
-      var tab = $(tabs[i]);
-
-      // get the id then sanitize it for use with bootstrap tabs
-      var id = tab.attr('id');
-
-      // see if this is marked as the active tab
-      if (tab.hasClass('active'))
-        activeTab = i;
-
-      // sanitize the id for use with bootstrap tabs
-      id = id.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_');
-      tab.attr('id', id);
-
-      // get the heading element within it and grab it's text
-      var heading = tab.find('h' + tabLevel + ':first');
-      var headingDom = heading.contents();
-
-      // build and append the tab list item
-      var a = $('<a role="tab" data-toggle="tab" data-bs-toggle="tab" class="nav-link"></a>');
-      a.append(headingDom);
-      a.attr('href', '#' + id);
-      a.attr('aria-controls', id);
-      var li = $('<li role="presentation" class="nav-item"></li>');
-      li.append(a);
-      tabList.append(li);
-
-      // set it's attributes
-      tab.attr('role', 'tabpanel');
-      tab.addClass('tab-pane');
-      tab.addClass('tabbed-pane');
-      tab.addClass('no-title');
-      if (fade)
-        tab.addClass('fade');
-
-      // move it into the tab content div
-      tab.detach().appendTo(tabContent);
-    });
-
-    // set active tab
-    $(tabList.children()[activeTab]).tab("show");
-    var active = $(tabContent.children('div.section')[activeTab]);
-    active.addClass('active');
-    if (fade)
-      active.addClass('in');
-
-    // add nav-tabs-custom
-    tabset.addClass('nav-tabs-custom');
-
-    // internal layout is dashboard-column with tab-content flexing
-    tabset.addClass('dashboard-column');
-    setFlex(tabContent, 1);
-  }
-
-  // one time global initialization for components
-  function componentsInit(dashboardContainer) {
-    for (var i=0; i<window.FlexDashboardComponents.length; i++) {
-      var component = window.FlexDashboardComponents[i];
-      if (component.init)
-        component.init(dashboardContainer);
-    }
-  }
-
-  // find components that apply within a container
-  function componentsFind(container) {
-
-    // look for components
-    var components = [];
-    for (var i=0; i<window.FlexDashboardComponents.length; i++) {
-      var component = window.FlexDashboardComponents[i];
-      if (component.find(container).length)
-        components.push(component);
-    }
-
-    // if there were none then use a special flowing content component
-    // that just adds a scrollbar in fillPage mode
-    if (components.length == 0) {
-      components.push({
-        find: function(container) {
-          return container;
-        },
-
-        flex: function(fillPage) {
-          return fillPage;
-        },
-
-        layout: function(title, container, element, fillPage) {
-          if (fillPage) {
-            container.addClass('flowing-content-shim');
-            container.addClass('flowing-content-container');
-          }
-        }
-      });
-    }
-
-    return components;
-  }
-
-  // if there is a custom component then pick it out
-  function componentsCustom(components) {
-    var customComponent = [];
-    for (var i=0; i<components.length; i++)
-      if (components[i].type === "custom") {
-        customComponent.push(components[i]);
-        break;
-      }
-    return customComponent;
-  }
-
-  // query all components for flex
-  function componentsFlex(components) {
-
-    // no components at all means no flex
-    if (components.length === 0)
-      return false;
-
-    // otherwise query components (assume true unless we see false)
-    var isMobile = isMobilePhone();
-    for (var i=0; i<components.length; i++)
-      if (components[i].flex && !components[i].flex(_options.fillPage))
-        return false;
-    return true;
-  }
-
-  // layout all components
-  function componentsLayout(components, title, container) {
-    var isMobile = isMobilePhone();
-    for (var i=0; i<components.length; i++) {
-      var element = components[i].find(container);
-      if (components[i].layout) {
-        // call layout (don't call other components if it returns false)
-        var result = components[i].layout(title, container, element, _options.fillPage);
-        if (result === false)
-          return;
-      }
-    }
-  }
-
-  // get a reference to the h3, discover it's inner html, and remove it
-  function extractTitle(container) {
-    var h3 = container.children('h3').first();
-    var title = '';
-    if (!container.hasClass('no-title'))
-      title = h3.contents();
-    h3.detach();
-    return title;
-  }
-
-  // extract chart notes
-  function extractChartNotes(chartContent, chartNotes) {
-    // look for a terminating blockquote or image caption
-    var blockquote = chartContent.children('blockquote:last-child');
-    var caption = chartContent.children('div.image-container')
-                              .children('p.caption');
-    if (blockquote.length) {
-      chartNotes.empty().append(blockquote.children('p:first-child').contents());
-      blockquote.remove();
-      return true;
-    } else if (caption.length) {
-      chartNotes.empty().append(caption.contents());
-      caption.remove();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  function findShinyOutput(chartContent) {
-    return chartContent.find('.shiny-text-output, .shiny-html-output');
-  }
-
-  // safely detect rendering on a mobile phone
-  function isMobilePhone() {
-    try
-    {
-      return ! window.matchMedia("only screen and (min-width: 768px)").matches;
-    }
-    catch(e) {
-      return false;
-    }
-  }
-
-  function isFillPage() {
-    return _options.fillPage;
-  }
-
-  // detect portrait mode
-  function isPortrait() {
-    return ($(window).width() < $(window).height());
-  }
-
-  // safely detect rendering on a tablet
-  function isTablet() {
-    try
-    {
-      return window.matchMedia("only screen and (min-width: 769px) and (max-width: 992px)").matches;
-    }
-    catch(e) {
-      return false;
-    }
-  }
-
-  // test whether this is a shiny doc
-  function isShinyDoc() {
-    return (typeof(window.Shiny) !== "undefined" && !!window.Shiny.outputBindings);
-  }
-
-  // set flex using vendor specific prefixes
-  function setFlex(el, flex) {
-    el.css('-webkit-box-flex', flex)
-      .css('-webkit-flex', flex)
-      .css('-ms-flex', flex)
-      .css('flex', flex);
-  }
-
-  // support bookmarking of pages
-  function handleLocationHash() {
-
-    // restore tab/page from bookmark
-    var hash = window.decodeURIComponent(window.location.hash);
-    if (hash.length > 0) {
-      // Update the tab without .showPage() so that we don't change page history
-      $('ul.nav a[href="' + hash + '"]').tab('show');
-    }
-
-    // navigate to a tab when the history changes
-    window.addEventListener("popstate", function(e) {
-      var hash = window.decodeURIComponent(window.location.hash);
-      var activeTab = $('ul.nav a[href="' + hash + '"]');
-      if (activeTab.length) {
-        activeTab.tab('show');
-      } else {
-        // returning to the base page URL without a hash activates first tab
-        $('ul.nav a:first').tab('show');
-      }
-    });
-
-    // add a hash to the URL when the user clicks on a tab/page
-    $('.navbar-nav a[data-toggle="tab"]').on('click', function(e) {
-      var baseUrl = FlexDashboardUtils.urlWithoutHash(window.location.href);
-      var hash = FlexDashboardUtils.urlHash($(this).attr('href'));
-      var href = baseUrl + hash;
-      FlexDashboardUtils.setLocation(href);
-    });
-
-    // handle clicks of other links that should activate pages
-    var navPages = $('ul.navbar-nav li a[data-toggle=tab]');
-    navPages.each(function() {
-      var href =  $(this).attr('href');
-      var links = $('a[href="' + href + '"][data-toggle!=tab]');
-      links.each(function() {
-        $(this).on('click', function(e) {
-          window.FlexDashboardUtils.showPage(href);
-        });
-      });
-    });
-  }
-
-  // tweak Prism highlighting
-  function initPrismHighlighting() {
-
-    if (window.Prism) {
-      Prism.languages.insertBefore('r', 'comment', {
-        'heading': [
-          {
-            // title 1
-        	  // =======
-
-        	  // title 2
-        	  // -------
-        	  pattern: /\w+.*(?:\r?\n|\r)(?:====+|----+)/,
-            alias: 'operator'
-          },
-          {
-            // ### title 3
-            pattern: /(^\s*)###[^#].+/m,
-            lookbehind: true,
-            alias: 'operator'
-          }
-        ]
-      });
-
-      // prism highlight
-      Prism.highlightAll();
-    }
-  }
-
-  FlexDashboard.prototype = {
-    constructor: FlexDashboard,
-    init: init,
-    isMobilePhone: isMobilePhone,
-    isFillPage: isFillPage
-  };
-
-  return FlexDashboard;
-
-})();
-
-// utils
-window.FlexDashboardUtils = {
-  resizableImage: function(img) {
-    var src = img.attr('src');
-    var url = 'url("' + src + '")';
-    img.parent().css('background', url)
-                .css('background-size', 'contain')
-                .css('background-repeat', 'no-repeat')
-                .css('background-position', 'center')
-                .addClass('image-container');
-  },
-  setLocation: function(href) {
-    if (history && history.pushState) {
-      history.pushState(null, null, href);
-    } else {
-      window.location.replace(href);
-    }
-    setTimeout(function() {
-        window.scrollTo(0, 0);
-    }, 10);
-  },
-  showPage: function(href) {
-    $('ul.navbar-nav li a[href="' + href + '"]').tab('show');
-    var baseUrl = this.urlWithoutHash(window.location.href);
-    var loc = baseUrl + href;
-    this.setLocation(loc);
-  },
-  showLinkedValue: function(href) {
-    // check for a page link
-    if ($('ul.navbar-nav li a[data-toggle=tab][href="' + href + '"]').length > 0)
-      this.showPage(href);
-    else
-      window.open(href);
-  },
-  urlWithoutHash: function(url) {
-    var hashLoc = url.indexOf('#');
-    if (hashLoc != -1)
-      return url.substring(0, hashLoc);
-    else
-      return url;
-  },
-  urlHash: function(url) {
-    var hashLoc = url.indexOf('#');
-    if (hashLoc != -1)
-      return url.substring(hashLoc);
-    else
-      return "";
-  }
-};
-
-window.FlexDashboard = new FlexDashboard();
-
-// empty content
-window.FlexDashboardComponents.push({
-  find: function(container) {
-    if (container.find('p').length == 0)
-      return container;
-    else
-      return $();
-  }
-})
-
-// plot image
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    return container.children('p')
-                    .children('img:only-child');
-  },
-
-  layout: function(title, container, element, fillPage) {
-    FlexDashboardUtils.resizableImage(element);
-  }
-});
-
-// plot image (figure style)
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    return container.children('div.figure').children('img');
-  },
-
-  layout: function(title, container, element, fillPage) {
-    FlexDashboardUtils.resizableImage(element);
-  }
-});
-
-// htmlwidget
-window.FlexDashboardComponents.push({
-
-  init: function(dashboardContainer) {
-    // trigger "shown" after initial layout to force static htmlwidgets
-    // in runtime: shiny to be resized after the dom has been transformed
-    dashboardContainer.on('flexdashboard:layoutcomplete', function(event) {
-      setTimeout(function() {
-        dashboardContainer.trigger('shown');
-      }, 200);
-    });
-  },
-
-  find: function(container) {
-    return container.children('div[id^="htmlwidget-"],div.html-widget');
-  }
-});
-
-// gauge
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    return container.children('div.html-widget.gauge');
-  },
-
-  flex: function(fillPage) {
-    return false;
-  },
-
-  layout: function(title, container, element, fillPage) {
-
-
-  }
-
-});
-
-// shiny output
-window.FlexDashboardComponents.push({
-  find: function(container) {
-    return container.children('div[class^="shiny-"]');
-  }
-});
-
-// bootstrap table
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    var bsTable = container.find('table.table');
-    if (bsTable.length !== 0)
-      return bsTable;
-    else
-      return container.find('tr.header').parent('thead').parent('table');
-  },
-
-  flex: function(fillPage) {
-    return fillPage;
-  },
-
-  layout: function(title, container, element, fillPage) {
-
-    // alias variables
-    var bsTable = element;
-
-    // fixup xtable generated tables with a proper thead
-    var headerRow = bsTable.find('tbody > tr:first-child > th').parent();
-    if (headerRow.length > 0) {
-      var thead = $('<thead></thead>');
-      bsTable.prepend(thead);
-      headerRow.detach().appendTo(thead);
-    }
-
-    // improve appearance
-    container.addClass('bootstrap-table');
-
-    // for fill page provide scrolling w/ sticky headers
-    if (fillPage) {
-      // force scrollbar on overflow
-      container.addClass('flowing-content-shim');
-
-      // stable table headers when scrolling
-      bsTable.stickyTableHeaders({
-        scrollableArea: container
-      });
-    }
-  }
-});
-
-// embedded shiny app
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    return container.find('iframe.shiny-frame');
-  },
-
-  flex: function(fillPage) {
-    return fillPage;
-  },
-
-  layout: function(title, container, element, fillPage) {
-    if (fillPage) {
-      element.attr('height', '100%');
-    } else {
-      // provide default height if necessary
-      var height = element.get(0).style.height;
-      if (!height)
-        height = element.attr('height');
-      if (!height)
-        element.attr('height', 500);
-    }
-  }
-});
-
-// shiny fillRow or fillCol
-window.FlexDashboardComponents.push({
-
-  find: function(container) {
-    return container.find('.flexfill-container');
-  },
-
-  flex: function(fillPage) {
-    return fillPage;
-  },
-
-  layout: function(title, container, element, fillPage) {
-    if (fillPage)
-      element.css('height', '100%');
-    else {
-      // provide default height if necessary
-      var height = element.get(0).style.height;
-      if (height === "100%" || height === "auto" || height === "initial" ||
-          height === "inherit" || !height) {
-        element.css('height', 500);
-      }
-    }
-  }
-});
-
-// valueBox
-window.FlexDashboardComponents.push({
-
-  type: "custom",
-
-  find: function(container) {
-    if (container.find('span.value-output, .shiny-valuebox-output').length)
-      return container;
-    else
-      return $();
-  },
-
-  flex: function(fillPage) {
-    return false;
-  },
-
-  layout: function(title, container, element, fillPage) {
-
-    // alias variables
-    var chartTitle = title;
-    var valueBox = element;
-
-    // add value-box class to container
-    container.addClass('value-box');
-
-    // value paragraph
-    var value = $('<p class="value"></p>');
-
-    // if we have shiny-text-output then just move it in
-    var valueOutputSpan = [];
-    var shinyOutput = valueBox.find('.shiny-valuebox-output').detach();
-    if (shinyOutput.length) {
-      valueBox.children().remove();
-      shinyOutput.html("&mdash;");
-      value.append(shinyOutput);
-    } else {
-      // extract the value (remove leading vector index)
-      var chartValue = valueBox.text().trim();
-      chartValue = chartValue.replace("[1] ", "");
-      valueOutputSpan = valueBox.find('span.value-output').detach();
-      valueBox.children().remove();
-      value.text(chartValue);
-    }
-
-    // caption
-    var caption = $('<p class="caption"></p>');
-    caption.append(chartTitle);
-
-    // build inner div for value box and add it
-    var inner = $('<div class="inner"></div>');
-    inner.append(value);
-    inner.append(caption);
-    valueBox.append(inner);
-
-    // add icon if specified
-    var icon = $('<div class="icon"><i></i></div>');
-    valueBox.append(icon);
-    function setIcon(chartIcon) {
-      var iconLib = "";
-      var iconSplit = chartIcon.split(" ");
-      if (iconSplit.length > 1) {
-        iconLib = iconSplit[0];
-        chartIcon = iconSplit.slice(1).join(" ");
-      } else {
-        var components = chartIcon.split("-");
-        if (components.length > 1)
-          iconLib = components[0];
-      }
-      icon.children('i').attr('class', iconLib + ' ' + chartIcon);
-    }
-    var chartIcon = valueBox.attr('data-icon');
-    if (chartIcon)
-      setIcon(chartIcon);
-
-    // handle data attributes in valueOutputSpan
-    function handleValueOutput(valueOutput) {
-
-      // caption
-      var dataCaption = valueOutput.attr('data-caption');
-      if (dataCaption)
-        caption.html(dataCaption);
-
-      // icon
-      var dataIcon = valueOutput.attr('data-icon');
-      if (dataIcon)
-        setIcon(dataIcon);
-
-      // If valueBox(color=) was an accent color, this attr should
-      // be populated with the accent color and the relevant CSS comes
-      // in through HTML dependencies
-      var dataColorAccent = valueOutput.attr('data-color-accent');
-      var valueBoxClasses = "value-box-" + (["primary", "info", "danger", "warning", "success"].join(" value-box-"));
-      if (dataColorAccent) {
-        valueBox.removeClass(valueBoxClasses);
-        valueBox.addClass('value-box-' + dataColorAccent);
-      }
-
-      // If valueBox(color=) was a CSS color, these other data-color-*
-      // attrs will be populated
-      var dataColor = valueOutput.attr('data-color');
-      if (dataColor) {
-        valueBox.removeClass(valueBoxClasses);
-        valueBox.css('background-color', dataColor);
-      }
-      var dataColorText = valueOutput.attr('data-color-text');
-      if (dataColorText) {
-        valueBox.find(".inner").css('color', dataColorText);
-      }
-      var dataColorIcon = valueOutput.attr('data-color-icon');
-      if (dataColorIcon) {
-        valueBox.find(".icon").css('color', dataColorIcon);
-      }
-
-      // url
-      var dataHref = valueOutput.attr('data-href');
-      if (dataHref) {
-        valueBox.addClass('linked-value');
-        valueBox.off('click.value-box');
-        valueBox.on('click.value-box', function(e) {
-          window.FlexDashboardUtils.showLinkedValue(dataHref);
-        });
-      }
-    }
-
-    // check for a valueOutputSpan
-    if (valueOutputSpan.length > 0) {
-      handleValueOutput(valueOutputSpan);
-    }
-
-    // if we have a shinyOutput then bind a listener to handle
-    // new valueOutputSpan values
-    shinyOutput.on('shiny:value',
-      function(event) {
-        var element = $(event.target);
-        setTimeout(function() {
-          var valueOutputSpan = element.find('span.value-output');
-          if (valueOutputSpan.length > 0)
-            handleValueOutput(valueOutputSpan);
-        }, 10);
-      }
-    );
-  }
-});
-</script>
-
-<div id="dashboard-container">
 
 <p>By borough / zip code (like the TA’s example) Primary use of subway
 Average subway ride length Most used line</p>
@@ -1874,118 +315,505 @@ class="uri">https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-po
 to get majority of the borough’s zip codes. Any remaining ones, I looked
 up on Google. There were three zip codes that I could not find a match
 for, and were likely miswritten, so I removed those data rows.</p>
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+<pre class="r"><code>#Clean data
+subway_rider_data = 
+  read_csv(&quot;data/2019_subway_rider_data.csv&quot;) |&gt; 
+  janitor::clean_names()</code></pre>
+<pre><code>## Rows: 10704 Columns: 19
+## ── Column specification ────────────────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
+## lgl  (1): is_subway_affordable
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>subway_drops =
+  subway_rider_data |&gt; 
+  select(-survey_stop_borough, -survey_stop_location) |&gt; 
+  drop_na() |&gt; 
+  mutate(survey_id = row_number()) |&gt; 
+  relocate(survey_id, .before = 1)
+  
+rider_data =
+  subway_drops |&gt;
+  mutate(
+    use_of_subway_frequency = case_when(
+      use_of_subway_frequency == &quot;Everyday / Almost everyday&quot; ~ &quot;Every day&quot;,
+      use_of_subway_frequency == &quot;More than once a week, varies&quot; ~ &quot;Several times a week&quot;,
+      use_of_subway_frequency %in% c(&quot;Weekdays, Mon - Fri&quot;, &quot;~5 days per week&quot;) ~ &quot;5 days per week&quot;,
+      use_of_subway_frequency == &quot;Once a week&quot; ~ &quot;Once a week&quot;,
+      use_of_subway_frequency == &quot;Once a month&quot; ~ &quot;Once a month&quot;,
+      use_of_subway_frequency == &quot;Almost never&quot; ~ &quot;Almost never&quot;,
+      use_of_subway_frequency == &quot;Never&quot; ~ &quot;Never&quot;,
+      TRUE ~ NA_character_
+    ),
+    use_of_subway_frequency = 
+      factor(
+        use_of_subway_frequency,
+        levels = c(&quot;Never&quot;, 
+                   &quot;Almost never&quot;, 
+                   &quot;Once a month&quot;, 
+                   &quot;Once a week&quot;,
+                   &quot;Several times a week&quot;, 
+                   &quot;5 days per week&quot;, 
+                   &quot;Every day&quot;),
+        ordered = TRUE)
+    )
 
-</div>
+
+rider_data =
+  subway_drops |&gt; 
+  mutate(average_length_subway_ride = 
+           factor(average_length_subway_ride,
+                  levels = c(&quot;&lt; 20 min&quot;, 
+                             &quot;20 - 40 min&quot;, 
+                             &quot;40 - 60 min&quot;,
+                             &quot;60 - 90 min&quot;, 
+                             &quot;90 min - 2 hours&quot;),
+                  ordered = TRUE))
+
+
+rider_data =
+  subway_drops |&gt;
+  mutate(
+    overall_satisfaction = 
+      recode(
+        overall_satisfaction,
+        &quot;Not satisfied&quot; = &quot;Unsatisfied&quot;),
+    overall_satisfaction = 
+      factor(
+        overall_satisfaction,
+        levels = c(&quot;Highly unsatisfied&quot;,
+                 &quot;Unsatisfied&quot;,
+                 &quot;Neutral&quot;,
+                 &quot;Somewhat satisfied&quot;,
+                 &quot;Very satisfied&quot;),
+      ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |&gt; 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c(&quot;Everyday&quot;,
+                 &quot;A few times a week&quot;,
+                 &quot;Rarely&quot;,
+                 &quot;Almost never&quot;,
+                 &quot;Never&quot;),
+      ordered = TRUE)
+    )
+    
+#Zip code --&gt; borough 
+
+zip_code_data = 
+  read_csv(&quot;data/nyc_zipcodes.csv&quot;) %&gt;%
+  select(borough, zipcode)</code></pre>
+<pre><code>## Rows: 343 Columns: 2
+## ── Column specification ────────────────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): borough, zipcode
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>#Make sure character type
+rider_data &lt;- rider_data %&gt;%
+  mutate(zip_code = as.character(zip_code))
+zip_code_data &lt;- zip_code_data %&gt;%
+  mutate(zipcode = as.character(zipcode))
+
+#Join
+rider_data_full &lt;- rider_data %&gt;%
+  left_join(zip_code_data, by = c(&quot;zip_code&quot; = &quot;zipcode&quot;))</code></pre>
+<pre><code>## Warning in left_join(., zip_code_data, by = c(zip_code = &quot;zipcode&quot;)): Detected an unexpected many-to-many relationship between `x` and `y`.
+## ℹ Row 6 of `x` matches multiple rows in `y`.
+## ℹ Row 109 of `y` matches multiple rows in `x`.
+## ℹ If a many-to-many relationship is expected, set `relationship = &quot;many-to-many&quot;` to
+##   silence this warning.</code></pre>
+<pre class="r"><code>#If there&#39;s no match, we want to keep the zip_code in the borough column, so we use coalesce to handle this
+rider_data_full &lt;- rider_data_full %&gt;%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#manually go through remaining zip codes - removing 11135 11290 12105 as they are not real zip codes &amp; also removing one observation that didn&#39;t have zip code 
+rider_data_full &lt;- rider_data_full %&gt;%
+  filter(survey_id != 2410) %&gt;% 
+  filter(survey_id != 944) %&gt;% 
+  filter(survey_id != 241) %&gt;% 
+  filter(survey_id != 919) </code></pre>
 <div id="survey-respondents-by-borough" class="section level3">
 <h3>Survey Respondents by Borough</h3>
-<div class="knitr-options" data-fig-width="576" data-fig-height="1344">
+<pre class="r"><code>#Location distribution 
+borough_df &lt;- rider_data_full %&gt;% 
+  count(borough)
 
-</div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-697bb0fc7dc73d8eb2d1" style="width:576px;height:1344px;"></div>
-<script type="application/json" data-for="htmlwidget-697bb0fc7dc73d8eb2d1">{"x":{"visdat":{"305c17cb366a":["function () ","plotlyVisDat"]},"cur_data":"305c17cb366a","attrs":{"305c17cb366a":{"x":{},"y":{},"marker":{"color":"#2A768EFF"},"hovertemplate":"Borough: %{x}<br>Count: %{y}<extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Survey Respondents by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Borough","type":"category","categoryorder":"array","categoryarray":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count"},"autosize":true,"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[337,1999,11,1820,38,58,6,1031,117],"marker":{"color":"#2A768EFF","line":{"color":"rgba(31,119,180,1)"}},"hovertemplate":["Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+#Pick blue from gradient 
+viridis_blue &lt;- viridis(100)[40]
+
+#Produce plot
+plot_ly(
+  borough_df,
+  x = ~borough,
+  y = ~n,
+  type = &quot;bar&quot;,
+  marker = list(color = viridis_blue),
+  hovertemplate = &quot;Borough: %{x}&lt;br&gt;Count: %{y}&lt;extra&gt;&lt;/extra&gt;&quot;
+) %&gt;%
+  layout(
+    title = &quot;Survey Respondents by Borough&quot;,
+    xaxis = list(title = &quot;Borough&quot;),
+    yaxis = list(title = &quot;Count&quot;),
+    autosize = TRUE
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-23eeba675884538f3779" style="width:672px;height:1344px;"></div>
+<script type="application/json" data-for="htmlwidget-23eeba675884538f3779">{"x":{"visdat":{"5b94659e5e8e":["function () ","plotlyVisDat"]},"cur_data":"5b94659e5e8e","attrs":{"5b94659e5e8e":{"x":{},"y":{},"marker":{"color":"#2A768EFF"},"hovertemplate":"Borough: %{x}<br>Count: %{y}<extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Survey Respondents by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Borough","type":"category","categoryorder":"array","categoryarray":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count"},"autosize":true,"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[337,1999,11,1820,38,58,6,1031,117],"marker":{"color":"#2A768EFF","line":{"color":"rgba(31,119,180,1)"}},"hovertemplate":["Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="primary-subway-use-by-borough" class="section level3">
 <h3>Primary Subway Use by Borough</h3>
-<div class="knitr-options" data-fig-width="576" data-fig-height="1344">
+<pre class="r"><code>#Primary use of subway 
+primary_df &lt;- rider_data_full %&gt;%
+  count(borough, primary_use_of_subway) %&gt;%
+  group_by(borough) %&gt;%
+  mutate(prop = n / sum(n))
 
-</div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-9bc30f8929a078c381c0" style="width:576px;height:1344px;"></div>
-<script type="application/json" data-for="htmlwidget-9bc30f8929a078c381c0">{"x":{"visdat":{"305c5e6627c0":["function () ","plotlyVisDat"]},"cur_data":"305c5e6627c0","attrs":{"305c5e6627c0":{"x":{},"y":{},"hovertemplate":"Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","customdata":{},"color":{},"colors":["#440154FF","#21908CFF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Primary Subway Use by Borough","yaxis":{"domain":[0,1],"automargin":true,"tickformat":".0%","title":"Proportion"},"autosize":true,"xaxis":{"domain":[0,1],"automargin":true,"title":"borough","type":"category","categoryorder":"array","categoryarray":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Bronx","Brooklyn","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[0.18397626112759644,0.13356678339169584,0.3098901098901099,0.23684210526315788,0.17241379310344829,0.66666666666666663,0.17361784675072744,0.34188034188034189],"hovertemplate":["Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"customdata":["Other","Other","Other","Other","Other","Other","Other","Other"],"type":"bar","name":"Other","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Long Island","Manhattan","New York State","Queens","Staten Island"],"y":[0.053412462908011868,0.053026513256628313,0.18181818181818182,0.03021978021978022,0.068965517241379309,0.050436469447138699,0.034188034188034191],"hovertemplate":["Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"customdata":["School","School","School","School","School","School","School"],"type":"bar","name":"School","marker":{"color":"rgba(33,144,140,1)","line":{"color":"rgba(33,144,140,1)"}},"textfont":{"color":"rgba(33,144,140,1)"},"error_y":{"color":"rgba(33,144,140,1)"},"error_x":{"color":"rgba(33,144,140,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[0.76261127596439171,0.81340670335167586,0.81818181818181823,0.65989010989010988,0.76315789473684215,0.75862068965517238,0.33333333333333331,0.7759456838021338,0.62393162393162394],"hovertemplate":["Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"customdata":["Work","Work","Work","Work","Work","Work","Work","Work","Work"],"type":"bar","name":"Work","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+#Set colors for the categorical variable 
+uses &lt;- unique(primary_df$primary_use_of_subway)
+vir_cols &lt;- viridis(length(uses))
+names(vir_cols) &lt;- uses
+
+plot_ly(
+  primary_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~primary_use_of_subway,
+  type = &quot;bar&quot;,
+  colors = vir_cols,
+  hovertemplate =
+    &quot;Borough: %{x}&lt;br&gt;Use: %{customdata}&lt;br&gt;Percent: %{y:.1%}&lt;extra&gt;&lt;/extra&gt;&quot;,
+  customdata = ~primary_use_of_subway
+) %&gt;%
+  layout(
+    barmode = &quot;stack&quot;,
+    title = &quot;Primary Subway Use by Borough&quot;,
+    yaxis = list(tickformat = &quot;.0%&quot;, title = &quot;Proportion&quot;)
+  ) %&gt;%
+  layout(autosize = TRUE)</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-0a0775d2899cc4674e46" style="width:672px;height:1344px;"></div>
+<script type="application/json" data-for="htmlwidget-0a0775d2899cc4674e46">{"x":{"visdat":{"5b9415367b5":["function () ","plotlyVisDat"]},"cur_data":"5b9415367b5","attrs":{"5b9415367b5":{"x":{},"y":{},"hovertemplate":"Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","customdata":{},"color":{},"colors":["#440154FF","#21908CFF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Primary Subway Use by Borough","yaxis":{"domain":[0,1],"automargin":true,"tickformat":".0%","title":"Proportion"},"autosize":true,"xaxis":{"domain":[0,1],"automargin":true,"title":"borough","type":"category","categoryorder":"array","categoryarray":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Bronx","Brooklyn","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[0.18397626112759644,0.13356678339169584,0.3098901098901099,0.23684210526315788,0.17241379310344829,0.66666666666666663,0.17361784675072744,0.34188034188034189],"hovertemplate":["Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"customdata":["Other","Other","Other","Other","Other","Other","Other","Other"],"type":"bar","name":"Other","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Long Island","Manhattan","New York State","Queens","Staten Island"],"y":[0.053412462908011868,0.053026513256628313,0.18181818181818182,0.03021978021978022,0.068965517241379309,0.050436469447138699,0.034188034188034191],"hovertemplate":["Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"customdata":["School","School","School","School","School","School","School"],"type":"bar","name":"School","marker":{"color":"rgba(33,144,140,1)","line":{"color":"rgba(33,144,140,1)"}},"textfont":{"color":"rgba(33,144,140,1)"},"error_y":{"color":"rgba(33,144,140,1)"},"error_x":{"color":"rgba(33,144,140,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[0.76261127596439171,0.81340670335167586,0.81818181818181823,0.65989010989010988,0.76315789473684215,0.75862068965517238,0.33333333333333331,0.7759456838021338,0.62393162393162394],"hovertemplate":["Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"customdata":["Work","Work","Work","Work","Work","Work","Work","Work","Work"],"type":"bar","name":"Work","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="ride-length-distribution-by-borough" class="section level3">
 <h3>Ride Length Distribution by Borough</h3>
-<div class="knitr-options" data-fig-width="576" data-fig-height="1344">
+<pre class="r"><code>#Average subway ride length 
+ride_df &lt;- rider_data_full %&gt;%
+  count(borough, average_length_subway_ride)
 
-</div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-e937b0334970f0024e55" style="width:576px;height:1344px;"></div>
-<script type="application/json" data-for="htmlwidget-e937b0334970f0024e55">{"x":{"visdat":{"305c33483ead":["function () ","plotlyVisDat"]},"cur_data":"305c33483ead","attrs":{"305c33483ead":{"x":{},"y":{},"text":{},"textposition":"none","hovertemplate":"Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","color":{},"colors":["#440154FF","#472D7BFF","#3B528BFF","#2C728EFF","#21908CFF","#27AD81FF","#5DC863FF","#AADC32FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Ride Length Distribution by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Ride Length Category","type":"category","categoryorder":"array","categoryarray":["< 20 min","20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[98,133,78,20,8],"text":["Bronx","Bronx","Bronx","Bronx","Bronx"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Bronx","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[850,705,232,26,186],"text":["Brooklyn","Brooklyn","Brooklyn","Brooklyn","Brooklyn"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Brooklyn","marker":{"color":"rgba(71,45,123,1)","line":{"color":"rgba(71,45,123,1)"}},"textfont":{"color":"rgba(71,45,123,1)"},"error_y":{"color":"rgba(71,45,123,1)"},"error_x":{"color":"rgba(71,45,123,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","< 20 min"],"y":[4,2,2,3],"text":["Long Island","Long Island","Long Island","Long Island"],"textposition":["none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Long Island","marker":{"color":"rgba(59,82,139,1)","line":{"color":"rgba(59,82,139,1)"}},"textfont":{"color":"rgba(59,82,139,1)"},"error_y":{"color":"rgba(59,82,139,1)"},"error_x":{"color":"rgba(59,82,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[904,374,61,11,470],"text":["Manhattan","Manhattan","Manhattan","Manhattan","Manhattan"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Manhattan","marker":{"color":"rgba(44,114,142,1)","line":{"color":"rgba(44,114,142,1)"}},"textfont":{"color":"rgba(44,114,142,1)"},"error_y":{"color":"rgba(44,114,142,1)"},"error_x":{"color":"rgba(44,114,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","< 20 min"],"y":[18,4,1,15],"text":["New Jersey","New Jersey","New Jersey","New Jersey"],"textposition":["none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"New Jersey","marker":{"color":"rgba(33,144,140,1)","line":{"color":"rgba(33,144,140,1)"}},"textfont":{"color":"rgba(33,144,140,1)"},"error_y":{"color":"rgba(33,144,140,1)"},"error_x":{"color":"rgba(33,144,140,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[22,13,2,2,19],"text":["New York State","New York State","New York State","New York State","New York State"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"New York State","marker":{"color":"rgba(39,173,129,1)","line":{"color":"rgba(39,173,129,1)"}},"textfont":{"color":"rgba(39,173,129,1)"},"error_y":{"color":"rgba(39,173,129,1)"},"error_x":{"color":"rgba(39,173,129,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min"],"y":[3,2,1],"text":["Outside NY","Outside NY","Outside NY"],"textposition":["none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Outside NY","marker":{"color":"rgba(93,200,99,1)","line":{"color":"rgba(93,200,99,1)"}},"textfont":{"color":"rgba(93,200,99,1)"},"error_y":{"color":"rgba(93,200,99,1)"},"error_x":{"color":"rgba(93,200,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[357,447,143,30,54],"text":["Queens","Queens","Queens","Queens","Queens"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Queens","marker":{"color":"rgba(170,220,50,1)","line":{"color":"rgba(170,220,50,1)"}},"textfont":{"color":"rgba(170,220,50,1)"},"error_y":{"color":"rgba(170,220,50,1)"},"error_x":{"color":"rgba(170,220,50,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[60,12,9,5,31],"text":["Staten Island","Staten Island","Staten Island","Staten Island","Staten Island"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Staten Island","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+#Set colors for the categorical variable 
+boroughs &lt;- unique(ride_df$borough)
+vir_cols &lt;- viridis(length(boroughs)) #one color for each borough
+names(vir_cols) &lt;- boroughs  
+
+#Produce plot
+plot_ly(
+  ride_df,
+  x = ~average_length_subway_ride,
+  y = ~n,
+  color = ~borough,
+  type = &quot;bar&quot;,
+  colors = vir_cols,
+  text = ~borough, #adding so the borough name will populate in the hover text
+  textposition = &quot;none&quot;, #hide the label from printing onto the bar plot 
+  hovertemplate = &quot;Borough: %{text}&lt;br&gt;Ride Length: %{x}&lt;br&gt;Count: %{y}&lt;extra&gt;&lt;/extra&gt;&quot;
+) %&gt;%
+  layout(
+    barmode = &quot;stack&quot;,
+    title = &quot;Ride Length Distribution by Borough&quot;,
+    xaxis = list(title = &quot;Ride Length Category&quot;),
+    yaxis = list(title = &quot;Count&quot;)
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-598bec085c8293c84867" style="width:672px;height:1344px;"></div>
+<script type="application/json" data-for="htmlwidget-598bec085c8293c84867">{"x":{"visdat":{"5b9453a02ff6":["function () ","plotlyVisDat"]},"cur_data":"5b9453a02ff6","attrs":{"5b9453a02ff6":{"x":{},"y":{},"text":{},"textposition":"none","hovertemplate":"Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","color":{},"colors":["#440154FF","#472D7BFF","#3B528BFF","#2C728EFF","#21908CFF","#27AD81FF","#5DC863FF","#AADC32FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Ride Length Distribution by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Ride Length Category","type":"category","categoryorder":"array","categoryarray":["< 20 min","20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[98,133,78,20,8],"text":["Bronx","Bronx","Bronx","Bronx","Bronx"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Bronx","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[850,705,232,26,186],"text":["Brooklyn","Brooklyn","Brooklyn","Brooklyn","Brooklyn"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Brooklyn","marker":{"color":"rgba(71,45,123,1)","line":{"color":"rgba(71,45,123,1)"}},"textfont":{"color":"rgba(71,45,123,1)"},"error_y":{"color":"rgba(71,45,123,1)"},"error_x":{"color":"rgba(71,45,123,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","< 20 min"],"y":[4,2,2,3],"text":["Long Island","Long Island","Long Island","Long Island"],"textposition":["none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Long Island","marker":{"color":"rgba(59,82,139,1)","line":{"color":"rgba(59,82,139,1)"}},"textfont":{"color":"rgba(59,82,139,1)"},"error_y":{"color":"rgba(59,82,139,1)"},"error_x":{"color":"rgba(59,82,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[904,374,61,11,470],"text":["Manhattan","Manhattan","Manhattan","Manhattan","Manhattan"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Manhattan","marker":{"color":"rgba(44,114,142,1)","line":{"color":"rgba(44,114,142,1)"}},"textfont":{"color":"rgba(44,114,142,1)"},"error_y":{"color":"rgba(44,114,142,1)"},"error_x":{"color":"rgba(44,114,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","< 20 min"],"y":[18,4,1,15],"text":["New Jersey","New Jersey","New Jersey","New Jersey"],"textposition":["none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"New Jersey","marker":{"color":"rgba(33,144,140,1)","line":{"color":"rgba(33,144,140,1)"}},"textfont":{"color":"rgba(33,144,140,1)"},"error_y":{"color":"rgba(33,144,140,1)"},"error_x":{"color":"rgba(33,144,140,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[22,13,2,2,19],"text":["New York State","New York State","New York State","New York State","New York State"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"New York State","marker":{"color":"rgba(39,173,129,1)","line":{"color":"rgba(39,173,129,1)"}},"textfont":{"color":"rgba(39,173,129,1)"},"error_y":{"color":"rgba(39,173,129,1)"},"error_x":{"color":"rgba(39,173,129,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min"],"y":[3,2,1],"text":["Outside NY","Outside NY","Outside NY"],"textposition":["none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Outside NY","marker":{"color":"rgba(93,200,99,1)","line":{"color":"rgba(93,200,99,1)"}},"textfont":{"color":"rgba(93,200,99,1)"},"error_y":{"color":"rgba(93,200,99,1)"},"error_x":{"color":"rgba(93,200,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[357,447,143,30,54],"text":["Queens","Queens","Queens","Queens","Queens"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Queens","marker":{"color":"rgba(170,220,50,1)","line":{"color":"rgba(170,220,50,1)"}},"textfont":{"color":"rgba(170,220,50,1)"},"error_y":{"color":"rgba(170,220,50,1)"},"error_x":{"color":"rgba(170,220,50,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[60,12,9,5,31],"text":["Staten Island","Staten Island","Staten Island","Staten Island","Staten Island"],"textposition":["none","none","none","none","none"],"hovertemplate":["Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","name":"Staten Island","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="most-used-subway-lines-by-borough" class="section level3">
 <h3>Most Used Subway Lines by Borough</h3>
-<div class="knitr-options" data-fig-width="576" data-fig-height="1344">
+<pre class="r"><code>#Most used line 
+line_df &lt;- rider_data_full %&gt;%
+  count(borough, subway_line_used_most_often)
 
-</div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-4309dcebec94511e41eb" style="width:576px;height:1344px;"></div>
-<script type="application/json" data-for="htmlwidget-4309dcebec94511e41eb">{"x":{"visdat":{"305c65ebe9a":["function () ","plotlyVisDat"]},"cur_data":"305c65ebe9a","attrs":{"305c65ebe9a":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":0,"y":{},"xend":{},"yend":{},"type":"scatter","mode":"lines","line":{"color":{}},"hoverinfo":"none","showlegend":false,"inherit":true},"305c65ebe9a.1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":{},"y":{},"type":"scatter","mode":"markers","marker":{"color":{}},"hovertemplate":"Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","customdata":{},"showlegend":false,"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Most Used Subway Lines by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Count"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","type":"category","categoryorder":"array","categoryarray":["Z","S","Staten Island Railway","W","J","B","5","M","G","3","D","4","C","6","N","E","Q","7","2","F","L","R","A","1"]},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0,1174,null,0,286,null,0,97,null,0,165,null,0,79,null,0,223,null,0,259,null,0,469,null,0,75,null,0,178,null,0,150,null,0,240,null,0,385,null,0,92,null,0,72,null,0,404,null,0,89,null,0,226,null,0,244,null,0,462,null,0,3,null,0,18,null,0,26,null,0,1],"y":["1","1",null,"2","2",null,"3","3",null,"4","4",null,"5","5",null,"6","6",null,"7","7",null,"A","A",null,"B","B",null,"C","C",null,"D","D",null,"E","E",null,"F","F",null,"G","G",null,"J","J",null,"L","L",null,"M","M",null,"N","N",null,"Q","Q",null,"R","R",null,"S","S",null,"Staten Island Railway","Staten Island Railway",null,"W","W",null,"Z","Z"],"type":"scatter","mode":"lines","line":{"color":["#EE352E","#EE352E","#EE352E","#00933C","#00933C","#00933C","#B933AD","#0039A6","#FF6319","#0039A6","#FF6319","#0039A6","#FF6319","#6CBE45","#996633","#A7A9AC","#FF6319","#FCCC0A","#FCCC0A","#FCCC0A","#808183",null,"#FCCC0A","#996633"]},"hoverinfo":["none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none"],"showlegend":false,"marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1174,286,97,165,79,223,259,469,75,178,150,240,385,92,72,404,89,226,244,462,3,18,26,1],"y":["1","2","3","4","5","6","7","A","B","C","D","E","F","G","J","L","M","N","Q","R","S","Staten Island Railway","W","Z"],"type":"scatter","mode":"markers","marker":{"color":["#EE352E","#EE352E","#EE352E","#00933C","#00933C","#00933C","#B933AD","#0039A6","#FF6319","#0039A6","#FF6319","#0039A6","#FF6319","#6CBE45","#996633","#A7A9AC","#FF6319","#FCCC0A","#FCCC0A","#FCCC0A","#808183",null,"#FCCC0A","#996633"],"line":{"color":"rgba(255,127,14,1)"}},"hovertemplate":["Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>"],"customdata":["Bronx: 86<br>Brooklyn: 277<br>Long Island: 1<br>Manhattan: 614<br>New Jersey: 9<br>New York State: 19<br>Outside NY: 2<br>Queens: 119<br>Staten Island: 47","Bronx: 55<br>Brooklyn: 109<br>Manhattan: 107<br>New Jersey: 2<br>New York State: 7<br>Queens: 3<br>Staten Island: 3","Brooklyn: 45<br>Manhattan: 50<br>Queens: 2","Bronx: 37<br>Brooklyn: 49<br>Manhattan: 46<br>New Jersey: 1<br>New York State: 14<br>Outside NY: 1<br>Queens: 1<br>Staten Island: 16","Bronx: 25<br>Brooklyn: 25<br>Manhattan: 18<br>New York State: 4<br>Queens: 2<br>Staten Island: 5","Bronx: 73<br>Brooklyn: 4<br>Manhattan: 139<br>New Jersey: 1<br>New York State: 4<br>Queens: 1<br>Staten Island: 1","Bronx: 1<br>Brooklyn: 9<br>Manhattan: 9<br>New Jersey: 4<br>New York State: 2<br>Queens: 234","Bronx: 3<br>Brooklyn: 101<br>Manhattan: 295<br>New Jersey: 9<br>New York State: 2<br>Outside NY: 1<br>Queens: 58","Bronx: 4<br>Brooklyn: 52<br>Long Island: 1<br>Manhattan: 18","Brooklyn: 67<br>Long Island: 1<br>Manhattan: 105<br>New Jersey: 3<br>Queens: 2","Bronx: 40<br>Brooklyn: 66<br>Manhattan: 39<br>New York State: 2<br>Queens: 2<br>Staten Island: 1","Bronx: 4<br>Brooklyn: 4<br>Long Island: 4<br>Manhattan: 83<br>New Jersey: 3<br>New York State: 1<br>Outside NY: 1<br>Queens: 140","Bronx: 2<br>Brooklyn: 166<br>Long Island: 2<br>Manhattan: 101<br>New Jersey: 1<br>New York State: 3<br>Queens: 110","Brooklyn: 88<br>Manhattan: 2<br>New Jersey: 1<br>Queens: 1","Brooklyn: 46<br>Manhattan: 7<br>Queens: 19","Brooklyn: 347<br>Manhattan: 30<br>Queens: 27","Brooklyn: 38<br>Manhattan: 7<br>Queens: 44","Bronx: 2<br>Brooklyn: 56<br>Long Island: 1<br>Manhattan: 18<br>Queens: 148<br>Staten Island: 1","Brooklyn: 142<br>Manhattan: 94<br>New Jersey: 4<br>Outside NY: 1<br>Queens: 1<br>Staten Island: 2","Bronx: 3<br>Brooklyn: 308<br>Long Island: 1<br>Manhattan: 36<br>Queens: 91<br>Staten Island: 23","Queens: 2<br>Staten Island: 1","Queens: 1<br>Staten Island: 17","Bronx: 2<br>Manhattan: 1<br>Queens: 23","Manhattan: 1"],"showlegend":false,"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+#Make the hover show counts per borough
+hover_df &lt;- line_df %&gt;%
+  group_by(subway_line_used_most_often) %&gt;%
+  summarise(
+    total_count = sum(n),
+    borough_info = paste0(borough, &quot;: &quot;, n, collapse = &quot;&lt;br&gt;&quot;)
+  )
+
+#Add colors for each subway line 
+line_colors &lt;- tibble::tribble(
+  ~subway_line, ~color,
+  &quot;1&quot;, &quot;#EE352E&quot;,
+  &quot;2&quot;, &quot;#EE352E&quot;,
+  &quot;3&quot;, &quot;#EE352E&quot;,
+  &quot;4&quot;, &quot;#00933C&quot;,
+  &quot;5&quot;, &quot;#00933C&quot;,
+  &quot;6&quot;, &quot;#00933C&quot;,
+  &quot;7&quot;, &quot;#B933AD&quot;,
+  &quot;A&quot;, &quot;#0039A6&quot;,
+  &quot;C&quot;, &quot;#0039A6&quot;,
+  &quot;E&quot;, &quot;#0039A6&quot;,
+  &quot;B&quot;, &quot;#FF6319&quot;,
+  &quot;D&quot;, &quot;#FF6319&quot;,
+  &quot;F&quot;, &quot;#FF6319&quot;,
+  &quot;M&quot;, &quot;#FF6319&quot;,
+  &quot;N&quot;, &quot;#FCCC0A&quot;,
+  &quot;Q&quot;, &quot;#FCCC0A&quot;,
+  &quot;R&quot;, &quot;#FCCC0A&quot;,
+  &quot;W&quot;, &quot;#FCCC0A&quot;,
+  &quot;G&quot;, &quot;#6CBE45&quot;,
+  &quot;J&quot;, &quot;#996633&quot;,
+  &quot;Z&quot;, &quot;#996633&quot;,
+  &quot;L&quot;, &quot;#A7A9AC&quot;,
+  &quot;S&quot;, &quot;#808183&quot;
+)
+hover_df &lt;- hover_df %&gt;%
+  left_join(line_colors, by = c(&quot;subway_line_used_most_often&quot; = &quot;subway_line&quot;))
+
+
+#Produce plot
+plot_ly(hover_df) %&gt;%
+  add_segments(
+    x = 0,
+    xend = ~total_count,
+    y = ~reorder(subway_line_used_most_often, total_count),
+    yend = ~reorder(subway_line_used_most_often, total_count),
+    line = list(color = ~color),
+    hoverinfo = &quot;none&quot;,
+    showlegend = FALSE 
+  ) %&gt;%
+  add_markers(
+    x = ~total_count,
+    y = ~reorder(subway_line_used_most_often, total_count),
+    marker = list(color = ~color),
+    hovertemplate = &quot;Line: %{y}&lt;br&gt;Total Count: %{x}&lt;br&gt;%{customdata}&lt;extra&gt;&lt;/extra&gt;&quot;,
+    customdata = ~borough_info,
+    showlegend = FALSE
+  ) %&gt;%
+  layout(
+    title = &quot;Most Used Subway Lines by Borough&quot;,
+    xaxis = list(title = &quot;Count&quot;),
+    yaxis = list(title = &quot;Subway Line&quot;)
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-357c14da313d0db12b64" style="width:672px;height:1344px;"></div>
+<script type="application/json" data-for="htmlwidget-357c14da313d0db12b64">{"x":{"visdat":{"5b94467140a5":["function () ","plotlyVisDat"]},"cur_data":"5b94467140a5","attrs":{"5b94467140a5":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":0,"y":{},"xend":{},"yend":{},"type":"scatter","mode":"lines","line":{"color":{}},"hoverinfo":"none","showlegend":false,"inherit":true},"5b94467140a5.1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":{},"y":{},"type":"scatter","mode":"markers","marker":{"color":{}},"hovertemplate":"Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","customdata":{},"showlegend":false,"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Most Used Subway Lines by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Count"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","type":"category","categoryorder":"array","categoryarray":["Z","S","Staten Island Railway","W","J","B","5","M","G","3","D","4","C","6","N","E","Q","7","2","F","L","R","A","1"]},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0,1174,null,0,286,null,0,97,null,0,165,null,0,79,null,0,223,null,0,259,null,0,469,null,0,75,null,0,178,null,0,150,null,0,240,null,0,385,null,0,92,null,0,72,null,0,404,null,0,89,null,0,226,null,0,244,null,0,462,null,0,3,null,0,18,null,0,26,null,0,1],"y":["1","1",null,"2","2",null,"3","3",null,"4","4",null,"5","5",null,"6","6",null,"7","7",null,"A","A",null,"B","B",null,"C","C",null,"D","D",null,"E","E",null,"F","F",null,"G","G",null,"J","J",null,"L","L",null,"M","M",null,"N","N",null,"Q","Q",null,"R","R",null,"S","S",null,"Staten Island Railway","Staten Island Railway",null,"W","W",null,"Z","Z"],"type":"scatter","mode":"lines","line":{"color":["#EE352E","#EE352E","#EE352E","#00933C","#00933C","#00933C","#B933AD","#0039A6","#FF6319","#0039A6","#FF6319","#0039A6","#FF6319","#6CBE45","#996633","#A7A9AC","#FF6319","#FCCC0A","#FCCC0A","#FCCC0A","#808183",null,"#FCCC0A","#996633"]},"hoverinfo":["none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none"],"showlegend":false,"marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1174,286,97,165,79,223,259,469,75,178,150,240,385,92,72,404,89,226,244,462,3,18,26,1],"y":["1","2","3","4","5","6","7","A","B","C","D","E","F","G","J","L","M","N","Q","R","S","Staten Island Railway","W","Z"],"type":"scatter","mode":"markers","marker":{"color":["#EE352E","#EE352E","#EE352E","#00933C","#00933C","#00933C","#B933AD","#0039A6","#FF6319","#0039A6","#FF6319","#0039A6","#FF6319","#6CBE45","#996633","#A7A9AC","#FF6319","#FCCC0A","#FCCC0A","#FCCC0A","#808183",null,"#FCCC0A","#996633"],"line":{"color":"rgba(255,127,14,1)"}},"hovertemplate":["Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>","Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra><\/extra>"],"customdata":["Bronx: 86<br>Brooklyn: 277<br>Long Island: 1<br>Manhattan: 614<br>New Jersey: 9<br>New York State: 19<br>Outside NY: 2<br>Queens: 119<br>Staten Island: 47","Bronx: 55<br>Brooklyn: 109<br>Manhattan: 107<br>New Jersey: 2<br>New York State: 7<br>Queens: 3<br>Staten Island: 3","Brooklyn: 45<br>Manhattan: 50<br>Queens: 2","Bronx: 37<br>Brooklyn: 49<br>Manhattan: 46<br>New Jersey: 1<br>New York State: 14<br>Outside NY: 1<br>Queens: 1<br>Staten Island: 16","Bronx: 25<br>Brooklyn: 25<br>Manhattan: 18<br>New York State: 4<br>Queens: 2<br>Staten Island: 5","Bronx: 73<br>Brooklyn: 4<br>Manhattan: 139<br>New Jersey: 1<br>New York State: 4<br>Queens: 1<br>Staten Island: 1","Bronx: 1<br>Brooklyn: 9<br>Manhattan: 9<br>New Jersey: 4<br>New York State: 2<br>Queens: 234","Bronx: 3<br>Brooklyn: 101<br>Manhattan: 295<br>New Jersey: 9<br>New York State: 2<br>Outside NY: 1<br>Queens: 58","Bronx: 4<br>Brooklyn: 52<br>Long Island: 1<br>Manhattan: 18","Brooklyn: 67<br>Long Island: 1<br>Manhattan: 105<br>New Jersey: 3<br>Queens: 2","Bronx: 40<br>Brooklyn: 66<br>Manhattan: 39<br>New York State: 2<br>Queens: 2<br>Staten Island: 1","Bronx: 4<br>Brooklyn: 4<br>Long Island: 4<br>Manhattan: 83<br>New Jersey: 3<br>New York State: 1<br>Outside NY: 1<br>Queens: 140","Bronx: 2<br>Brooklyn: 166<br>Long Island: 2<br>Manhattan: 101<br>New Jersey: 1<br>New York State: 3<br>Queens: 110","Brooklyn: 88<br>Manhattan: 2<br>New Jersey: 1<br>Queens: 1","Brooklyn: 46<br>Manhattan: 7<br>Queens: 19","Brooklyn: 347<br>Manhattan: 30<br>Queens: 27","Brooklyn: 38<br>Manhattan: 7<br>Queens: 44","Bronx: 2<br>Brooklyn: 56<br>Long Island: 1<br>Manhattan: 18<br>Queens: 148<br>Staten Island: 1","Brooklyn: 142<br>Manhattan: 94<br>New Jersey: 4<br>Outside NY: 1<br>Queens: 1<br>Staten Island: 2","Bronx: 3<br>Brooklyn: 308<br>Long Island: 1<br>Manhattan: 36<br>Queens: 91<br>Staten Island: 23","Queens: 2<br>Staten Island: 1","Queens: 1<br>Staten Island: 17","Bronx: 2<br>Manhattan: 1<br>Queens: 23","Manhattan: 1"],"showlegend":false,"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="affordability-perception-by-borough" class="section level3">
 <h3>Affordability Perception by Borough</h3>
-<div class="knitr-options" data-fig-width="576" data-fig-height="1344">
+<pre class="r"><code>#Perception of affordability 
+afford_df &lt;- rider_data_full %&gt;%
+  count(borough, is_subway_affordable) %&gt;%
+  group_by(borough) %&gt;%
+  mutate(prop = n / sum(n))
 
-</div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-43b1ab03a731668f16ab" style="width:576px;height:1344px;"></div>
-<script type="application/json" data-for="htmlwidget-43b1ab03a731668f16ab">{"x":{"visdat":{"305c7d53ce1":["function () ","plotlyVisDat"]},"cur_data":"305c7d53ce1","attrs":{"305c7d53ce1":{"x":{},"y":{},"customdata":{},"hovertemplate":"Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","color":{},"colors":["#440154FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Affordability Perception by Borough","yaxis":{"domain":[0,1],"automargin":true,"tickformat":".0%","title":"Proportion"},"xaxis":{"domain":[0,1],"automargin":true,"title":"borough","type":"category","categoryorder":"array","categoryarray":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[0.52225519287833833,0.37918959479739872,0.36363636363636365,0.35164835164835168,0.36842105263157893,0.5,0.16666666666666666,0.4267701260911736,0.36752136752136755],"customdata":[false,false,false,false,false,false,false,false,false],"hovertemplate":["Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"type":"bar","name":"FALSE","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[0.47774480712166173,0.62081040520260133,0.63636363636363635,0.64835164835164838,0.63157894736842102,0.5,0.83333333333333337,0.5732298739088264,0.63247863247863245],"customdata":[true,true,true,true,true,true,true,true,true],"hovertemplate":["Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"type":"bar","name":"TRUE","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+#Initialize to see unique TRUE/FALSE values 
+vals &lt;- unique(afford_df$is_subway_affordable)
+
+#Make colors for each categorical option
+vals &lt;- unique(afford_df$is_subway_affordable)
+vir_cols &lt;- viridis(length(vals))     
+names(vir_cols) &lt;- vals                        
+
+
+plot_ly(
+  afford_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~is_subway_affordable,
+  type = &quot;bar&quot;,
+  colors = vir_cols,                         
+  customdata = ~is_subway_affordable,
+  hovertemplate = &quot;Borough: %{x}&lt;br&gt;Affordability: %{customdata}&lt;br&gt;Percent: %{y:.1%}&lt;extra&gt;&lt;/extra&gt;&quot;
+) %&gt;%
+  layout(
+    barmode = &quot;stack&quot;,
+    title = &quot;Affordability Perception by Borough&quot;,
+    yaxis = list(tickformat = &quot;.0%&quot;, title = &quot;Proportion&quot;)
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-7a2b0088d747049075ff" style="width:672px;height:1344px;"></div>
+<script type="application/json" data-for="htmlwidget-7a2b0088d747049075ff">{"x":{"visdat":{"5b94441d1865":["function () ","plotlyVisDat"]},"cur_data":"5b94441d1865","attrs":{"5b94441d1865":{"x":{},"y":{},"customdata":{},"hovertemplate":"Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","color":{},"colors":["#440154FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Affordability Perception by Borough","yaxis":{"domain":[0,1],"automargin":true,"tickformat":".0%","title":"Proportion"},"xaxis":{"domain":[0,1],"automargin":true,"title":"borough","type":"category","categoryorder":"array","categoryarray":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[0.52225519287833833,0.37918959479739872,0.36363636363636365,0.35164835164835168,0.36842105263157893,0.5,0.16666666666666666,0.4267701260911736,0.36752136752136755],"customdata":[false,false,false,false,false,false,false,false,false],"hovertemplate":["Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"type":"bar","name":"FALSE","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[0.47774480712166173,0.62081040520260133,0.63636363636363635,0.64835164835164838,0.63157894736842102,0.5,0.83333333333333337,0.5732298739088264,0.63247863247863245],"customdata":[true,true,true,true,true,true,true,true,true],"hovertemplate":["Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"type":"bar","name":"TRUE","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="opinions-on-increased-fairs-by-borough" class="section level3">
 <h3>Opinions on Increased Fairs by Borough</h3>
-<div class="knitr-options" data-fig-width="576" data-fig-height="1344">
+<pre class="r"><code>#Opinion on increased fair 
+opinion_df &lt;- rider_data_full %&gt;%
+  count(borough, opinion_on_increased_fares) %&gt;%
+  group_by(borough) %&gt;%
+  mutate(
+    prop = n / sum(n),
+    hover_text = paste0(
+      &quot;Borough: &quot;, borough, &quot;&lt;br&gt;&quot;,
+      &quot;Opinion: &quot;, opinion_on_increased_fares, &quot;&lt;br&gt;&quot;,
+      &quot;Count: &quot;, n, &quot;&lt;br&gt;&quot;,
+      &quot;Proportion: &quot;, scales::percent(prop, accuracy = 0.1)
+    )
+  ) %&gt;%
+  ungroup()
 
-</div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-8efb68e3f351bd33e62c" style="width:576px;height:1344px;"></div>
-<script type="application/json" data-for="htmlwidget-8efb68e3f351bd33e62c">{"x":{"visdat":{"305c21342edb":["function () ","plotlyVisDat"]},"cur_data":"305c21342edb","attrs":{"305c21342edb":{"x":["Negative","Neutral","Other / No thoughts","Positive","Unaware"],"y":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"z":[[0.29376854599406527,0.080118694362017809,0.053412462908011868,0.52818991097922852,0.044510385756676561],[0.15557778889444723,0.13906953476738368,0.066033016508254133,0.57628814407203599,0.063031515757878936],[0.27272727272727271,0.18181818181818182,null,0.27272727272727271,0.27272727272727271],[0.13406593406593406,0.14560439560439561,0.081868131868131869,0.55384615384615388,0.08461538461538462],[0.052631578947368418,0.13157894736842105,0.078947368421052627,0.65789473684210531,0.078947368421052627],[0.18965517241379309,0.13793103448275862,0.10344827586206896,0.56896551724137934,null],[0.5,null,null,0.33333333333333331,0.16666666666666666],[0.17652764306498545,0.10863239573229874,0.044616876818622697,0.62560620756547036,0.044616876818622697],[0.22222222222222221,0.12820512820512819,0.034188034188034191,0.5641025641025641,0.05128205128205128]],"text":[["Borough: Bronx<br>Opinion: Negative<br>Count: 99<br>Proportion: 29.4%","Borough: Bronx<br>Opinion: Neutral<br>Count: 27<br>Proportion: 8.0%","Borough: Bronx<br>Opinion: Other / No thoughts<br>Count: 18<br>Proportion: 5.3%","Borough: Bronx<br>Opinion: Positive<br>Count: 178<br>Proportion: 52.8%","Borough: Bronx<br>Opinion: Unaware<br>Count: 15<br>Proportion: 4.5%"],["Borough: Brooklyn<br>Opinion: Negative<br>Count: 311<br>Proportion: 15.6%","Borough: Brooklyn<br>Opinion: Neutral<br>Count: 278<br>Proportion: 13.9%","Borough: Brooklyn<br>Opinion: Other / No thoughts<br>Count: 132<br>Proportion: 6.6%","Borough: Brooklyn<br>Opinion: Positive<br>Count: 1152<br>Proportion: 57.6%","Borough: Brooklyn<br>Opinion: Unaware<br>Count: 126<br>Proportion: 6.3%"],["Borough: Long Island<br>Opinion: Negative<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Neutral<br>Count: 2<br>Proportion: 18.2%",null,"Borough: Long Island<br>Opinion: Positive<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Unaware<br>Count: 3<br>Proportion: 27.3%"],["Borough: Manhattan<br>Opinion: Negative<br>Count: 244<br>Proportion: 13.4%","Borough: Manhattan<br>Opinion: Neutral<br>Count: 265<br>Proportion: 14.6%","Borough: Manhattan<br>Opinion: Other / No thoughts<br>Count: 149<br>Proportion: 8.2%","Borough: Manhattan<br>Opinion: Positive<br>Count: 1008<br>Proportion: 55.4%","Borough: Manhattan<br>Opinion: Unaware<br>Count: 154<br>Proportion: 8.5%"],["Borough: New Jersey<br>Opinion: Negative<br>Count: 2<br>Proportion: 5.3%","Borough: New Jersey<br>Opinion: Neutral<br>Count: 5<br>Proportion: 13.2%","Borough: New Jersey<br>Opinion: Other / No thoughts<br>Count: 3<br>Proportion: 7.9%","Borough: New Jersey<br>Opinion: Positive<br>Count: 25<br>Proportion: 65.8%","Borough: New Jersey<br>Opinion: Unaware<br>Count: 3<br>Proportion: 7.9%"],["Borough: New York State<br>Opinion: Negative<br>Count: 11<br>Proportion: 19.0%","Borough: New York State<br>Opinion: Neutral<br>Count: 8<br>Proportion: 13.8%","Borough: New York State<br>Opinion: Other / No thoughts<br>Count: 6<br>Proportion: 10.3%","Borough: New York State<br>Opinion: Positive<br>Count: 33<br>Proportion: 56.9%",null],["Borough: Outside NY<br>Opinion: Negative<br>Count: 3<br>Proportion: 50.0%",null,null,"Borough: Outside NY<br>Opinion: Positive<br>Count: 2<br>Proportion: 33.3%","Borough: Outside NY<br>Opinion: Unaware<br>Count: 1<br>Proportion: 16.7%"],["Borough: Queens<br>Opinion: Negative<br>Count: 182<br>Proportion: 17.7%","Borough: Queens<br>Opinion: Neutral<br>Count: 112<br>Proportion: 10.9%","Borough: Queens<br>Opinion: Other / No thoughts<br>Count: 46<br>Proportion: 4.5%","Borough: Queens<br>Opinion: Positive<br>Count: 645<br>Proportion: 62.6%","Borough: Queens<br>Opinion: Unaware<br>Count: 46<br>Proportion: 4.5%"],["Borough: Staten Island<br>Opinion: Negative<br>Count: 26<br>Proportion: 22.2%","Borough: Staten Island<br>Opinion: Neutral<br>Count: 15<br>Proportion: 12.8%","Borough: Staten Island<br>Opinion: Other / No thoughts<br>Count: 4<br>Proportion: 3.4%","Borough: Staten Island<br>Opinion: Positive<br>Count: 66<br>Proportion: 56.4%","Borough: Staten Island<br>Opinion: Unaware<br>Count: 6<br>Proportion: 5.1%"]],"hoverinfo":"text","colorscale":"Viridis","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Opinions on Increased Fares by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Opinion"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Borough"},"scene":{"zaxis":{"title":[]}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":"Viridis","showscale":true,"x":["Negative","Neutral","Other / No thoughts","Positive","Unaware"],"y":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"z":[[0.29376854599406527,0.080118694362017809,0.053412462908011868,0.52818991097922852,0.044510385756676561],[0.15557778889444723,0.13906953476738368,0.066033016508254133,0.57628814407203599,0.063031515757878936],[0.27272727272727271,0.18181818181818182,null,0.27272727272727271,0.27272727272727271],[0.13406593406593406,0.14560439560439561,0.081868131868131869,0.55384615384615388,0.08461538461538462],[0.052631578947368418,0.13157894736842105,0.078947368421052627,0.65789473684210531,0.078947368421052627],[0.18965517241379309,0.13793103448275862,0.10344827586206896,0.56896551724137934,null],[0.5,null,null,0.33333333333333331,0.16666666666666666],[0.17652764306498545,0.10863239573229874,0.044616876818622697,0.62560620756547036,0.044616876818622697],[0.22222222222222221,0.12820512820512819,0.034188034188034191,0.5641025641025641,0.05128205128205128]],"text":[["Borough: Bronx<br>Opinion: Negative<br>Count: 99<br>Proportion: 29.4%","Borough: Bronx<br>Opinion: Neutral<br>Count: 27<br>Proportion: 8.0%","Borough: Bronx<br>Opinion: Other / No thoughts<br>Count: 18<br>Proportion: 5.3%","Borough: Bronx<br>Opinion: Positive<br>Count: 178<br>Proportion: 52.8%","Borough: Bronx<br>Opinion: Unaware<br>Count: 15<br>Proportion: 4.5%"],["Borough: Brooklyn<br>Opinion: Negative<br>Count: 311<br>Proportion: 15.6%","Borough: Brooklyn<br>Opinion: Neutral<br>Count: 278<br>Proportion: 13.9%","Borough: Brooklyn<br>Opinion: Other / No thoughts<br>Count: 132<br>Proportion: 6.6%","Borough: Brooklyn<br>Opinion: Positive<br>Count: 1152<br>Proportion: 57.6%","Borough: Brooklyn<br>Opinion: Unaware<br>Count: 126<br>Proportion: 6.3%"],["Borough: Long Island<br>Opinion: Negative<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Neutral<br>Count: 2<br>Proportion: 18.2%",null,"Borough: Long Island<br>Opinion: Positive<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Unaware<br>Count: 3<br>Proportion: 27.3%"],["Borough: Manhattan<br>Opinion: Negative<br>Count: 244<br>Proportion: 13.4%","Borough: Manhattan<br>Opinion: Neutral<br>Count: 265<br>Proportion: 14.6%","Borough: Manhattan<br>Opinion: Other / No thoughts<br>Count: 149<br>Proportion: 8.2%","Borough: Manhattan<br>Opinion: Positive<br>Count: 1008<br>Proportion: 55.4%","Borough: Manhattan<br>Opinion: Unaware<br>Count: 154<br>Proportion: 8.5%"],["Borough: New Jersey<br>Opinion: Negative<br>Count: 2<br>Proportion: 5.3%","Borough: New Jersey<br>Opinion: Neutral<br>Count: 5<br>Proportion: 13.2%","Borough: New Jersey<br>Opinion: Other / No thoughts<br>Count: 3<br>Proportion: 7.9%","Borough: New Jersey<br>Opinion: Positive<br>Count: 25<br>Proportion: 65.8%","Borough: New Jersey<br>Opinion: Unaware<br>Count: 3<br>Proportion: 7.9%"],["Borough: New York State<br>Opinion: Negative<br>Count: 11<br>Proportion: 19.0%","Borough: New York State<br>Opinion: Neutral<br>Count: 8<br>Proportion: 13.8%","Borough: New York State<br>Opinion: Other / No thoughts<br>Count: 6<br>Proportion: 10.3%","Borough: New York State<br>Opinion: Positive<br>Count: 33<br>Proportion: 56.9%",null],["Borough: Outside NY<br>Opinion: Negative<br>Count: 3<br>Proportion: 50.0%",null,null,"Borough: Outside NY<br>Opinion: Positive<br>Count: 2<br>Proportion: 33.3%","Borough: Outside NY<br>Opinion: Unaware<br>Count: 1<br>Proportion: 16.7%"],["Borough: Queens<br>Opinion: Negative<br>Count: 182<br>Proportion: 17.7%","Borough: Queens<br>Opinion: Neutral<br>Count: 112<br>Proportion: 10.9%","Borough: Queens<br>Opinion: Other / No thoughts<br>Count: 46<br>Proportion: 4.5%","Borough: Queens<br>Opinion: Positive<br>Count: 645<br>Proportion: 62.6%","Borough: Queens<br>Opinion: Unaware<br>Count: 46<br>Proportion: 4.5%"],["Borough: Staten Island<br>Opinion: Negative<br>Count: 26<br>Proportion: 22.2%","Borough: Staten Island<br>Opinion: Neutral<br>Count: 15<br>Proportion: 12.8%","Borough: Staten Island<br>Opinion: Other / No thoughts<br>Count: 4<br>Proportion: 3.4%","Borough: Staten Island<br>Opinion: Positive<br>Count: 66<br>Proportion: 56.4%","Borough: Staten Island<br>Opinion: Unaware<br>Count: 6<br>Proportion: 5.1%"]],"hoverinfo":"text","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+#Convert to wide
+heat_matrix &lt;- opinion_df %&gt;%
+  select(borough, opinion_on_increased_fares, prop) %&gt;%
+  pivot_wider(
+    names_from = opinion_on_increased_fares,
+    values_from = prop
+  )
+
+#Convert to wide for the hovering information
+hover_matrix &lt;- opinion_df %&gt;%
+  select(borough, opinion_on_increased_fares, hover_text) %&gt;%
+  pivot_wider(
+    names_from = opinion_on_increased_fares,
+    values_from = hover_text
+  )
+
+#Produce plot
+plot_ly(
+  x = colnames(heat_matrix)[-1],
+  y = heat_matrix$borough,
+  z = as.matrix(heat_matrix[,-1]),
+  text = as.matrix(hover_matrix[,-1]),
+  type = &quot;heatmap&quot;,
+  hoverinfo = &quot;text&quot;,
+  colorscale = &quot;Viridis&quot;) %&gt;%
+  layout(
+    title = &quot;Opinions on Increased Fares by Borough&quot;,
+    xaxis = list(title = &quot;Opinion&quot;),
+    yaxis = list(title = &quot;Borough&quot;)
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-fedd1e87a5adc4b4e498" style="width:672px;height:1344px;"></div>
+<script type="application/json" data-for="htmlwidget-fedd1e87a5adc4b4e498">{"x":{"visdat":{"5b946b833849":["function () ","plotlyVisDat"]},"cur_data":"5b946b833849","attrs":{"5b946b833849":{"x":["Negative","Neutral","Other / No thoughts","Positive","Unaware"],"y":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"z":[[0.29376854599406527,0.080118694362017809,0.053412462908011868,0.52818991097922852,0.044510385756676561],[0.15557778889444723,0.13906953476738368,0.066033016508254133,0.57628814407203599,0.063031515757878936],[0.27272727272727271,0.18181818181818182,null,0.27272727272727271,0.27272727272727271],[0.13406593406593406,0.14560439560439561,0.081868131868131869,0.55384615384615388,0.08461538461538462],[0.052631578947368418,0.13157894736842105,0.078947368421052627,0.65789473684210531,0.078947368421052627],[0.18965517241379309,0.13793103448275862,0.10344827586206896,0.56896551724137934,null],[0.5,null,null,0.33333333333333331,0.16666666666666666],[0.17652764306498545,0.10863239573229874,0.044616876818622697,0.62560620756547036,0.044616876818622697],[0.22222222222222221,0.12820512820512819,0.034188034188034191,0.5641025641025641,0.05128205128205128]],"text":[["Borough: Bronx<br>Opinion: Negative<br>Count: 99<br>Proportion: 29.4%","Borough: Bronx<br>Opinion: Neutral<br>Count: 27<br>Proportion: 8.0%","Borough: Bronx<br>Opinion: Other / No thoughts<br>Count: 18<br>Proportion: 5.3%","Borough: Bronx<br>Opinion: Positive<br>Count: 178<br>Proportion: 52.8%","Borough: Bronx<br>Opinion: Unaware<br>Count: 15<br>Proportion: 4.5%"],["Borough: Brooklyn<br>Opinion: Negative<br>Count: 311<br>Proportion: 15.6%","Borough: Brooklyn<br>Opinion: Neutral<br>Count: 278<br>Proportion: 13.9%","Borough: Brooklyn<br>Opinion: Other / No thoughts<br>Count: 132<br>Proportion: 6.6%","Borough: Brooklyn<br>Opinion: Positive<br>Count: 1152<br>Proportion: 57.6%","Borough: Brooklyn<br>Opinion: Unaware<br>Count: 126<br>Proportion: 6.3%"],["Borough: Long Island<br>Opinion: Negative<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Neutral<br>Count: 2<br>Proportion: 18.2%",null,"Borough: Long Island<br>Opinion: Positive<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Unaware<br>Count: 3<br>Proportion: 27.3%"],["Borough: Manhattan<br>Opinion: Negative<br>Count: 244<br>Proportion: 13.4%","Borough: Manhattan<br>Opinion: Neutral<br>Count: 265<br>Proportion: 14.6%","Borough: Manhattan<br>Opinion: Other / No thoughts<br>Count: 149<br>Proportion: 8.2%","Borough: Manhattan<br>Opinion: Positive<br>Count: 1008<br>Proportion: 55.4%","Borough: Manhattan<br>Opinion: Unaware<br>Count: 154<br>Proportion: 8.5%"],["Borough: New Jersey<br>Opinion: Negative<br>Count: 2<br>Proportion: 5.3%","Borough: New Jersey<br>Opinion: Neutral<br>Count: 5<br>Proportion: 13.2%","Borough: New Jersey<br>Opinion: Other / No thoughts<br>Count: 3<br>Proportion: 7.9%","Borough: New Jersey<br>Opinion: Positive<br>Count: 25<br>Proportion: 65.8%","Borough: New Jersey<br>Opinion: Unaware<br>Count: 3<br>Proportion: 7.9%"],["Borough: New York State<br>Opinion: Negative<br>Count: 11<br>Proportion: 19.0%","Borough: New York State<br>Opinion: Neutral<br>Count: 8<br>Proportion: 13.8%","Borough: New York State<br>Opinion: Other / No thoughts<br>Count: 6<br>Proportion: 10.3%","Borough: New York State<br>Opinion: Positive<br>Count: 33<br>Proportion: 56.9%",null],["Borough: Outside NY<br>Opinion: Negative<br>Count: 3<br>Proportion: 50.0%",null,null,"Borough: Outside NY<br>Opinion: Positive<br>Count: 2<br>Proportion: 33.3%","Borough: Outside NY<br>Opinion: Unaware<br>Count: 1<br>Proportion: 16.7%"],["Borough: Queens<br>Opinion: Negative<br>Count: 182<br>Proportion: 17.7%","Borough: Queens<br>Opinion: Neutral<br>Count: 112<br>Proportion: 10.9%","Borough: Queens<br>Opinion: Other / No thoughts<br>Count: 46<br>Proportion: 4.5%","Borough: Queens<br>Opinion: Positive<br>Count: 645<br>Proportion: 62.6%","Borough: Queens<br>Opinion: Unaware<br>Count: 46<br>Proportion: 4.5%"],["Borough: Staten Island<br>Opinion: Negative<br>Count: 26<br>Proportion: 22.2%","Borough: Staten Island<br>Opinion: Neutral<br>Count: 15<br>Proportion: 12.8%","Borough: Staten Island<br>Opinion: Other / No thoughts<br>Count: 4<br>Proportion: 3.4%","Borough: Staten Island<br>Opinion: Positive<br>Count: 66<br>Proportion: 56.4%","Borough: Staten Island<br>Opinion: Unaware<br>Count: 6<br>Proportion: 5.1%"]],"hoverinfo":"text","colorscale":"Viridis","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Opinions on Increased Fares by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Opinion"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Borough"},"scene":{"zaxis":{"title":[]}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":"Viridis","showscale":true,"x":["Negative","Neutral","Other / No thoughts","Positive","Unaware"],"y":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"z":[[0.29376854599406527,0.080118694362017809,0.053412462908011868,0.52818991097922852,0.044510385756676561],[0.15557778889444723,0.13906953476738368,0.066033016508254133,0.57628814407203599,0.063031515757878936],[0.27272727272727271,0.18181818181818182,null,0.27272727272727271,0.27272727272727271],[0.13406593406593406,0.14560439560439561,0.081868131868131869,0.55384615384615388,0.08461538461538462],[0.052631578947368418,0.13157894736842105,0.078947368421052627,0.65789473684210531,0.078947368421052627],[0.18965517241379309,0.13793103448275862,0.10344827586206896,0.56896551724137934,null],[0.5,null,null,0.33333333333333331,0.16666666666666666],[0.17652764306498545,0.10863239573229874,0.044616876818622697,0.62560620756547036,0.044616876818622697],[0.22222222222222221,0.12820512820512819,0.034188034188034191,0.5641025641025641,0.05128205128205128]],"text":[["Borough: Bronx<br>Opinion: Negative<br>Count: 99<br>Proportion: 29.4%","Borough: Bronx<br>Opinion: Neutral<br>Count: 27<br>Proportion: 8.0%","Borough: Bronx<br>Opinion: Other / No thoughts<br>Count: 18<br>Proportion: 5.3%","Borough: Bronx<br>Opinion: Positive<br>Count: 178<br>Proportion: 52.8%","Borough: Bronx<br>Opinion: Unaware<br>Count: 15<br>Proportion: 4.5%"],["Borough: Brooklyn<br>Opinion: Negative<br>Count: 311<br>Proportion: 15.6%","Borough: Brooklyn<br>Opinion: Neutral<br>Count: 278<br>Proportion: 13.9%","Borough: Brooklyn<br>Opinion: Other / No thoughts<br>Count: 132<br>Proportion: 6.6%","Borough: Brooklyn<br>Opinion: Positive<br>Count: 1152<br>Proportion: 57.6%","Borough: Brooklyn<br>Opinion: Unaware<br>Count: 126<br>Proportion: 6.3%"],["Borough: Long Island<br>Opinion: Negative<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Neutral<br>Count: 2<br>Proportion: 18.2%",null,"Borough: Long Island<br>Opinion: Positive<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Unaware<br>Count: 3<br>Proportion: 27.3%"],["Borough: Manhattan<br>Opinion: Negative<br>Count: 244<br>Proportion: 13.4%","Borough: Manhattan<br>Opinion: Neutral<br>Count: 265<br>Proportion: 14.6%","Borough: Manhattan<br>Opinion: Other / No thoughts<br>Count: 149<br>Proportion: 8.2%","Borough: Manhattan<br>Opinion: Positive<br>Count: 1008<br>Proportion: 55.4%","Borough: Manhattan<br>Opinion: Unaware<br>Count: 154<br>Proportion: 8.5%"],["Borough: New Jersey<br>Opinion: Negative<br>Count: 2<br>Proportion: 5.3%","Borough: New Jersey<br>Opinion: Neutral<br>Count: 5<br>Proportion: 13.2%","Borough: New Jersey<br>Opinion: Other / No thoughts<br>Count: 3<br>Proportion: 7.9%","Borough: New Jersey<br>Opinion: Positive<br>Count: 25<br>Proportion: 65.8%","Borough: New Jersey<br>Opinion: Unaware<br>Count: 3<br>Proportion: 7.9%"],["Borough: New York State<br>Opinion: Negative<br>Count: 11<br>Proportion: 19.0%","Borough: New York State<br>Opinion: Neutral<br>Count: 8<br>Proportion: 13.8%","Borough: New York State<br>Opinion: Other / No thoughts<br>Count: 6<br>Proportion: 10.3%","Borough: New York State<br>Opinion: Positive<br>Count: 33<br>Proportion: 56.9%",null],["Borough: Outside NY<br>Opinion: Negative<br>Count: 3<br>Proportion: 50.0%",null,null,"Borough: Outside NY<br>Opinion: Positive<br>Count: 2<br>Proportion: 33.3%","Borough: Outside NY<br>Opinion: Unaware<br>Count: 1<br>Proportion: 16.7%"],["Borough: Queens<br>Opinion: Negative<br>Count: 182<br>Proportion: 17.7%","Borough: Queens<br>Opinion: Neutral<br>Count: 112<br>Proportion: 10.9%","Borough: Queens<br>Opinion: Other / No thoughts<br>Count: 46<br>Proportion: 4.5%","Borough: Queens<br>Opinion: Positive<br>Count: 645<br>Proportion: 62.6%","Borough: Queens<br>Opinion: Unaware<br>Count: 46<br>Proportion: 4.5%"],["Borough: Staten Island<br>Opinion: Negative<br>Count: 26<br>Proportion: 22.2%","Borough: Staten Island<br>Opinion: Neutral<br>Count: 15<br>Proportion: 12.8%","Borough: Staten Island<br>Opinion: Other / No thoughts<br>Count: 4<br>Proportion: 3.4%","Borough: Staten Island<br>Opinion: Positive<br>Count: 66<br>Proportion: 56.4%","Borough: Staten Island<br>Opinion: Unaware<br>Count: 6<br>Proportion: 5.1%"]],"hoverinfo":"text","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="aggregated-satisfaction-levels" class="section level3">
 <h3>Aggregated Satisfaction Levels</h3>
-<div class="knitr-options" data-fig-width="576" data-fig-height="1344">
+<pre class="r"><code>#Satisfaction 
+satis_overall &lt;- rider_data_full %&gt;%
+  count(overall_satisfaction) %&gt;%
+  mutate(prop = n / sum(n),
+         percent = paste0(round(prop*100,1), &quot;%&quot;))
 
-</div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-81a6532c4d57123d171f" style="width:576px;height:1344px;"></div>
-<script type="application/json" data-for="htmlwidget-81a6532c4d57123d171f">{"x":{"visdat":{"305c52ed1c6f":["function () ","plotlyVisDat"]},"cur_data":"305c52ed1c6f","attrs":{"305c52ed1c6f":{"labels":{},"values":{},"hole":0.5,"textinfo":"label+percent","marker":{"colors":["#440154FF","#3B528BFF","#21908CFF","#5DC863FF","#FDE725FF"]},"hovertemplate":"%{label}<br>%{percent}<extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Aggregated Satisfaction Levels","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["Highly unsatisfied","Neutral","Not satisfied","Somewhat satisfied","Very satisfied"],"values":[0.24884622484770169,0.15359054827395238,0.36643898836994648,0.20103378253645929,0.030090455971940187],"hole":0.5,"textinfo":"label+percent","marker":{"color":"rgba(31,119,180,1)","colors":["#440154FF","#3B528BFF","#21908CFF","#5DC863FF","#FDE725FF"],"line":{"color":"rgba(255,255,255,1)"}},"hovertemplate":["%{label}<br>%{percent}<extra><\/extra>","%{label}<br>%{percent}<extra><\/extra>","%{label}<br>%{percent}<extra><\/extra>","%{label}<br>%{percent}<extra><\/extra>","%{label}<br>%{percent}<extra><\/extra>"],"type":"pie","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+#Set colors to gradient manually 
+viridis_colors &lt;- viridis(nrow(satis_overall))
+
+plot_ly(
+  satis_overall,
+  labels = ~overall_satisfaction,
+  values = ~prop,
+  type = &quot;pie&quot;,
+  hole = .5,
+  textinfo = &quot;label+percent&quot;,
+  marker = list(colors = viridis_colors),   # ← APPLY VIRIDIS HERE
+  hovertemplate = &quot;%{label}&lt;br&gt;%{percent}&lt;extra&gt;&lt;/extra&gt;&quot;
+) %&gt;%
+  layout(title = &quot;Aggregated Satisfaction Levels&quot;)</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-1ac0f5f47348c3e7f954" style="width:672px;height:1344px;"></div>
+<script type="application/json" data-for="htmlwidget-1ac0f5f47348c3e7f954">{"x":{"visdat":{"5b9419db33f7":["function () ","plotlyVisDat"]},"cur_data":"5b9419db33f7","attrs":{"5b9419db33f7":{"labels":{},"values":{},"hole":0.5,"textinfo":"label+percent","marker":{"colors":["#440154FF","#3B528BFF","#21908CFF","#5DC863FF","#FDE725FF"]},"hovertemplate":"%{label}<br>%{percent}<extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Aggregated Satisfaction Levels","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["Highly unsatisfied","Neutral","Not satisfied","Somewhat satisfied","Very satisfied"],"values":[0.24884622484770169,0.15359054827395238,0.36643898836994648,0.20103378253645929,0.030090455971940187],"hole":0.5,"textinfo":"label+percent","marker":{"color":"rgba(31,119,180,1)","colors":["#440154FF","#3B528BFF","#21908CFF","#5DC863FF","#FDE725FF"],"line":{"color":"rgba(255,255,255,1)"}},"hovertemplate":["%{label}<br>%{percent}<extra><\/extra>","%{label}<br>%{percent}<extra><\/extra>","%{label}<br>%{percent}<extra><\/extra>","%{label}<br>%{percent}<extra><\/extra>","%{label}<br>%{percent}<extra><\/extra>"],"type":"pie","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="satisfaction-levels-by-borough" class="section level3">
 <h3>Satisfaction Levels by Borough</h3>
-<div class="knitr-options" data-fig-width="576" data-fig-height="460">
+<pre class="r"><code># Prep data
+satis_df &lt;- rider_data_full %&gt;%
+  count(borough, overall_satisfaction) %&gt;%
+  group_by(borough) %&gt;%
+  mutate(
+    prop = n / sum(n),
+    hover_text = paste0(
+      &quot;Borough: &quot;, borough, &quot;&lt;br&gt;&quot;,
+      &quot;Opinion: &quot;, overall_satisfaction, &quot;&lt;br&gt;&quot;,
+      &quot;Count: &quot;, n, &quot;&lt;br&gt;&quot;,
+      &quot;Proportion: &quot;, scales::percent(prop, accuracy = 0.1)
+    )
+  ) %&gt;%
+  ungroup()
 
+#Convert to wide
+heat_matrix &lt;- satis_df %&gt;%
+  select(borough, overall_satisfaction, prop) %&gt;%
+  pivot_wider(
+    names_from = overall_satisfaction,
+    values_from = prop
+  )
+
+#Convert to wide for the hovering information
+hover_matrix &lt;- satis_df %&gt;%
+  select(borough, overall_satisfaction, hover_text) %&gt;%
+  pivot_wider(
+    names_from = overall_satisfaction,
+    values_from = hover_text
+  )
+
+#Produce plot
+plot_ly(
+  x = colnames(heat_matrix)[-1],
+  y = heat_matrix$borough,
+  z = as.matrix(heat_matrix[,-1]),
+  text = as.matrix(hover_matrix[,-1]),
+  type = &quot;heatmap&quot;,
+  hoverinfo = &quot;text&quot;,
+  colorscale = &quot;Viridis&quot;) %&gt;%
+  layout(
+    title = &quot;Overall Satisfaction by Borough&quot;,
+    xaxis = list(title = &quot;Satisfaction Level&quot;),
+    yaxis = list(title = &quot;Borough&quot;)
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-978eaffd9d06e564d832" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-978eaffd9d06e564d832">{"x":{"visdat":{"5b9431876e9d":["function () ","plotlyVisDat"]},"cur_data":"5b9431876e9d","attrs":{"5b9431876e9d":{"x":["Highly unsatisfied","Neutral","Not satisfied","Somewhat satisfied","Very satisfied"],"y":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"z":[[0.3056379821958457,0.1394658753709199,0.32937685459940652,0.20178041543026706,0.023738872403560832],[0.28264132066033015,0.15057528764382191,0.38119059529764882,0.16358179089544772,0.022011005502751375],[0.18181818181818182,0.27272727272727271,0.090909090909090912,0.27272727272727271,0.18181818181818182],[0.19725274725274725,0.160989010989011,0.35164835164835168,0.25054945054945055,0.039560439560439559],[0.078947368421052627,0.15789473684210525,0.34210526315789475,0.31578947368421051,0.10526315789473684],[0.1206896551724138,0.22413793103448276,0.43103448275862066,0.20689655172413793,0.017241379310344827],[0.16666666666666666,0.16666666666666666,0.5,0.16666666666666666,null],[0.28903976721629487,0.13191076624636275,0.38991270611057227,0.1716779825412221,0.017458777885548012],[0.085470085470085472,0.27350427350427353,0.23931623931623933,0.28205128205128205,0.11965811965811966]],"text":[["Borough: Bronx<br>Opinion: Highly unsatisfied<br>Count: 103<br>Proportion: 30.6%","Borough: Bronx<br>Opinion: Neutral<br>Count: 47<br>Proportion: 13.9%","Borough: Bronx<br>Opinion: Not satisfied<br>Count: 111<br>Proportion: 32.9%","Borough: Bronx<br>Opinion: Somewhat satisfied<br>Count: 68<br>Proportion: 20.2%","Borough: Bronx<br>Opinion: Very satisfied<br>Count: 8<br>Proportion: 2.4%"],["Borough: Brooklyn<br>Opinion: Highly unsatisfied<br>Count: 565<br>Proportion: 28.3%","Borough: Brooklyn<br>Opinion: Neutral<br>Count: 301<br>Proportion: 15.1%","Borough: Brooklyn<br>Opinion: Not satisfied<br>Count: 762<br>Proportion: 38.1%","Borough: Brooklyn<br>Opinion: Somewhat satisfied<br>Count: 327<br>Proportion: 16.4%","Borough: Brooklyn<br>Opinion: Very satisfied<br>Count: 44<br>Proportion: 2.2%"],["Borough: Long Island<br>Opinion: Highly unsatisfied<br>Count: 2<br>Proportion: 18.2%","Borough: Long Island<br>Opinion: Neutral<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Not satisfied<br>Count: 1<br>Proportion: 9.1%","Borough: Long Island<br>Opinion: Somewhat satisfied<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Very satisfied<br>Count: 2<br>Proportion: 18.2%"],["Borough: Manhattan<br>Opinion: Highly unsatisfied<br>Count: 359<br>Proportion: 19.7%","Borough: Manhattan<br>Opinion: Neutral<br>Count: 293<br>Proportion: 16.1%","Borough: Manhattan<br>Opinion: Not satisfied<br>Count: 640<br>Proportion: 35.2%","Borough: Manhattan<br>Opinion: Somewhat satisfied<br>Count: 456<br>Proportion: 25.1%","Borough: Manhattan<br>Opinion: Very satisfied<br>Count: 72<br>Proportion: 4.0%"],["Borough: New Jersey<br>Opinion: Highly unsatisfied<br>Count: 3<br>Proportion: 7.9%","Borough: New Jersey<br>Opinion: Neutral<br>Count: 6<br>Proportion: 15.8%","Borough: New Jersey<br>Opinion: Not satisfied<br>Count: 13<br>Proportion: 34.2%","Borough: New Jersey<br>Opinion: Somewhat satisfied<br>Count: 12<br>Proportion: 31.6%","Borough: New Jersey<br>Opinion: Very satisfied<br>Count: 4<br>Proportion: 10.5%"],["Borough: New York State<br>Opinion: Highly unsatisfied<br>Count: 7<br>Proportion: 12.1%","Borough: New York State<br>Opinion: Neutral<br>Count: 13<br>Proportion: 22.4%","Borough: New York State<br>Opinion: Not satisfied<br>Count: 25<br>Proportion: 43.1%","Borough: New York State<br>Opinion: Somewhat satisfied<br>Count: 12<br>Proportion: 20.7%","Borough: New York State<br>Opinion: Very satisfied<br>Count: 1<br>Proportion: 1.7%"],["Borough: Outside NY<br>Opinion: Highly unsatisfied<br>Count: 1<br>Proportion: 16.7%","Borough: Outside NY<br>Opinion: Neutral<br>Count: 1<br>Proportion: 16.7%","Borough: Outside NY<br>Opinion: Not satisfied<br>Count: 3<br>Proportion: 50.0%","Borough: Outside NY<br>Opinion: Somewhat satisfied<br>Count: 1<br>Proportion: 16.7%",null],["Borough: Queens<br>Opinion: Highly unsatisfied<br>Count: 298<br>Proportion: 28.9%","Borough: Queens<br>Opinion: Neutral<br>Count: 136<br>Proportion: 13.2%","Borough: Queens<br>Opinion: Not satisfied<br>Count: 402<br>Proportion: 39.0%","Borough: Queens<br>Opinion: Somewhat satisfied<br>Count: 177<br>Proportion: 17.2%","Borough: Queens<br>Opinion: Very satisfied<br>Count: 18<br>Proportion: 1.7%"],["Borough: Staten Island<br>Opinion: Highly unsatisfied<br>Count: 10<br>Proportion: 8.5%","Borough: Staten Island<br>Opinion: Neutral<br>Count: 32<br>Proportion: 27.4%","Borough: Staten Island<br>Opinion: Not satisfied<br>Count: 28<br>Proportion: 23.9%","Borough: Staten Island<br>Opinion: Somewhat satisfied<br>Count: 33<br>Proportion: 28.2%","Borough: Staten Island<br>Opinion: Very satisfied<br>Count: 14<br>Proportion: 12.0%"]],"hoverinfo":"text","colorscale":"Viridis","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Overall Satisfaction by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Satisfaction Level"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Borough"},"scene":{"zaxis":{"title":[]}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":"Viridis","showscale":true,"x":["Highly unsatisfied","Neutral","Not satisfied","Somewhat satisfied","Very satisfied"],"y":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"z":[[0.3056379821958457,0.1394658753709199,0.32937685459940652,0.20178041543026706,0.023738872403560832],[0.28264132066033015,0.15057528764382191,0.38119059529764882,0.16358179089544772,0.022011005502751375],[0.18181818181818182,0.27272727272727271,0.090909090909090912,0.27272727272727271,0.18181818181818182],[0.19725274725274725,0.160989010989011,0.35164835164835168,0.25054945054945055,0.039560439560439559],[0.078947368421052627,0.15789473684210525,0.34210526315789475,0.31578947368421051,0.10526315789473684],[0.1206896551724138,0.22413793103448276,0.43103448275862066,0.20689655172413793,0.017241379310344827],[0.16666666666666666,0.16666666666666666,0.5,0.16666666666666666,null],[0.28903976721629487,0.13191076624636275,0.38991270611057227,0.1716779825412221,0.017458777885548012],[0.085470085470085472,0.27350427350427353,0.23931623931623933,0.28205128205128205,0.11965811965811966]],"text":[["Borough: Bronx<br>Opinion: Highly unsatisfied<br>Count: 103<br>Proportion: 30.6%","Borough: Bronx<br>Opinion: Neutral<br>Count: 47<br>Proportion: 13.9%","Borough: Bronx<br>Opinion: Not satisfied<br>Count: 111<br>Proportion: 32.9%","Borough: Bronx<br>Opinion: Somewhat satisfied<br>Count: 68<br>Proportion: 20.2%","Borough: Bronx<br>Opinion: Very satisfied<br>Count: 8<br>Proportion: 2.4%"],["Borough: Brooklyn<br>Opinion: Highly unsatisfied<br>Count: 565<br>Proportion: 28.3%","Borough: Brooklyn<br>Opinion: Neutral<br>Count: 301<br>Proportion: 15.1%","Borough: Brooklyn<br>Opinion: Not satisfied<br>Count: 762<br>Proportion: 38.1%","Borough: Brooklyn<br>Opinion: Somewhat satisfied<br>Count: 327<br>Proportion: 16.4%","Borough: Brooklyn<br>Opinion: Very satisfied<br>Count: 44<br>Proportion: 2.2%"],["Borough: Long Island<br>Opinion: Highly unsatisfied<br>Count: 2<br>Proportion: 18.2%","Borough: Long Island<br>Opinion: Neutral<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Not satisfied<br>Count: 1<br>Proportion: 9.1%","Borough: Long Island<br>Opinion: Somewhat satisfied<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Very satisfied<br>Count: 2<br>Proportion: 18.2%"],["Borough: Manhattan<br>Opinion: Highly unsatisfied<br>Count: 359<br>Proportion: 19.7%","Borough: Manhattan<br>Opinion: Neutral<br>Count: 293<br>Proportion: 16.1%","Borough: Manhattan<br>Opinion: Not satisfied<br>Count: 640<br>Proportion: 35.2%","Borough: Manhattan<br>Opinion: Somewhat satisfied<br>Count: 456<br>Proportion: 25.1%","Borough: Manhattan<br>Opinion: Very satisfied<br>Count: 72<br>Proportion: 4.0%"],["Borough: New Jersey<br>Opinion: Highly unsatisfied<br>Count: 3<br>Proportion: 7.9%","Borough: New Jersey<br>Opinion: Neutral<br>Count: 6<br>Proportion: 15.8%","Borough: New Jersey<br>Opinion: Not satisfied<br>Count: 13<br>Proportion: 34.2%","Borough: New Jersey<br>Opinion: Somewhat satisfied<br>Count: 12<br>Proportion: 31.6%","Borough: New Jersey<br>Opinion: Very satisfied<br>Count: 4<br>Proportion: 10.5%"],["Borough: New York State<br>Opinion: Highly unsatisfied<br>Count: 7<br>Proportion: 12.1%","Borough: New York State<br>Opinion: Neutral<br>Count: 13<br>Proportion: 22.4%","Borough: New York State<br>Opinion: Not satisfied<br>Count: 25<br>Proportion: 43.1%","Borough: New York State<br>Opinion: Somewhat satisfied<br>Count: 12<br>Proportion: 20.7%","Borough: New York State<br>Opinion: Very satisfied<br>Count: 1<br>Proportion: 1.7%"],["Borough: Outside NY<br>Opinion: Highly unsatisfied<br>Count: 1<br>Proportion: 16.7%","Borough: Outside NY<br>Opinion: Neutral<br>Count: 1<br>Proportion: 16.7%","Borough: Outside NY<br>Opinion: Not satisfied<br>Count: 3<br>Proportion: 50.0%","Borough: Outside NY<br>Opinion: Somewhat satisfied<br>Count: 1<br>Proportion: 16.7%",null],["Borough: Queens<br>Opinion: Highly unsatisfied<br>Count: 298<br>Proportion: 28.9%","Borough: Queens<br>Opinion: Neutral<br>Count: 136<br>Proportion: 13.2%","Borough: Queens<br>Opinion: Not satisfied<br>Count: 402<br>Proportion: 39.0%","Borough: Queens<br>Opinion: Somewhat satisfied<br>Count: 177<br>Proportion: 17.2%","Borough: Queens<br>Opinion: Very satisfied<br>Count: 18<br>Proportion: 1.7%"],["Borough: Staten Island<br>Opinion: Highly unsatisfied<br>Count: 10<br>Proportion: 8.5%","Borough: Staten Island<br>Opinion: Neutral<br>Count: 32<br>Proportion: 27.4%","Borough: Staten Island<br>Opinion: Not satisfied<br>Count: 28<br>Proportion: 23.9%","Borough: Staten Island<br>Opinion: Somewhat satisfied<br>Count: 33<br>Proportion: 28.2%","Borough: Staten Island<br>Opinion: Very satisfied<br>Count: 14<br>Proportion: 12.0%"]],"hoverinfo":"text","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-704669489ed776378bf4" style="width:576px;height:460.8px;"></div>
-<script type="application/json" data-for="htmlwidget-704669489ed776378bf4">{"x":{"visdat":{"305c28ab4030":["function () ","plotlyVisDat"]},"cur_data":"305c28ab4030","attrs":{"305c28ab4030":{"x":["Highly unsatisfied","Neutral","Not satisfied","Somewhat satisfied","Very satisfied"],"y":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"z":[[0.3056379821958457,0.1394658753709199,0.32937685459940652,0.20178041543026706,0.023738872403560832],[0.28264132066033015,0.15057528764382191,0.38119059529764882,0.16358179089544772,0.022011005502751375],[0.18181818181818182,0.27272727272727271,0.090909090909090912,0.27272727272727271,0.18181818181818182],[0.19725274725274725,0.160989010989011,0.35164835164835168,0.25054945054945055,0.039560439560439559],[0.078947368421052627,0.15789473684210525,0.34210526315789475,0.31578947368421051,0.10526315789473684],[0.1206896551724138,0.22413793103448276,0.43103448275862066,0.20689655172413793,0.017241379310344827],[0.16666666666666666,0.16666666666666666,0.5,0.16666666666666666,null],[0.28903976721629487,0.13191076624636275,0.38991270611057227,0.1716779825412221,0.017458777885548012],[0.085470085470085472,0.27350427350427353,0.23931623931623933,0.28205128205128205,0.11965811965811966]],"text":[["Borough: Bronx<br>Opinion: Highly unsatisfied<br>Count: 103<br>Proportion: 30.6%","Borough: Bronx<br>Opinion: Neutral<br>Count: 47<br>Proportion: 13.9%","Borough: Bronx<br>Opinion: Not satisfied<br>Count: 111<br>Proportion: 32.9%","Borough: Bronx<br>Opinion: Somewhat satisfied<br>Count: 68<br>Proportion: 20.2%","Borough: Bronx<br>Opinion: Very satisfied<br>Count: 8<br>Proportion: 2.4%"],["Borough: Brooklyn<br>Opinion: Highly unsatisfied<br>Count: 565<br>Proportion: 28.3%","Borough: Brooklyn<br>Opinion: Neutral<br>Count: 301<br>Proportion: 15.1%","Borough: Brooklyn<br>Opinion: Not satisfied<br>Count: 762<br>Proportion: 38.1%","Borough: Brooklyn<br>Opinion: Somewhat satisfied<br>Count: 327<br>Proportion: 16.4%","Borough: Brooklyn<br>Opinion: Very satisfied<br>Count: 44<br>Proportion: 2.2%"],["Borough: Long Island<br>Opinion: Highly unsatisfied<br>Count: 2<br>Proportion: 18.2%","Borough: Long Island<br>Opinion: Neutral<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Not satisfied<br>Count: 1<br>Proportion: 9.1%","Borough: Long Island<br>Opinion: Somewhat satisfied<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Very satisfied<br>Count: 2<br>Proportion: 18.2%"],["Borough: Manhattan<br>Opinion: Highly unsatisfied<br>Count: 359<br>Proportion: 19.7%","Borough: Manhattan<br>Opinion: Neutral<br>Count: 293<br>Proportion: 16.1%","Borough: Manhattan<br>Opinion: Not satisfied<br>Count: 640<br>Proportion: 35.2%","Borough: Manhattan<br>Opinion: Somewhat satisfied<br>Count: 456<br>Proportion: 25.1%","Borough: Manhattan<br>Opinion: Very satisfied<br>Count: 72<br>Proportion: 4.0%"],["Borough: New Jersey<br>Opinion: Highly unsatisfied<br>Count: 3<br>Proportion: 7.9%","Borough: New Jersey<br>Opinion: Neutral<br>Count: 6<br>Proportion: 15.8%","Borough: New Jersey<br>Opinion: Not satisfied<br>Count: 13<br>Proportion: 34.2%","Borough: New Jersey<br>Opinion: Somewhat satisfied<br>Count: 12<br>Proportion: 31.6%","Borough: New Jersey<br>Opinion: Very satisfied<br>Count: 4<br>Proportion: 10.5%"],["Borough: New York State<br>Opinion: Highly unsatisfied<br>Count: 7<br>Proportion: 12.1%","Borough: New York State<br>Opinion: Neutral<br>Count: 13<br>Proportion: 22.4%","Borough: New York State<br>Opinion: Not satisfied<br>Count: 25<br>Proportion: 43.1%","Borough: New York State<br>Opinion: Somewhat satisfied<br>Count: 12<br>Proportion: 20.7%","Borough: New York State<br>Opinion: Very satisfied<br>Count: 1<br>Proportion: 1.7%"],["Borough: Outside NY<br>Opinion: Highly unsatisfied<br>Count: 1<br>Proportion: 16.7%","Borough: Outside NY<br>Opinion: Neutral<br>Count: 1<br>Proportion: 16.7%","Borough: Outside NY<br>Opinion: Not satisfied<br>Count: 3<br>Proportion: 50.0%","Borough: Outside NY<br>Opinion: Somewhat satisfied<br>Count: 1<br>Proportion: 16.7%",null],["Borough: Queens<br>Opinion: Highly unsatisfied<br>Count: 298<br>Proportion: 28.9%","Borough: Queens<br>Opinion: Neutral<br>Count: 136<br>Proportion: 13.2%","Borough: Queens<br>Opinion: Not satisfied<br>Count: 402<br>Proportion: 39.0%","Borough: Queens<br>Opinion: Somewhat satisfied<br>Count: 177<br>Proportion: 17.2%","Borough: Queens<br>Opinion: Very satisfied<br>Count: 18<br>Proportion: 1.7%"],["Borough: Staten Island<br>Opinion: Highly unsatisfied<br>Count: 10<br>Proportion: 8.5%","Borough: Staten Island<br>Opinion: Neutral<br>Count: 32<br>Proportion: 27.4%","Borough: Staten Island<br>Opinion: Not satisfied<br>Count: 28<br>Proportion: 23.9%","Borough: Staten Island<br>Opinion: Somewhat satisfied<br>Count: 33<br>Proportion: 28.2%","Borough: Staten Island<br>Opinion: Very satisfied<br>Count: 14<br>Proportion: 12.0%"]],"hoverinfo":"text","colorscale":"Viridis","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Overall Satisfaction by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Satisfaction Level"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Borough"},"scene":{"zaxis":{"title":[]}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":"Viridis","showscale":true,"x":["Highly unsatisfied","Neutral","Not satisfied","Somewhat satisfied","Very satisfied"],"y":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"z":[[0.3056379821958457,0.1394658753709199,0.32937685459940652,0.20178041543026706,0.023738872403560832],[0.28264132066033015,0.15057528764382191,0.38119059529764882,0.16358179089544772,0.022011005502751375],[0.18181818181818182,0.27272727272727271,0.090909090909090912,0.27272727272727271,0.18181818181818182],[0.19725274725274725,0.160989010989011,0.35164835164835168,0.25054945054945055,0.039560439560439559],[0.078947368421052627,0.15789473684210525,0.34210526315789475,0.31578947368421051,0.10526315789473684],[0.1206896551724138,0.22413793103448276,0.43103448275862066,0.20689655172413793,0.017241379310344827],[0.16666666666666666,0.16666666666666666,0.5,0.16666666666666666,null],[0.28903976721629487,0.13191076624636275,0.38991270611057227,0.1716779825412221,0.017458777885548012],[0.085470085470085472,0.27350427350427353,0.23931623931623933,0.28205128205128205,0.11965811965811966]],"text":[["Borough: Bronx<br>Opinion: Highly unsatisfied<br>Count: 103<br>Proportion: 30.6%","Borough: Bronx<br>Opinion: Neutral<br>Count: 47<br>Proportion: 13.9%","Borough: Bronx<br>Opinion: Not satisfied<br>Count: 111<br>Proportion: 32.9%","Borough: Bronx<br>Opinion: Somewhat satisfied<br>Count: 68<br>Proportion: 20.2%","Borough: Bronx<br>Opinion: Very satisfied<br>Count: 8<br>Proportion: 2.4%"],["Borough: Brooklyn<br>Opinion: Highly unsatisfied<br>Count: 565<br>Proportion: 28.3%","Borough: Brooklyn<br>Opinion: Neutral<br>Count: 301<br>Proportion: 15.1%","Borough: Brooklyn<br>Opinion: Not satisfied<br>Count: 762<br>Proportion: 38.1%","Borough: Brooklyn<br>Opinion: Somewhat satisfied<br>Count: 327<br>Proportion: 16.4%","Borough: Brooklyn<br>Opinion: Very satisfied<br>Count: 44<br>Proportion: 2.2%"],["Borough: Long Island<br>Opinion: Highly unsatisfied<br>Count: 2<br>Proportion: 18.2%","Borough: Long Island<br>Opinion: Neutral<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Not satisfied<br>Count: 1<br>Proportion: 9.1%","Borough: Long Island<br>Opinion: Somewhat satisfied<br>Count: 3<br>Proportion: 27.3%","Borough: Long Island<br>Opinion: Very satisfied<br>Count: 2<br>Proportion: 18.2%"],["Borough: Manhattan<br>Opinion: Highly unsatisfied<br>Count: 359<br>Proportion: 19.7%","Borough: Manhattan<br>Opinion: Neutral<br>Count: 293<br>Proportion: 16.1%","Borough: Manhattan<br>Opinion: Not satisfied<br>Count: 640<br>Proportion: 35.2%","Borough: Manhattan<br>Opinion: Somewhat satisfied<br>Count: 456<br>Proportion: 25.1%","Borough: Manhattan<br>Opinion: Very satisfied<br>Count: 72<br>Proportion: 4.0%"],["Borough: New Jersey<br>Opinion: Highly unsatisfied<br>Count: 3<br>Proportion: 7.9%","Borough: New Jersey<br>Opinion: Neutral<br>Count: 6<br>Proportion: 15.8%","Borough: New Jersey<br>Opinion: Not satisfied<br>Count: 13<br>Proportion: 34.2%","Borough: New Jersey<br>Opinion: Somewhat satisfied<br>Count: 12<br>Proportion: 31.6%","Borough: New Jersey<br>Opinion: Very satisfied<br>Count: 4<br>Proportion: 10.5%"],["Borough: New York State<br>Opinion: Highly unsatisfied<br>Count: 7<br>Proportion: 12.1%","Borough: New York State<br>Opinion: Neutral<br>Count: 13<br>Proportion: 22.4%","Borough: New York State<br>Opinion: Not satisfied<br>Count: 25<br>Proportion: 43.1%","Borough: New York State<br>Opinion: Somewhat satisfied<br>Count: 12<br>Proportion: 20.7%","Borough: New York State<br>Opinion: Very satisfied<br>Count: 1<br>Proportion: 1.7%"],["Borough: Outside NY<br>Opinion: Highly unsatisfied<br>Count: 1<br>Proportion: 16.7%","Borough: Outside NY<br>Opinion: Neutral<br>Count: 1<br>Proportion: 16.7%","Borough: Outside NY<br>Opinion: Not satisfied<br>Count: 3<br>Proportion: 50.0%","Borough: Outside NY<br>Opinion: Somewhat satisfied<br>Count: 1<br>Proportion: 16.7%",null],["Borough: Queens<br>Opinion: Highly unsatisfied<br>Count: 298<br>Proportion: 28.9%","Borough: Queens<br>Opinion: Neutral<br>Count: 136<br>Proportion: 13.2%","Borough: Queens<br>Opinion: Not satisfied<br>Count: 402<br>Proportion: 39.0%","Borough: Queens<br>Opinion: Somewhat satisfied<br>Count: 177<br>Proportion: 17.2%","Borough: Queens<br>Opinion: Very satisfied<br>Count: 18<br>Proportion: 1.7%"],["Borough: Staten Island<br>Opinion: Highly unsatisfied<br>Count: 10<br>Proportion: 8.5%","Borough: Staten Island<br>Opinion: Neutral<br>Count: 32<br>Proportion: 27.4%","Borough: Staten Island<br>Opinion: Not satisfied<br>Count: 28<br>Proportion: 23.9%","Borough: Staten Island<br>Opinion: Somewhat satisfied<br>Count: 33<br>Proportion: 28.2%","Borough: Staten Island<br>Opinion: Very satisfied<br>Count: 14<br>Proportion: 12.0%"]],"hoverinfo":"text","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
+
+
+
 
 </div>
 
 <script>
-$(document).ready(function() {
-  // add bootstrap table styles to pandoc tables
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed table-sm');
 
-  // initialize mathjax
-  var script = document.createElement("script");
-  script.type = "text/javascript";
-  script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-  document.getElementsByTagName("head")[0].appendChild(script);
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
 
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
 });
 </script>
 
-<script type="text/javascript">
+<!-- code folding -->
+<script>
 $(document).ready(function () {
-  FlexDashboard.init({
-    fillPage: true,
-    orientation: "rows",
-    storyboard: false,
-    defaultFigWidth: 576,
-    defaultFigHeight: 460,
-    defaultFigWidthMobile: 360,
-    defaultFigHeightMobile: 460,
-    resize_reload: true
-  });
-  var navbar = $(".navbar").first();
-  var body = $("body").first();
-  var sidebar = $(".section.sidebar").first();
-  function addNavbarPadding() {
-    var navHeight = navbar.outerHeight();
-    body.css("padding-top", (navHeight + 8) + "px");
-    sidebar.css("top", navHeight + "px");
-    var resizeEvent = window.document.createEvent("UIEvents");
-    resizeEvent.initUIEvent("resize", true, false, window, 0);
-    window.dispatchEvent(resizeEvent);
-  }
-  if (!window.Shiny) setTimeout(addNavbarPadding, 100);
-  $(document).on("shiny:idle", function() {
-    setTimeout(addNavbarPadding, 50);
-  });
+  window.initializeCodeFolding("hide" === "show");
 });
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
 </script>
 
 </body>

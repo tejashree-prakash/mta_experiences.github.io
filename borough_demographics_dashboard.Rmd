@@ -1,10 +1,5 @@
 ---
 title: "Borough Demographics Dashboard"
-output: 
-  flexdashboard::flex_dashboard:
-    orientation: rows
-    vertical_layout: fill
-    theme: flatly
 ---
 
 By borough / zip code (like the TA’s example) 

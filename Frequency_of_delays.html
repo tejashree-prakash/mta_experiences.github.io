@@ -16,7 +16,7 @@
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -30,6 +30,7 @@
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
@@ -224,6 +225,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -271,9 +275,6 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="index.html">Welcome</a>
-</li>
-<li>
   <a href="borough_demographics_dashboard.html">Borough dashboard</a>
 </li>
 <li>
@@ -289,6 +290,14 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Frequency of Delays by Subway Line</h1>
@@ -299,49 +308,17 @@ $(document).ready(function () {
 <p>This is an interactive visualization representing the frequency of
 delays by subway line.</p>
 <p>Packages (need to install gt package to use gt library first)</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-## ✔ ggplot2   3.5.2     ✔ tibble    3.3.0
-## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-## ✔ purrr     1.1.0     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(janitor)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;janitor&#39;
-## 
-## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     chisq.test, fisher.test</code></pre>
-<pre class="r"><code>library(viridis)</code></pre>
-<pre><code>## Loading required package: viridisLite</code></pre>
-<pre class="r"><code>library(plotly)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;plotly&#39;
-## 
-## The following object is masked from &#39;package:ggplot2&#39;:
-## 
-##     last_plot
-## 
-## The following object is masked from &#39;package:stats&#39;:
-## 
-##     filter
-## 
-## The following object is masked from &#39;package:graphics&#39;:
-## 
-##     layout</code></pre>
-<pre class="r"><code>library(knitr)
+<pre class="r"><code>library(tidyverse)
+library(janitor)
+library(viridis)
+library(plotly)
+library(knitr)
 library(gt)</code></pre>
-<pre><code>## Warning: package &#39;gt&#39; was built under R version 4.5.2</code></pre>
 <p>Load data.</p>
 <pre class="r"><code>raw &lt;- read_csv(&quot;data/2019_subway_rider_data.csv&quot;) |&gt; 
   clean_names()</code></pre>
 <pre><code>## Rows: 10704 Columns: 19
-## ── Column specification ────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
 ## lgl  (1): is_subway_affordable
@@ -431,23 +408,23 @@ subway_directory_display |&gt;
     everything() ~ px(180)
   ) |&gt;
   opt_table_outline()</code></pre>
-<div id="whdwfvnkjc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#whdwfvnkjc table {
+<div id="fxxwvnjont" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fxxwvnjont table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#whdwfvnkjc thead, #whdwfvnkjc tbody, #whdwfvnkjc tfoot, #whdwfvnkjc tr, #whdwfvnkjc td, #whdwfvnkjc th {
+#fxxwvnjont thead, #fxxwvnjont tbody, #fxxwvnjont tfoot, #fxxwvnjont tr, #fxxwvnjont td, #fxxwvnjont th {
   border-style: none;
 }
 
-#whdwfvnkjc p {
+#fxxwvnjont p {
   margin: 0;
   padding: 0;
 }
 
-#whdwfvnkjc .gt_table {
+#fxxwvnjont .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -473,12 +450,12 @@ subway_directory_display |&gt;
   border-left-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_caption {
+#fxxwvnjont .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#whdwfvnkjc .gt_title {
+#fxxwvnjont .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -490,7 +467,7 @@ subway_directory_display |&gt;
   border-bottom-width: 0;
 }
 
-#whdwfvnkjc .gt_subtitle {
+#fxxwvnjont .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -502,7 +479,7 @@ subway_directory_display |&gt;
   border-top-width: 0;
 }
 
-#whdwfvnkjc .gt_heading {
+#fxxwvnjont .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -514,13 +491,13 @@ subway_directory_display |&gt;
   border-right-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_bottom_border {
+#fxxwvnjont .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_col_headings {
+#fxxwvnjont .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -535,7 +512,7 @@ subway_directory_display |&gt;
   border-right-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_col_heading {
+#fxxwvnjont .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -555,7 +532,7 @@ subway_directory_display |&gt;
   overflow-x: hidden;
 }
 
-#whdwfvnkjc .gt_column_spanner_outer {
+#fxxwvnjont .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -567,15 +544,15 @@ subway_directory_display |&gt;
   padding-right: 4px;
 }
 
-#whdwfvnkjc .gt_column_spanner_outer:first-child {
+#fxxwvnjont .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#whdwfvnkjc .gt_column_spanner_outer:last-child {
+#fxxwvnjont .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#whdwfvnkjc .gt_column_spanner {
+#fxxwvnjont .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -587,11 +564,11 @@ subway_directory_display |&gt;
   width: 100%;
 }
 
-#whdwfvnkjc .gt_spanner_row {
+#fxxwvnjont .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#whdwfvnkjc .gt_group_heading {
+#fxxwvnjont .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -617,7 +594,7 @@ subway_directory_display |&gt;
   text-align: left;
 }
 
-#whdwfvnkjc .gt_empty_group_heading {
+#fxxwvnjont .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -632,15 +609,15 @@ subway_directory_display |&gt;
   vertical-align: middle;
 }
 
-#whdwfvnkjc .gt_from_md > :first-child {
+#fxxwvnjont .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#whdwfvnkjc .gt_from_md > :last-child {
+#fxxwvnjont .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#whdwfvnkjc .gt_row {
+#fxxwvnjont .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -659,7 +636,7 @@ subway_directory_display |&gt;
   overflow-x: hidden;
 }
 
-#whdwfvnkjc .gt_stub {
+#fxxwvnjont .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -672,7 +649,7 @@ subway_directory_display |&gt;
   padding-right: 5px;
 }
 
-#whdwfvnkjc .gt_stub_row_group {
+#fxxwvnjont .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -686,15 +663,15 @@ subway_directory_display |&gt;
   vertical-align: top;
 }
 
-#whdwfvnkjc .gt_row_group_first td {
+#fxxwvnjont .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#whdwfvnkjc .gt_row_group_first th {
+#fxxwvnjont .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#whdwfvnkjc .gt_summary_row {
+#fxxwvnjont .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -704,16 +681,16 @@ subway_directory_display |&gt;
   padding-right: 5px;
 }
 
-#whdwfvnkjc .gt_first_summary_row {
+#fxxwvnjont .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_first_summary_row.thick {
+#fxxwvnjont .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#whdwfvnkjc .gt_last_summary_row {
+#fxxwvnjont .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -723,7 +700,7 @@ subway_directory_display |&gt;
   border-bottom-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_grand_summary_row {
+#fxxwvnjont .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -733,7 +710,7 @@ subway_directory_display |&gt;
   padding-right: 5px;
 }
 
-#whdwfvnkjc .gt_first_grand_summary_row {
+#fxxwvnjont .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -743,7 +720,7 @@ subway_directory_display |&gt;
   border-top-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_last_grand_summary_row_top {
+#fxxwvnjont .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -753,11 +730,11 @@ subway_directory_display |&gt;
   border-bottom-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_striped {
+#fxxwvnjont .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#whdwfvnkjc .gt_table_body {
+#fxxwvnjont .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -766,7 +743,7 @@ subway_directory_display |&gt;
   border-bottom-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_footnotes {
+#fxxwvnjont .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -780,7 +757,7 @@ subway_directory_display |&gt;
   border-right-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_footnote {
+#fxxwvnjont .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -789,7 +766,7 @@ subway_directory_display |&gt;
   padding-right: 5px;
 }
 
-#whdwfvnkjc .gt_sourcenotes {
+#fxxwvnjont .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -803,7 +780,7 @@ subway_directory_display |&gt;
   border-right-color: #D3D3D3;
 }
 
-#whdwfvnkjc .gt_sourcenote {
+#fxxwvnjont .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -811,72 +788,72 @@ subway_directory_display |&gt;
   padding-right: 5px;
 }
 
-#whdwfvnkjc .gt_left {
+#fxxwvnjont .gt_left {
   text-align: left;
 }
 
-#whdwfvnkjc .gt_center {
+#fxxwvnjont .gt_center {
   text-align: center;
 }
 
-#whdwfvnkjc .gt_right {
+#fxxwvnjont .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#whdwfvnkjc .gt_font_normal {
+#fxxwvnjont .gt_font_normal {
   font-weight: normal;
 }
 
-#whdwfvnkjc .gt_font_bold {
+#fxxwvnjont .gt_font_bold {
   font-weight: bold;
 }
 
-#whdwfvnkjc .gt_font_italic {
+#fxxwvnjont .gt_font_italic {
   font-style: italic;
 }
 
-#whdwfvnkjc .gt_super {
+#fxxwvnjont .gt_super {
   font-size: 65%;
 }
 
-#whdwfvnkjc .gt_footnote_marks {
+#fxxwvnjont .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#whdwfvnkjc .gt_asterisk {
+#fxxwvnjont .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#whdwfvnkjc .gt_indent_1 {
+#fxxwvnjont .gt_indent_1 {
   text-indent: 5px;
 }
 
-#whdwfvnkjc .gt_indent_2 {
+#fxxwvnjont .gt_indent_2 {
   text-indent: 10px;
 }
 
-#whdwfvnkjc .gt_indent_3 {
+#fxxwvnjont .gt_indent_3 {
   text-indent: 15px;
 }
 
-#whdwfvnkjc .gt_indent_4 {
+#fxxwvnjont .gt_indent_4 {
   text-indent: 20px;
 }
 
-#whdwfvnkjc .gt_indent_5 {
+#fxxwvnjont .gt_indent_5 {
   text-indent: 25px;
 }
 
-#whdwfvnkjc .katex-display {
+#fxxwvnjont .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#whdwfvnkjc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#fxxwvnjont div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1004,8 +981,8 @@ plot_ly(
     yaxis = list(title = &quot;Proportion&quot;, tickformat=&quot;.0%&quot;),
     showlegend = TRUE
   )</code></pre>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-1f95bad168da7f54e4ce" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-1f95bad168da7f54e4ce">{"x":{"visdat":{"5774da31862":["function () ","plotlyVisDat"]},"cur_data":"5774da31862","attrs":{"5774da31862":{"x":{},"y":{},"customdata":{},"hovertemplate":"<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","color":{},"colors":["#440154FF","#414487FF","#2A788EFF","#22A884FF","#7AD151FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":{"text":"<b>Distribution of Delay Frequency Responses by Subway Line<\/b>","x":0.5},"xaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","type":"category","categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion","tickformat":".0%"},"showlegend":true,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.29078014184397161,0.23901098901098902,0.26004228329809725,0.35833333333333334,0.5,0.19220055710306408,0.34293948126801155,0.35761589403973509,0.2299349240780911,0.21686746987951808,0.25301204819277107,0.27972027972027974,0.25862068965517243,0.28947368421052633,0.32723577235772355,0.2298050139275766,0.26492537313432835,0.21637426900584794,0.1111111111111111,0.25806451612903225,0.22268907563025211,0.3171021377672209,0.26415094339622641],"customdata":["Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Everyday","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.55082742316784872,0.53846153846153844,0.52642706131078221,0.5,0.5,0.59610027855153203,0.48126801152737753,0.50331125827814571,0.48590021691973967,0.57831325301204817,0.63253012048192769,0.61888111888111885,0.59946949602122013,0.61184210526315785,0.55691056910569103,0.5352831940575673,0.5149253731343284,0.55555555555555558,0.33333333333333331,0.59139784946236562,0.57773109243697474,0.55938242280285033,0.64150943396226412],"customdata":["A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"A few times a week","marker":{"color":"rgba(122,209,81,1)","line":{"color":"rgba(122,209,81,1)"}},"textfont":{"color":"rgba(122,209,81,1)"},"error_y":{"color":"rgba(122,209,81,1)"},"error_x":{"color":"rgba(122,209,81,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.15721040189125296,0.22252747252747251,0.21353065539112051,0.14166666666666666,0.20891364902506965,0.17002881844380405,0.13907284768211919,0.2841648590021692,0.20481927710843373,0.1144578313253012,0.097902097902097904,0.14058355437665782,0.098684210526315791,0.10975609756097561,0.23259052924791088,0.21828358208955223,0.22222222222222221,0.33333333333333331,0.14623655913978495,0.19957983193277312,0.11876484560570071,0.094339622641509441],"customdata":["Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Rarely","marker":{"color":"rgba(65,68,135,1)","line":{"color":"rgba(65,68,135,1)"}},"textfont":{"color":"rgba(65,68,135,1)"},"error_y":{"color":"rgba(65,68,135,1)"},"error_x":{"color":"rgba(65,68,135,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","L","4","D","F","7","1","2","3","S","N","R"],"y":[0.0011820330969267139,0.0027855153203342618,0.005763688760806916,0.0034965034965034965,0.0013262599469496021,0.0060975609756097563,0.002321262766945218,0.0018656716417910447,0.0058479532163742687,0.22222222222222221,0.0043010752688172043,0.0047505938242280287],"customdata":["Never","Never","Never","Never","Never","Never","Never","Never","Never","Never","Never","Never"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Never","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-316e08649b1f21de07ef" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-316e08649b1f21de07ef">{"x":{"visdat":{"5b947dda6be1":["function () ","plotlyVisDat"]},"cur_data":"5b947dda6be1","attrs":{"5b947dda6be1":{"x":{},"y":{},"customdata":{},"hovertemplate":"<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","color":{},"colors":["#440154FF","#414487FF","#2A788EFF","#22A884FF","#7AD151FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":{"text":"<b>Distribution of Delay Frequency Responses by Subway Line<\/b>","x":0.5},"xaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","type":"category","categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion","tickformat":".0%"},"showlegend":true,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.29078014184397161,0.23901098901098902,0.26004228329809725,0.35833333333333334,0.5,0.19220055710306408,0.34293948126801155,0.35761589403973509,0.2299349240780911,0.21686746987951808,0.25301204819277107,0.27972027972027974,0.25862068965517243,0.28947368421052633,0.32723577235772355,0.2298050139275766,0.26492537313432835,0.21637426900584794,0.1111111111111111,0.25806451612903225,0.22268907563025211,0.3171021377672209,0.26415094339622641],"customdata":["Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday","Everyday"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Everyday","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.55082742316784872,0.53846153846153844,0.52642706131078221,0.5,0.5,0.59610027855153203,0.48126801152737753,0.50331125827814571,0.48590021691973967,0.57831325301204817,0.63253012048192769,0.61888111888111885,0.59946949602122013,0.61184210526315785,0.55691056910569103,0.5352831940575673,0.5149253731343284,0.55555555555555558,0.33333333333333331,0.59139784946236562,0.57773109243697474,0.55938242280285033,0.64150943396226412],"customdata":["A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week","A few times a week"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"A few times a week","marker":{"color":"rgba(122,209,81,1)","line":{"color":"rgba(122,209,81,1)"}},"textfont":{"color":"rgba(122,209,81,1)"},"error_y":{"color":"rgba(122,209,81,1)"},"error_x":{"color":"rgba(122,209,81,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.15721040189125296,0.22252747252747251,0.21353065539112051,0.14166666666666666,0.20891364902506965,0.17002881844380405,0.13907284768211919,0.2841648590021692,0.20481927710843373,0.1144578313253012,0.097902097902097904,0.14058355437665782,0.098684210526315791,0.10975609756097561,0.23259052924791088,0.21828358208955223,0.22222222222222221,0.33333333333333331,0.14623655913978495,0.19957983193277312,0.11876484560570071,0.094339622641509441],"customdata":["Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely","Rarely"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Rarely","marker":{"color":"rgba(65,68,135,1)","line":{"color":"rgba(65,68,135,1)"}},"textfont":{"color":"rgba(65,68,135,1)"},"error_y":{"color":"rgba(65,68,135,1)"},"error_x":{"color":"rgba(65,68,135,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","L","4","D","F","7","1","2","3","S","N","R"],"y":[0.0011820330969267139,0.0027855153203342618,0.005763688760806916,0.0034965034965034965,0.0013262599469496021,0.0060975609756097563,0.002321262766945218,0.0018656716417910447,0.0058479532163742687,0.22222222222222221,0.0043010752688172043,0.0047505938242280287],"customdata":["Never","Never","Never","Never","Never","Never","Never","Never","Never","Never","Never","Never"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Delay Frequency:<\/b> %{customdata}<br> <b>Proportion of Riders:<\/b> %{y:.1%}<br> <extra><\/extra>"],"type":"bar","name":"Never","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div
 id="proportion-of-riders-reporting-long-delays-20-min-by-individual-line"
@@ -1079,8 +1056,8 @@ plot_ly(
 <pre><code>## Warning: &#39;layout&#39; objects don&#39;t have these attributes: &#39;bargroupgap&#39;
 ## Valid attributes include:
 ## &#39;_deprecated&#39;, &#39;activeshape&#39;, &#39;annotations&#39;, &#39;autosize&#39;, &#39;autotypenumbers&#39;, &#39;calendar&#39;, &#39;clickmode&#39;, &#39;coloraxis&#39;, &#39;colorscale&#39;, &#39;colorway&#39;, &#39;computed&#39;, &#39;datarevision&#39;, &#39;dragmode&#39;, &#39;editrevision&#39;, &#39;editType&#39;, &#39;font&#39;, &#39;geo&#39;, &#39;grid&#39;, &#39;height&#39;, &#39;hidesources&#39;, &#39;hoverdistance&#39;, &#39;hoverlabel&#39;, &#39;hovermode&#39;, &#39;images&#39;, &#39;legend&#39;, &#39;mapbox&#39;, &#39;margin&#39;, &#39;meta&#39;, &#39;metasrc&#39;, &#39;modebar&#39;, &#39;newshape&#39;, &#39;paper_bgcolor&#39;, &#39;plot_bgcolor&#39;, &#39;polar&#39;, &#39;scene&#39;, &#39;selectdirection&#39;, &#39;selectionrevision&#39;, &#39;separators&#39;, &#39;shapes&#39;, &#39;showlegend&#39;, &#39;sliders&#39;, &#39;smith&#39;, &#39;spikedistance&#39;, &#39;template&#39;, &#39;ternary&#39;, &#39;title&#39;, &#39;transition&#39;, &#39;uirevision&#39;, &#39;uniformtext&#39;, &#39;updatemenus&#39;, &#39;width&#39;, &#39;xaxis&#39;, &#39;yaxis&#39;, &#39;boxmode&#39;, &#39;barmode&#39;, &#39;bargap&#39;, &#39;mapType&#39;</code></pre>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-42560df1ba648f878f23" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-42560df1ba648f878f23">{"x":{"visdat":{"57745d7e5355":["function () ","plotlyVisDat"]},"cur_data":"57745d7e5355","attrs":{"57745d7e5355":{"x":{},"y":{},"marker":{"color":{}},"customdata":{},"hovertemplate":"<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"Proportion of Riders Reporting Long Delays (≥ 20 min)","y":0.94999999999999996},"xaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","tickangle":0,"categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"type":"category"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion of Long Delays","tickformat":".0%","range":[0,0.55000000000000004]},"bargap":0.20000000000000001,"bargroupgap":0.050000000000000003,"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["1","2","3","4","5","6","7","A","B","C","D","E","F","G","J","L","M","N","Q","R","W","Z"],"y":[0.092328892971979784,0.083333333333333329,0.056818181818181816,0.097982708933717577,0.13907284768211919,0.081896551724137928,0.16837782340862423,0.1163895486935867,0.1377245508982036,0.11699164345403899,0.16723549488054607,0.14791666666666667,0.12666666666666668,0.089285714285714288,0.1864406779661017,0.096418732782369149,0.13636363636363635,0.18354430379746836,0.11134453781512606,0.16018845700824499,0.14814814814814814,0.5],"marker":{"color":["#EE352E","#EE352E","#EE352E","#00933C","#00933C","#00933C","#B933AD","#0039A6","#FF6319","#0039A6","#FF6319","#0039A6","#FF6319","#6CBE45","#996633","#A7A9AC","#FF6319","#FCCC0A","#FCCC0A","#FCCC0A","#FCCC0A","#996633"],"line":{"color":"rgba(31,119,180,1)"}},"customdata":["Red Line","Red Line","Red Line","Green Line","Green Line","Green Line","Purple Line","Blue Line","Orange Line","Blue Line","Orange Line","Blue Line","Orange Line","Light Green Line","Brown Line","Gray Line","Orange Line","Yellow Line","Yellow Line","Yellow Line","Yellow Line","Brown Line"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>"],"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-42ebc5255eb64e2314c8" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-42ebc5255eb64e2314c8">{"x":{"visdat":{"5b9426693d6b":["function () ","plotlyVisDat"]},"cur_data":"5b9426693d6b","attrs":{"5b9426693d6b":{"x":{},"y":{},"marker":{"color":{}},"customdata":{},"hovertemplate":"<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"Proportion of Riders Reporting Long Delays (≥ 20 min)","y":0.94999999999999996},"xaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","tickangle":0,"categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"type":"category"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion of Long Delays","tickformat":".0%","range":[0,0.55000000000000004]},"bargap":0.20000000000000001,"bargroupgap":0.050000000000000003,"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["1","2","3","4","5","6","7","A","B","C","D","E","F","G","J","L","M","N","Q","R","W","Z"],"y":[0.092328892971979784,0.083333333333333329,0.056818181818181816,0.097982708933717577,0.13907284768211919,0.081896551724137928,0.16837782340862423,0.1163895486935867,0.1377245508982036,0.11699164345403899,0.16723549488054607,0.14791666666666667,0.12666666666666668,0.089285714285714288,0.1864406779661017,0.096418732782369149,0.13636363636363635,0.18354430379746836,0.11134453781512606,0.16018845700824499,0.14814814814814814,0.5],"marker":{"color":["#EE352E","#EE352E","#EE352E","#00933C","#00933C","#00933C","#B933AD","#0039A6","#FF6319","#0039A6","#FF6319","#0039A6","#FF6319","#6CBE45","#996633","#A7A9AC","#FF6319","#FCCC0A","#FCCC0A","#FCCC0A","#FCCC0A","#996633"],"line":{"color":"rgba(31,119,180,1)"}},"customdata":["Red Line","Red Line","Red Line","Green Line","Green Line","Green Line","Purple Line","Blue Line","Orange Line","Blue Line","Orange Line","Blue Line","Orange Line","Light Green Line","Brown Line","Gray Line","Orange Line","Yellow Line","Yellow Line","Yellow Line","Yellow Line","Brown Line"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Proportion Long Delays (≥20 min):<\/b> %{y:.2f}<br> <b>Color Group:<\/b> %{customdata} <extra><\/extra>"],"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="ordinal-frequency-of-delay-responses" class="section level3">
 <h3>4. Ordinal frequency of delay responses</h3>
@@ -1145,8 +1122,8 @@ plot_ly(
     paper_bgcolor = &quot;white&quot;,
     plot_bgcolor = &quot;white&quot;
   )</code></pre>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-2739ed88049ca4057b0b" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-2739ed88049ca4057b0b">{"x":{"visdat":{"57746e3c3a95":["function () ","plotlyVisDat"]},"cur_data":"57746e3c3a95","attrs":{"57746e3c3a95":{"x":{},"y":{},"z":{},"customdata":{},"hovertemplate":"<b>Line:<\/b> %{y}<br> <b>Delay Frequency:<\/b> %{x}<br> <b>Proportion:<\/b> %{z:.1%}<br> <b>Count:<\/b> %{customdata}<br> <extra><\/extra>","colors":["#440154FF","#450558FF","#46085CFF","#470D60FF","#471063FF","#481467FF","#481769FF","#481B6DFF","#481E70FF","#482173FF","#482576FF","#482878FF","#472C7AFF","#472F7CFF","#46327EFF","#453581FF","#453882FF","#443B84FF","#433E85FF","#424186FF","#404587FF","#3F4788FF","#3E4A89FF","#3D4D8AFF","#3C508BFF","#3B528BFF","#39558CFF","#38598CFF","#375B8DFF","#355E8DFF","#34608DFF","#33638DFF","#32658EFF","#31688EFF","#2F6B8EFF","#2E6D8EFF","#2D708EFF","#2C718EFF","#2B748EFF","#2A768EFF","#29798EFF","#287C8EFF","#277E8EFF","#26818EFF","#26828EFF","#25858EFF","#24878EFF","#238A8DFF","#228D8DFF","#218F8DFF","#20928CFF","#20938CFF","#1F968BFF","#1F998AFF","#1E9B8AFF","#1F9E89FF","#1FA088FF","#1FA287FF","#20A486FF","#22A785FF","#24AA83FF","#25AC82FF","#28AE80FF","#2BB07FFF","#2EB37CFF","#31B67BFF","#35B779FF","#39BA76FF","#3DBC74FF","#41BE71FF","#47C06FFF","#4CC26CFF","#51C56AFF","#56C667FF","#5BC863FF","#61CA60FF","#67CC5CFF","#6DCD59FF","#73D056FF","#78D152FF","#7FD34EFF","#85D54AFF","#8CD646FF","#92D741FF","#99D83DFF","#A0DA39FF","#A7DB35FF","#ADDC30FF","#B4DE2CFF","#BBDE28FF","#C2DF23FF","#C9E020FF","#D0E11CFF","#D7E219FF","#DDE318FF","#E4E419FF","#EBE51AFF","#F1E51DFF","#F7E620FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":80,"l":90,"t":80,"r":20},"title":"Delay Frequency Distribution by Subway Line","xaxis":{"domain":[0,1],"automargin":true,"title":"Delay Frequency","tickangle":0,"categoryorder":"array","categoryarray":["Rarely","A few times a week","Everyday"],"type":"category"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"type":"category"},"paper_bgcolor":"white","plot_bgcolor":"white","scene":{"zaxis":{"title":"prop"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"prop","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(71,17,99,1)"],["0.0833333333333333","rgba(72,31,113,1)"],["0.125","rgba(71,45,123,1)"],["0.166666666666667","rgba(69,58,131,1)"],["0.208333333333333","rgba(63,70,136,1)"],["0.25","rgba(59,82,139,1)"],["0.291666666666667","rgba(53,94,141,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(44,113,142,1)"],["0.416666666666667","rgba(40,124,142,1)"],["0.458333333333333","rgba(37,134,142,1)"],["0.5","rgba(33,144,141,1)"],["0.541666666666667","rgba(30,154,138,1)"],["0.583333333333333","rgba(32,163,134,1)"],["0.625","rgba(40,174,128,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(72,192,111,1)"],["0.75","rgba(93,200,98,1)"],["0.791666666666667","rgba(117,208,85,1)"],["0.833333333333333","rgba(143,215,68,1)"],["0.875","rgba(171,220,50,1)"],["0.916666666666667","rgba(199,224,33,1)"],["0.958333333333333","rgba(227,228,25,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"x":["A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely"],"y":["A","A","A","C","C","C","E","E","E","J","J","J","Z","Z","Z","L","L","L","4","4","4","5","5","5","6","6","6","G","G","G","B","B","B","D","D","D","F","F","F","M","M","M","7","7","7","1","1","1","2","2","2","3","3","3","S","S","S","N","N","N","Q","Q","Q","R","R","R","W","W","W"],"z":[0.5514792899408284,0.29112426035502958,0.15739644970414202,0.53846153846153844,0.23901098901098902,0.22252747252747251,0.52642706131078221,0.26004228329809725,0.21353065539112051,0.5,0.35833333333333334,0.14166666666666666,0.5,0.5,0,0.5977653631284916,0.19273743016759776,0.20949720670391062,0.48405797101449277,0.34492753623188405,0.17101449275362318,0.50331125827814571,0.35761589403973509,0.13907284768211919,0.48590021691973967,0.2299349240780911,0.2841648590021692,0.57831325301204817,0.21686746987951808,0.20481927710843373,0.63253012048192769,0.25301204819277107,0.1144578313253012,0.62105263157894741,0.2807017543859649,0.098245614035087719,0.60026560424966802,0.25896414342629481,0.1407702523240372,0.61184210526315785,0.28947368421052633,0.098684210526315791,0.56032719836400813,0.32924335378323111,0.11042944785276074,0.5365286179618427,0.23033969288040948,0.23313168915774779,0.51588785046728969,0.26542056074766357,0.21869158878504674,0.55882352941176472,0.21764705882352942,0.22352941176470589,0.42857142857142855,0.14285714285714285,0.42857142857142855,0.59395248380129595,0.25917926565874733,0.14686825053995681,0.57773109243697474,0.22268907563025211,0.19957983193277312,0.56205250596658707,0.31861575178997614,0.11933174224343675,0.64150943396226412,0.26415094339622641,0.094339622641509441],"customdata":[466,246,133,196,87,81,249,123,101,60,43,17,1,1,0,214,69,75,167,119,59,76,54,21,224,106,131,96,36,34,105,42,19,177,80,28,452,195,106,93,44,15,274,161,54,1153,495,501,276,142,117,95,37,38,3,1,3,275,120,68,275,106,95,471,267,100,34,14,5],"hovertemplate":"<b>Line:<\/b> %{y}<br> <b>Delay Frequency:<\/b> %{x}<br> <b>Proportion:<\/b> %{z:.1%}<br> <b>Count:<\/b> %{customdata}<br> <extra><\/extra>","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-5126dc62b87df32f3f58" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-5126dc62b87df32f3f58">{"x":{"visdat":{"5b9459cd2943":["function () ","plotlyVisDat"]},"cur_data":"5b9459cd2943","attrs":{"5b9459cd2943":{"x":{},"y":{},"z":{},"customdata":{},"hovertemplate":"<b>Line:<\/b> %{y}<br> <b>Delay Frequency:<\/b> %{x}<br> <b>Proportion:<\/b> %{z:.1%}<br> <b>Count:<\/b> %{customdata}<br> <extra><\/extra>","colors":["#440154FF","#450558FF","#46085CFF","#470D60FF","#471063FF","#481467FF","#481769FF","#481B6DFF","#481E70FF","#482173FF","#482576FF","#482878FF","#472C7AFF","#472F7CFF","#46327EFF","#453581FF","#453882FF","#443B84FF","#433E85FF","#424186FF","#404587FF","#3F4788FF","#3E4A89FF","#3D4D8AFF","#3C508BFF","#3B528BFF","#39558CFF","#38598CFF","#375B8DFF","#355E8DFF","#34608DFF","#33638DFF","#32658EFF","#31688EFF","#2F6B8EFF","#2E6D8EFF","#2D708EFF","#2C718EFF","#2B748EFF","#2A768EFF","#29798EFF","#287C8EFF","#277E8EFF","#26818EFF","#26828EFF","#25858EFF","#24878EFF","#238A8DFF","#228D8DFF","#218F8DFF","#20928CFF","#20938CFF","#1F968BFF","#1F998AFF","#1E9B8AFF","#1F9E89FF","#1FA088FF","#1FA287FF","#20A486FF","#22A785FF","#24AA83FF","#25AC82FF","#28AE80FF","#2BB07FFF","#2EB37CFF","#31B67BFF","#35B779FF","#39BA76FF","#3DBC74FF","#41BE71FF","#47C06FFF","#4CC26CFF","#51C56AFF","#56C667FF","#5BC863FF","#61CA60FF","#67CC5CFF","#6DCD59FF","#73D056FF","#78D152FF","#7FD34EFF","#85D54AFF","#8CD646FF","#92D741FF","#99D83DFF","#A0DA39FF","#A7DB35FF","#ADDC30FF","#B4DE2CFF","#BBDE28FF","#C2DF23FF","#C9E020FF","#D0E11CFF","#D7E219FF","#DDE318FF","#E4E419FF","#EBE51AFF","#F1E51DFF","#F7E620FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":80,"l":90,"t":80,"r":20},"title":"Delay Frequency Distribution by Subway Line","xaxis":{"domain":[0,1],"automargin":true,"title":"Delay Frequency","tickangle":0,"categoryorder":"array","categoryarray":["Rarely","A few times a week","Everyday"],"type":"category"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"type":"category"},"paper_bgcolor":"white","plot_bgcolor":"white","scene":{"zaxis":{"title":"prop"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"prop","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(71,17,99,1)"],["0.0833333333333333","rgba(72,31,113,1)"],["0.125","rgba(71,45,123,1)"],["0.166666666666667","rgba(69,58,131,1)"],["0.208333333333333","rgba(63,70,136,1)"],["0.25","rgba(59,82,139,1)"],["0.291666666666667","rgba(53,94,141,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(44,113,142,1)"],["0.416666666666667","rgba(40,124,142,1)"],["0.458333333333333","rgba(37,134,142,1)"],["0.5","rgba(33,144,141,1)"],["0.541666666666667","rgba(30,154,138,1)"],["0.583333333333333","rgba(32,163,134,1)"],["0.625","rgba(40,174,128,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(72,192,111,1)"],["0.75","rgba(93,200,98,1)"],["0.791666666666667","rgba(117,208,85,1)"],["0.833333333333333","rgba(143,215,68,1)"],["0.875","rgba(171,220,50,1)"],["0.916666666666667","rgba(199,224,33,1)"],["0.958333333333333","rgba(227,228,25,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"x":["A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely"],"y":["A","A","A","C","C","C","E","E","E","J","J","J","Z","Z","Z","L","L","L","4","4","4","5","5","5","6","6","6","G","G","G","B","B","B","D","D","D","F","F","F","M","M","M","7","7","7","1","1","1","2","2","2","3","3","3","S","S","S","N","N","N","Q","Q","Q","R","R","R","W","W","W"],"z":[0.5514792899408284,0.29112426035502958,0.15739644970414202,0.53846153846153844,0.23901098901098902,0.22252747252747251,0.52642706131078221,0.26004228329809725,0.21353065539112051,0.5,0.35833333333333334,0.14166666666666666,0.5,0.5,0,0.5977653631284916,0.19273743016759776,0.20949720670391062,0.48405797101449277,0.34492753623188405,0.17101449275362318,0.50331125827814571,0.35761589403973509,0.13907284768211919,0.48590021691973967,0.2299349240780911,0.2841648590021692,0.57831325301204817,0.21686746987951808,0.20481927710843373,0.63253012048192769,0.25301204819277107,0.1144578313253012,0.62105263157894741,0.2807017543859649,0.098245614035087719,0.60026560424966802,0.25896414342629481,0.1407702523240372,0.61184210526315785,0.28947368421052633,0.098684210526315791,0.56032719836400813,0.32924335378323111,0.11042944785276074,0.5365286179618427,0.23033969288040948,0.23313168915774779,0.51588785046728969,0.26542056074766357,0.21869158878504674,0.55882352941176472,0.21764705882352942,0.22352941176470589,0.42857142857142855,0.14285714285714285,0.42857142857142855,0.59395248380129595,0.25917926565874733,0.14686825053995681,0.57773109243697474,0.22268907563025211,0.19957983193277312,0.56205250596658707,0.31861575178997614,0.11933174224343675,0.64150943396226412,0.26415094339622641,0.094339622641509441],"customdata":[466,246,133,196,87,81,249,123,101,60,43,17,1,1,0,214,69,75,167,119,59,76,54,21,224,106,131,96,36,34,105,42,19,177,80,28,452,195,106,93,44,15,274,161,54,1153,495,501,276,142,117,95,37,38,3,1,3,275,120,68,275,106,95,471,267,100,34,14,5],"hovertemplate":"<b>Line:<\/b> %{y}<br> <b>Delay Frequency:<\/b> %{x}<br> <b>Proportion:<\/b> %{z:.1%}<br> <b>Count:<\/b> %{customdata}<br> <extra><\/extra>","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 
 
@@ -1182,6 +1159,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

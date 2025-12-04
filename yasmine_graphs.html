@@ -16,7 +16,7 @@
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -30,6 +30,7 @@
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
@@ -224,6 +225,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -261,18 +265,15 @@ $(document).ready(function () {
       <a href="proposal.html">Report</a>
     </li>
     <li>
-      <a href="ranking_regression_analysis.html">Regression analysis</a>
-    </li>
-    <li>
       <a href="https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd">Data source</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="index.html">Welcome</a>
-</li>
+        <li class="dropdown-header">Data Exploration</li>
+<li class="dropdown-header">Borough Analysis</li>
+<li class="dropdown-header">Subway Line Analysis</li>
 <li>
   <a href="borough_demographics_dashboard.html">Borough dashboard</a>
 </li>
@@ -282,12 +283,23 @@ $(document).ready(function () {
 <li>
   <a href="Updated-Dashboard-complaint-types-II.html">Complaint types</a>
 </li>
+<li>
+  <a href="ranking_regression_analysis.html">Regression analysis</a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
 <div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
 
@@ -509,8 +521,8 @@ library(plotly)</code></pre>
   )
 
 delay_reason_plot</code></pre>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-c863e48fa1a71db27a8a" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-c863e48fa1a71db27a8a">{"x":{"visdat":{"305c6fb775a4":["function () ","plotlyVisDat"]},"cur_data":"305c6fb775a4","attrs":{"305c6fb775a4":{"x":{},"y":{},"text":{},"hoverinfo":"text","color":{},"colors":"viridis","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Delay Reason by Overall Satisfaction","xaxis":{"domain":[0,1],"automargin":true,"title":"Most Common Reason to Delay","type":"category","categoryorder":"array","categoryarray":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of Riders"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"],"y":[613,35,140,827,1707,318,2],"text":["Delay reason: No reason is given <br>Satisfaction: Highly unsatisfied <br>Riders: 613","Delay reason: Police incident <br>Satisfaction: Highly unsatisfied <br>Riders: 35","Delay reason: Sick passenger <br>Satisfaction: Highly unsatisfied <br>Riders: 140","Delay reason: Signal malfunction <br>Satisfaction: Highly unsatisfied <br>Riders: 827","Delay reason: Train traffic <br>Satisfaction: Highly unsatisfied <br>Riders: 1707","Delay reason: Waiting for signal change <br>Satisfaction: Highly unsatisfied <br>Riders: 318","Delay reason: Weather <br>Satisfaction: Highly unsatisfied <br>Riders: 2"],"hoverinfo":["text","text","text","text","text","text","text"],"type":"bar","name":"Highly unsatisfied","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"],"y":[199,47,103,355,1243,215,6],"text":["Delay reason: No reason is given <br>Satisfaction: Neutral <br>Riders: 199","Delay reason: Police incident <br>Satisfaction: Neutral <br>Riders: 47","Delay reason: Sick passenger <br>Satisfaction: Neutral <br>Riders: 103","Delay reason: Signal malfunction <br>Satisfaction: Neutral <br>Riders: 355","Delay reason: Train traffic <br>Satisfaction: Neutral <br>Riders: 1243","Delay reason: Waiting for signal change <br>Satisfaction: Neutral <br>Riders: 215","Delay reason: Weather <br>Satisfaction: Neutral <br>Riders: 6"],"hoverinfo":["text","text","text","text","text","text","text"],"type":"bar","name":"Neutral","marker":{"color":"rgba(59,82,139,1)","line":{"color":"rgba(59,82,139,1)"}},"textfont":{"color":"rgba(59,82,139,1)"},"error_y":{"color":"rgba(59,82,139,1)"},"error_x":{"color":"rgba(59,82,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"],"y":[590,64,191,1164,2806,605,5],"text":["Delay reason: No reason is given <br>Satisfaction: Not satisfied <br>Riders: 590","Delay reason: Police incident <br>Satisfaction: Not satisfied <br>Riders: 64","Delay reason: Sick passenger <br>Satisfaction: Not satisfied <br>Riders: 191","Delay reason: Signal malfunction <br>Satisfaction: Not satisfied <br>Riders: 1164","Delay reason: Train traffic <br>Satisfaction: Not satisfied <br>Riders: 2806","Delay reason: Waiting for signal change <br>Satisfaction: Not satisfied <br>Riders: 605","Delay reason: Weather <br>Satisfaction: Not satisfied <br>Riders: 5"],"hoverinfo":["text","text","text","text","text","text","text"],"type":"bar","name":"Not satisfied","marker":{"color":"rgba(33,144,141,1)","line":{"color":"rgba(33,144,141,1)"}},"textfont":{"color":"rgba(33,144,141,1)"},"error_y":{"color":"rgba(33,144,141,1)"},"error_x":{"color":"rgba(33,144,141,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"],"y":[237,109,134,449,1609,350,13],"text":["Delay reason: No reason is given <br>Satisfaction: Somewhat satisfied <br>Riders: 237","Delay reason: Police incident <br>Satisfaction: Somewhat satisfied <br>Riders: 109","Delay reason: Sick passenger <br>Satisfaction: Somewhat satisfied <br>Riders: 134","Delay reason: Signal malfunction <br>Satisfaction: Somewhat satisfied <br>Riders: 449","Delay reason: Train traffic <br>Satisfaction: Somewhat satisfied <br>Riders: 1609","Delay reason: Waiting for signal change <br>Satisfaction: Somewhat satisfied <br>Riders: 350","Delay reason: Weather <br>Satisfaction: Somewhat satisfied <br>Riders: 13"],"hoverinfo":["text","text","text","text","text","text","text"],"type":"bar","name":"Somewhat satisfied","marker":{"color":"rgba(93,200,99,1)","line":{"color":"rgba(93,200,99,1)"}},"textfont":{"color":"rgba(93,200,99,1)"},"error_y":{"color":"rgba(93,200,99,1)"},"error_x":{"color":"rgba(93,200,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"],"y":[40,9,27,39,234,66,3],"text":["Delay reason: No reason is given <br>Satisfaction: Very satisfied <br>Riders: 40","Delay reason: Police incident <br>Satisfaction: Very satisfied <br>Riders: 9","Delay reason: Sick passenger <br>Satisfaction: Very satisfied <br>Riders: 27","Delay reason: Signal malfunction <br>Satisfaction: Very satisfied <br>Riders: 39","Delay reason: Train traffic <br>Satisfaction: Very satisfied <br>Riders: 234","Delay reason: Waiting for signal change <br>Satisfaction: Very satisfied <br>Riders: 66","Delay reason: Weather <br>Satisfaction: Very satisfied <br>Riders: 3"],"hoverinfo":["text","text","text","text","text","text","text"],"type":"bar","name":"Very satisfied","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-566720f4228fb03f0b9e" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-566720f4228fb03f0b9e">{"x":{"visdat":{"4a6c34c06c1b":["function () ","plotlyVisDat"]},"cur_data":"4a6c34c06c1b","attrs":{"4a6c34c06c1b":{"x":{},"y":{},"text":{},"hoverinfo":"text","color":{},"colors":"viridis","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Delay Reason by Overall Satisfaction","xaxis":{"domain":[0,1],"automargin":true,"title":"Most Common Reason to Delay","type":"category","categoryorder":"array","categoryarray":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Number of Riders"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"],"y":[613,35,140,827,1707,318,2],"text":["Delay reason: No reason is given <br>Satisfaction: Highly unsatisfied <br>Riders: 613","Delay reason: Police incident <br>Satisfaction: Highly unsatisfied <br>Riders: 35","Delay reason: Sick passenger <br>Satisfaction: Highly unsatisfied <br>Riders: 140","Delay reason: Signal malfunction <br>Satisfaction: Highly unsatisfied <br>Riders: 827","Delay reason: Train traffic <br>Satisfaction: Highly unsatisfied <br>Riders: 1707","Delay reason: Waiting for signal change <br>Satisfaction: Highly unsatisfied <br>Riders: 318","Delay reason: Weather <br>Satisfaction: Highly unsatisfied <br>Riders: 2"],"hoverinfo":["text","text","text","text","text","text","text"],"type":"bar","name":"Highly unsatisfied","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"],"y":[199,47,103,355,1243,215,6],"text":["Delay reason: No reason is given <br>Satisfaction: Neutral <br>Riders: 199","Delay reason: Police incident <br>Satisfaction: Neutral <br>Riders: 47","Delay reason: Sick passenger <br>Satisfaction: Neutral <br>Riders: 103","Delay reason: Signal malfunction <br>Satisfaction: Neutral <br>Riders: 355","Delay reason: Train traffic <br>Satisfaction: Neutral <br>Riders: 1243","Delay reason: Waiting for signal change <br>Satisfaction: Neutral <br>Riders: 215","Delay reason: Weather <br>Satisfaction: Neutral <br>Riders: 6"],"hoverinfo":["text","text","text","text","text","text","text"],"type":"bar","name":"Neutral","marker":{"color":"rgba(59,82,139,1)","line":{"color":"rgba(59,82,139,1)"}},"textfont":{"color":"rgba(59,82,139,1)"},"error_y":{"color":"rgba(59,82,139,1)"},"error_x":{"color":"rgba(59,82,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"],"y":[590,64,191,1164,2806,605,5],"text":["Delay reason: No reason is given <br>Satisfaction: Not satisfied <br>Riders: 590","Delay reason: Police incident <br>Satisfaction: Not satisfied <br>Riders: 64","Delay reason: Sick passenger <br>Satisfaction: Not satisfied <br>Riders: 191","Delay reason: Signal malfunction <br>Satisfaction: Not satisfied <br>Riders: 1164","Delay reason: Train traffic <br>Satisfaction: Not satisfied <br>Riders: 2806","Delay reason: Waiting for signal change <br>Satisfaction: Not satisfied <br>Riders: 605","Delay reason: Weather <br>Satisfaction: Not satisfied <br>Riders: 5"],"hoverinfo":["text","text","text","text","text","text","text"],"type":"bar","name":"Not satisfied","marker":{"color":"rgba(33,144,141,1)","line":{"color":"rgba(33,144,141,1)"}},"textfont":{"color":"rgba(33,144,141,1)"},"error_y":{"color":"rgba(33,144,141,1)"},"error_x":{"color":"rgba(33,144,141,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"],"y":[237,109,134,449,1609,350,13],"text":["Delay reason: No reason is given <br>Satisfaction: Somewhat satisfied <br>Riders: 237","Delay reason: Police incident <br>Satisfaction: Somewhat satisfied <br>Riders: 109","Delay reason: Sick passenger <br>Satisfaction: Somewhat satisfied <br>Riders: 134","Delay reason: Signal malfunction <br>Satisfaction: Somewhat satisfied <br>Riders: 449","Delay reason: Train traffic <br>Satisfaction: Somewhat satisfied <br>Riders: 1609","Delay reason: Waiting for signal change <br>Satisfaction: Somewhat satisfied <br>Riders: 350","Delay reason: Weather <br>Satisfaction: Somewhat satisfied <br>Riders: 13"],"hoverinfo":["text","text","text","text","text","text","text"],"type":"bar","name":"Somewhat satisfied","marker":{"color":"rgba(93,200,99,1)","line":{"color":"rgba(93,200,99,1)"}},"textfont":{"color":"rgba(93,200,99,1)"},"error_y":{"color":"rgba(93,200,99,1)"},"error_x":{"color":"rgba(93,200,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["No reason is given","Police incident","Sick passenger","Signal malfunction","Train traffic","Waiting for signal change","Weather"],"y":[40,9,27,39,234,66,3],"text":["Delay reason: No reason is given <br>Satisfaction: Very satisfied <br>Riders: 40","Delay reason: Police incident <br>Satisfaction: Very satisfied <br>Riders: 9","Delay reason: Sick passenger <br>Satisfaction: Very satisfied <br>Riders: 27","Delay reason: Signal malfunction <br>Satisfaction: Very satisfied <br>Riders: 39","Delay reason: Train traffic <br>Satisfaction: Very satisfied <br>Riders: 234","Delay reason: Waiting for signal change <br>Satisfaction: Very satisfied <br>Riders: 66","Delay reason: Weather <br>Satisfaction: Very satisfied <br>Riders: 3"],"hoverinfo":["text","text","text","text","text","text","text"],"type":"bar","name":"Very satisfied","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <p>which trains are the worst with delays?</p>
 <pre class="r"><code>delay_counts =
   rider_data |&gt;
@@ -528,8 +540,8 @@ delay_reason_plot</code></pre>
   )
 
 delay_counts_plot</code></pre>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-fa6b260d5faf2f93511c" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-fa6b260d5faf2f93511c">{"x":{"visdat":{"305c21012735":["function () ","plotlyVisDat"]},"cur_data":"305c21012735","attrs":{"305c21012735":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Subway Lines with the Most Delays","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["1","R","A","F","7","2","Q","N","E","6","C","D","4","L","3","B","5","M","G","J","W","Staten Island Railway","S","Z"],"values":[2452,1178,1160,957,683,639,589,566,535,464,412,405,403,403,223,195,194,194,191,184,63,17,5,3],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-346381ee813af0f5ba70" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-346381ee813af0f5ba70">{"x":{"visdat":{"4a6c3d9e5068":["function () ","plotlyVisDat"]},"cur_data":"4a6c3d9e5068","attrs":{"4a6c3d9e5068":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Subway Lines with the Most Delays","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["1","R","A","F","7","2","Q","N","E","6","C","D","4","L","3","B","5","M","G","J","W","Staten Island Railway","S","Z"],"values":[2452,1178,1160,957,683,639,589,566,535,464,412,405,403,403,223,195,194,194,191,184,63,17,5,3],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 
@@ -566,6 +578,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
