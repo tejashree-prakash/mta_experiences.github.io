@@ -6,10 +6,13 @@ output:
     vertical_layout: fill
     theme: flatly
 ---
-Using Yasmine's cleaned dataset,
-this is an interactive visualization representing the frequency of delays by subway line.
+```{r}
+# Using Yasmine's cleaned dataset,this is an interactive visualization representing the frequency of delays by subway line.
 
-load packages she used + what I need for my graphs
+#load packages she used + what I need for my graphs
+
+```
+
 ```{r}
 library(tidyverse)
 library(lubridate)
@@ -20,9 +23,9 @@ library(knitr)
 library(gt)
 ```
 
-Here I will clean the 2019_subway_rider_data 
 
 ```{r}
+# Here I will clean the 2019_subway_rider_data 
 subway_rider_data = 
   read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
   janitor::clean_names()
@@ -37,10 +40,9 @@ subway_drops =
   
 ```
 
-Now I will specifically clean the data within the columns
 
-Cleaned rider frequency table: 
 ```{r}
+# Now I will specifically clean the data within the columns
 rider_data =
   subway_drops |>
   mutate(
@@ -114,9 +116,9 @@ rider_data =
     
 ```
 
-Making some of the variables as a character and some as a factor!
 
 ```{r}
+#Making some of the variables as a character and some as a factor!
 rider_data = 
   rider_data |> 
   mutate(
@@ -146,9 +148,10 @@ rider_data =
   )
 ```
 
-Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
 
 ```{r}
+#Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
+
 zip_code_data = 
   read_csv("data/nyc_zipcodes.csv") %>%
   select(borough, zipcode)
@@ -176,8 +179,10 @@ rider_data_full <- rider_data_full %>%
   filter(survey_id != 919) 
 ```
 
-Subway Line Directory Table
-```{r}
+
+```{r, echo=FALSE}
+#Subway Line Directory Table
+subway_directory_display =
 subway_directory_display <- tribble(
   ~`Line Family`, ~Lines, ~Color,
   "Red Line", "1, 2, 3", "#EE352E",
@@ -192,7 +197,8 @@ subway_directory_display <- tribble(
   "Shuttle", "S", "#808183"
 )
 
-subway_directory_display %>%
+subway_directory_display =
+  subway_directory_display %>%
   gt() %>%
   tab_header(title = "NYC Subway Line Directory") %>%
   text_transform(
@@ -215,10 +221,13 @@ subway_directory_display %>%
     Color ~ px(100)
   ) %>%
   opt_table_outline()
+
+subway_directory_display
 ```
 
-Join-ready Subway Line Directory + Join to cleaned dataset
+
 ```{r}
+#Join-ready Subway Line Directory + Join to cleaned dataset
 subway_directory <- tribble(
 ~subway_line, ~group_color, ~hex_color,
 "1","Red Line","#EE352E",
@@ -247,8 +256,9 @@ subway_directory <- tribble(
 )
 ```
 
-Join line directory into rider_data_full
+
 ```{r}
+#Join line directory into rider_data_full
 rider_data_full <- rider_data_full |>
   mutate(
     subway_line = subway_line_used_most_often |>
@@ -265,11 +275,13 @@ rider_data_full <- rider_data_full |>
   
 ```
 
-## Plots! 
 
-Distribution of Delay Frequency Responses 
-Interactive Plotly Stacked Bar Chart 
 ```{r}
+#Plots! 
+
+# Distribution of Delay Frequency Responses 
+# Interactive Plotly Stacked Bar Chart 
+
 dist_delay <- rider_data_full |>
   filter(!is.na(frequency_of_delays)) |>
   count(subway_line, group_color, frequency_of_delays) |>
@@ -306,12 +318,19 @@ showlegend = TRUE
 )
 ```
 
-To establish proportion of Riders with Long Delays (≥20 min):
-Define long delay buckets.
 
-Proportion of Riders with Long Delays (≥20 min)
-Interactive plotly bar chart
 ```{r}
+
+# To establish proportion of Riders with Long Delays (≥20 min): Define long delay buckets.
+
+# Proportion of Riders with Long Delays (≥20 min)
+# Interactive plotly bar chart
+
+
+
+
+
+
 long_categories <- c(
 "20 - 40 min", "40 - 60 min", "60 - 90 min",
 "90 min - 2 hours", "> 60 min"
@@ -354,9 +373,13 @@ bargap = 0.20
 )
 ```
 
-Ordinal frequency of delay responses
-Interactive plotly heat map
+
 ```{r}
+
+# Ordinal frequency of delay responses
+# Interactive plotly heat map
+
+
 keep_delays <- c(
 "Rarely",
 "A few times a week",

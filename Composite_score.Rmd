@@ -2,16 +2,19 @@
 title: "Composite_score"
 output: html_document
 ---
-load packages
+
 ```{r}
+#load packages
 library(tidyverse)
 library(lubridate)
 library(readxl)
+library(gt)
 ```
 
-Here I will clean the 2019_subway_rider_data 
+
 
 ```{r}
+# Here I will clean the 2019_subway_rider_data 
 subway_rider_data = 
   read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
   janitor::clean_names()
@@ -26,10 +29,10 @@ subway_drops =
   
 ```
 
-Now I will specifically clean the data within the columns
 
-Cleaned rider frequency table: 
 ```{r}
+#Now I will specifically clean the data within the columns
+
 rider_data =
   subway_drops |>
   mutate(
@@ -104,10 +107,10 @@ rider_data =
 ```
 
 
-Making some of the variables as a character and some as a factor!
-
 
 ```{r}
+#Making some of the variables as a character and some as a factor!
+
 rider_data = 
   rider_data |> 
   mutate(
@@ -136,9 +139,9 @@ rider_data =
 ```
 
 
-Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
-
 ```{r}
+# Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
+
 zip_code_data = 
   read_csv("data/nyc_zipcodes.csv") %>%
   select(borough, zipcode)
@@ -164,12 +167,16 @@ rider_data_full <- rider_data_full %>%
   filter(survey_id != 944) %>% 
   filter(survey_id != 241) %>% 
   filter(survey_id != 919) 
+
+# final data set is rider_data_full
 ```
 
-final data set is rider_data_full
 
-Subway Line Directory Table Code:
+
+
 ```{r}
+# Subway Line Directory Table Code:
+
 subway_directory_display <- tribble(
   ~`Line Family`, ~Lines, ~Color,
   "Red Line", "1, 2, 3", "#EE352E",
@@ -209,8 +216,9 @@ subway_directory_display %>%
   opt_table_outline()
 ```
 
-Join-ready Subway Line Directory + Join to cleaned dataset
+
 ```{r}
+# Join-ready Subway Line Directory + Join to cleaned dataset
 subway_directory <- tribble(
 ~subway_line, ~group_color, ~hex_color,
 "1","Red Line","#EE352E",
@@ -364,9 +372,10 @@ subway_directory_display_final <- subway_directory_display |>
 ```
 
 ```{r}
+subway_directory_display_final=
 subway_directory_display_final %>%
   gt() %>%
-  tab_header(title = "NYC Subway Line Directory with Composite Score") %>%
+  tab_header(title = "NYC Subway Line Directory & Score") %>%
   cols_move(
     columns = c(composite_score, rank),
     after = Color
@@ -393,13 +402,16 @@ subway_directory_display_final %>%
     }
   ) %>%
   cols_width(
-    `Line Family` ~ px(180),
-    Lines ~ px(180),
-    Color ~ px(100),
-    composite_score ~ px(120),
-    rank ~ px(60)
+    `Line Family` ~ px(120),
+    Lines ~ px(100),
+    Color ~ px(70),
+    composite_score ~ px(80),
+    rank ~ px(70)
   ) %>%
   opt_table_outline()
 
+subway_directory_display_final
 ```
+
+
 

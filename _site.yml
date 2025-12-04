@@ -1,14 +1,32 @@
-name: "Yay internet!"
-output_dir: "."
+name: "mta_experiences"
+output_dir: "."   # keep this since your repo is <name>.github.io
 navbar:
-  title: "Home"
+  title: "Not All Trains are Created Equal"
+  left:
+    - text: "Home"
+      href: index.html
+
+    - text: "Borough dashboard"
+      href: borough_demographics_dashboard.html
+
+    - text: "Delay frequency"
+      href: Frequency_of_delays.html
+
+    - text: "Complaint types"
+      href: Updated-Dashboard-complaint-types-II.html
+
+    - text: "Subway map & rankings"
+      href: nyc_subway_routes.html
+
+    - text: "Regression analysis"
+      href: ranking_regression_analysis.html
+
   right:
-    - text: "About"
-      href: about.html
-    - icon: fa-envelope fa-lg
-      href: mailto:<you@youremail.com>
-    - icon: fa-github fa-lg
-      href: http://github.com/<YOUR_GH_NAME>/
+    - text: "Report"
+      href: proposal.html
+    - text: "Data source"
+      href: "https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd"
+
 output:
   html_document:
     theme: cerulean

@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Frequency of Delays by Subway Line</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.11.0/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Not All Trains are Created Equal</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="borough_demographics_dashboard.html">Borough dashboard</a>
+</li>
+<li>
+  <a href="Frequency_of_delays.html">Delay frequency</a>
+</li>
+<li>
+  <a href="Updated-Dashboard-complaint-types-II.html">Complaint types</a>
+</li>
+<li>
+  <a href="nyc_subway_routes.html">Subway map &amp; rankings</a>
+</li>
+<li>
+  <a href="ranking_regression_analysis.html">Regression analysis</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="proposal.html">Report</a>
+</li>
+<li>
+  <a href="https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd">Data source</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Frequency of Delays by Subway Line</h1>
+
+</div>
+
+
+<pre class="r"><code># Using Yasmine&#39;s cleaned dataset,this is an interactive visualization representing the frequency of delays by subway line.
+
+#load packages she used + what I need for my graphs</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.2     ✔ tibble    3.3.0
+## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+## ✔ purrr     1.1.0     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(lubridate)
+library(readxl)
+library(viridis)</code></pre>
+<pre><code>## Loading required package: viridisLite</code></pre>
+<pre class="r"><code>library(plotly)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;
+## 
+## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot
+## 
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter
+## 
+## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<pre class="r"><code>library(knitr)
+library(gt)</code></pre>
+<pre><code>## Warning: package &#39;gt&#39; was built under R version 4.5.2</code></pre>
+<pre class="r"><code># Here I will clean the 2019_subway_rider_data 
+subway_rider_data = 
+  read_csv(&quot;data/2019_Subway_Rider_Survey_20251121.csv&quot;) |&gt; 
+  janitor::clean_names()</code></pre>
+<pre><code>## Rows: 10704 Columns: 19
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
+## lgl  (1): is_subway_affordable
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>subway_drops =
+  subway_rider_data |&gt; 
+  select(-survey_stop_borough, -survey_stop_location) |&gt; 
+  drop_na() |&gt; 
+  mutate(survey_id = row_number()) |&gt; 
+  relocate(survey_id, .before = 1)</code></pre>
+<pre class="r"><code># Now I will specifically clean the data within the columns
+rider_data =
+  subway_drops |&gt;
+  mutate(
+    use_of_subway_frequency = case_when(
+      use_of_subway_frequency == &quot;Everyday / Almost everyday&quot; ~ &quot;Every day&quot;,
+      use_of_subway_frequency == &quot;More than once a week, varies&quot; ~ &quot;Several times a week&quot;,
+      use_of_subway_frequency %in% c(&quot;Weekdays, Mon - Fri&quot;, &quot;~5 days per week&quot;) ~ &quot;5 days per week&quot;,
+      use_of_subway_frequency == &quot;Once a week&quot; ~ &quot;Once a week&quot;,
+      use_of_subway_frequency == &quot;Once a month&quot; ~ &quot;Once a month&quot;,
+      use_of_subway_frequency == &quot;Almost never&quot; ~ &quot;Almost never&quot;,
+      use_of_subway_frequency == &quot;Never&quot; ~ &quot;Never&quot;,
+      TRUE ~ NA_character_
+    ),
+    use_of_subway_frequency = 
+      factor(
+        use_of_subway_frequency,
+        levels = c(&quot;Never&quot;, 
+                   &quot;Almost never&quot;, 
+                   &quot;Once a month&quot;, 
+                   &quot;Once a week&quot;,
+                   &quot;Several times a week&quot;, 
+                   &quot;5 days per week&quot;, 
+                   &quot;Every day&quot;),
+        ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |&gt; 
+  mutate(average_length_subway_ride = 
+           factor(average_length_subway_ride,
+                  levels = c(&quot;&lt; 20 min&quot;, 
+                             &quot;20 - 40 min&quot;, 
+                             &quot;40 - 60 min&quot;,
+                             &quot;60 - 90 min&quot;, 
+                             &quot;90 min - 2 hours&quot;),
+                  ordered = TRUE))
+
+
+rider_data =
+  subway_drops |&gt;
+  mutate(
+    overall_satisfaction = 
+      recode(
+        overall_satisfaction,
+        &quot;Not satisfied&quot; = &quot;Unsatisfied&quot;),
+    overall_satisfaction = 
+      factor(
+        overall_satisfaction,
+        levels = c(&quot;Highly unsatisfied&quot;,
+                 &quot;Unsatisfied&quot;,
+                 &quot;Neutral&quot;,
+                 &quot;Somewhat satisfied&quot;,
+                 &quot;Very satisfied&quot;),
+      ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |&gt; 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c(&quot;Everyday&quot;,
+                 &quot;A few times a week&quot;,
+                 &quot;Rarely&quot;,
+                 &quot;Almost never&quot;,
+                 &quot;Never&quot;),
+      ordered = TRUE)
+    )</code></pre>
+<pre class="r"><code>#Making some of the variables as a character and some as a factor!
+rider_data = 
+  rider_data |&gt; 
+  mutate(
+    is_subway_affordable = if_else(
+      is_subway_affordable == &quot;Yes&quot;, TRUE, FALSE),
+    zip_code = as.character(zip_code)
+    )
+
+
+rider_data =
+  rider_data |&gt; 
+  mutate(
+    across(c(subway_line_used_most_often,
+             get_to_subway_via,
+             primary_use_of_subway,
+             alternative_transport), as.factor)
+  )</code></pre>
+<pre class="r"><code>rider_data = 
+  rider_data %&gt;%
+  mutate(
+    top_three_complaints = 
+      str_remove_all(top_three_complaints, &quot;\\[|\\]|&#39;&quot;)
+  )</code></pre>
+<pre class="r"><code>#Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough&#39;s zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
+
+zip_code_data = 
+  read_csv(&quot;data/nyc_zipcodes.csv&quot;) %&gt;%
+  select(borough, zipcode)</code></pre>
+<pre><code>## Rows: 343 Columns: 2
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): borough, zipcode
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>#Make sure character variables 
+zip_code_data &lt;- zip_code_data %&gt;%
+  mutate(zipcode = as.character(zipcode)) #make sure it&#39;s a character variable 
+rider_data &lt;- rider_data %&gt;%
+  mutate(zip_code = as.character(zip_code))
+
+#Join
+rider_data_full &lt;- rider_data %&gt;%
+  left_join(zip_code_data, by = c(&quot;zip_code&quot; = &quot;zipcode&quot;))</code></pre>
+<pre><code>## Warning in left_join(., zip_code_data, by = c(zip_code = &quot;zipcode&quot;)): Detected an unexpected many-to-many relationship between `x` and `y`.
+## ℹ Row 6 of `x` matches multiple rows in `y`.
+## ℹ Row 109 of `y` matches multiple rows in `x`.
+## ℹ If a many-to-many relationship is expected, set `relationship =
+##   &quot;many-to-many&quot;` to silence this warning.</code></pre>
+<pre class="r"><code>#Fill borough where missing
+rider_data_full &lt;- rider_data_full %&gt;%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#Remove invalid zip codes
+rider_data_full &lt;- rider_data_full %&gt;%
+  filter(survey_id != 2410) %&gt;% 
+  filter(survey_id != 944) %&gt;% 
+  filter(survey_id != 241) %&gt;% 
+  filter(survey_id != 919) </code></pre>
+<div id="cafkwvjfsb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#cafkwvjfsb table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#cafkwvjfsb thead, #cafkwvjfsb tbody, #cafkwvjfsb tfoot, #cafkwvjfsb tr, #cafkwvjfsb td, #cafkwvjfsb th {
+  border-style: none;
+}
+
+#cafkwvjfsb p {
+  margin: 0;
+  padding: 0;
+}
+
+#cafkwvjfsb .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 3px;
+  border-top-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 3px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#cafkwvjfsb .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#cafkwvjfsb .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#cafkwvjfsb .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#cafkwvjfsb .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#cafkwvjfsb .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#cafkwvjfsb .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#cafkwvjfsb .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#cafkwvjfsb .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#cafkwvjfsb .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#cafkwvjfsb .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#cafkwvjfsb .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#cafkwvjfsb .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#cafkwvjfsb .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#cafkwvjfsb .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cafkwvjfsb .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#cafkwvjfsb .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#cafkwvjfsb .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#cafkwvjfsb .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cafkwvjfsb .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#cafkwvjfsb .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cafkwvjfsb .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#cafkwvjfsb .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cafkwvjfsb .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#cafkwvjfsb .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#cafkwvjfsb .gt_left {
+  text-align: left;
+}
+
+#cafkwvjfsb .gt_center {
+  text-align: center;
+}
+
+#cafkwvjfsb .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#cafkwvjfsb .gt_font_normal {
+  font-weight: normal;
+}
+
+#cafkwvjfsb .gt_font_bold {
+  font-weight: bold;
+}
+
+#cafkwvjfsb .gt_font_italic {
+  font-style: italic;
+}
+
+#cafkwvjfsb .gt_super {
+  font-size: 65%;
+}
+
+#cafkwvjfsb .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#cafkwvjfsb .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#cafkwvjfsb .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#cafkwvjfsb .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#cafkwvjfsb .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#cafkwvjfsb .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#cafkwvjfsb .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#cafkwvjfsb .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#cafkwvjfsb div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" style="table-layout:fixed;width:0px;" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <colgroup>
+    <col style="width:180px;"/>
+    <col style="width:180px;"/>
+    <col style="width:100px;"/>
+  </colgroup>
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="3" class="gt_heading gt_title gt_font_normal gt_bottom_border" style>NYC Subway Line Directory</td>
+    </tr>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Line-Family">Line Family</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Lines">Lines</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Color">Color</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="Line Family" class="gt_row gt_left">Red Line</td>
+<td headers="Lines" class="gt_row gt_left">1, 2, 3</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#EE352E; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Green Line</td>
+<td headers="Lines" class="gt_row gt_left">4, 5, 6</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#00933C; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Purple Line</td>
+<td headers="Lines" class="gt_row gt_left">7</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#B933AD; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Blue Line</td>
+<td headers="Lines" class="gt_row gt_left">A, C, E</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#0039A6; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Orange Line</td>
+<td headers="Lines" class="gt_row gt_left">B, D, F, M</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#FF6319; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Yellow Line</td>
+<td headers="Lines" class="gt_row gt_left">N, Q, R, W</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#FCCC0A; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Light Green Line</td>
+<td headers="Lines" class="gt_row gt_left">G</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#6CBE45; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Brown Line</td>
+<td headers="Lines" class="gt_row gt_left">J, Z</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#996633; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Gray Line</td>
+<td headers="Lines" class="gt_row gt_left">L</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#A7A9AC; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Shuttle</td>
+<td headers="Lines" class="gt_row gt_left">S</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#808183; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
+  </tbody>
+  
+</table>
+</div>
+<pre class="r"><code>#Join-ready Subway Line Directory + Join to cleaned dataset
+subway_directory &lt;- tribble(
+~subway_line, ~group_color, ~hex_color,
+&quot;1&quot;,&quot;Red Line&quot;,&quot;#EE352E&quot;,
+&quot;2&quot;,&quot;Red Line&quot;,&quot;#EE352E&quot;,
+&quot;3&quot;,&quot;Red Line&quot;,&quot;#EE352E&quot;,
+&quot;4&quot;,&quot;Green Line&quot;,&quot;#00933C&quot;,
+&quot;5&quot;,&quot;Green Line&quot;,&quot;#00933C&quot;,
+&quot;6&quot;,&quot;Green Line&quot;,&quot;#00933C&quot;,
+&quot;7&quot;,&quot;Purple Line&quot;,&quot;#B933AD&quot;,
+&quot;A&quot;,&quot;Blue Line&quot;,&quot;#0039A6&quot;,
+&quot;C&quot;,&quot;Blue Line&quot;,&quot;#0039A6&quot;,
+&quot;E&quot;,&quot;Blue Line&quot;,&quot;#0039A6&quot;,
+&quot;B&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
+&quot;D&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
+&quot;F&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
+&quot;M&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
+&quot;N&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
+&quot;Q&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
+&quot;R&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
+&quot;W&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
+&quot;G&quot;,&quot;Light Green Line&quot;,&quot;#6CBE45&quot;,
+&quot;J&quot;,&quot;Brown Line&quot;,&quot;#996633&quot;,
+&quot;Z&quot;,&quot;Brown Line&quot;,&quot;#996633&quot;,
+&quot;L&quot;,&quot;Gray Line&quot;,&quot;#A7A9AC&quot;,
+&quot;S&quot;,&quot;Shuttle&quot;,&quot;#808183&quot;
+)</code></pre>
+<pre class="r"><code>#Join line directory into rider_data_full
+rider_data_full &lt;- rider_data_full |&gt;
+  mutate(
+    subway_line = subway_line_used_most_often |&gt;
+      str_replace_all(&quot;[^A-Za-z0-9]&quot;, &quot;/&quot;) |&gt;
+      str_split(&quot;/&quot;)
+  ) |&gt;
+  unnest(subway_line) |&gt;
+  mutate(
+    subway_line = str_trim(subway_line),
+    subway_line = str_to_upper(subway_line)
+  ) |&gt;
+  filter(subway_line %in% subway_directory$subway_line) |&gt;
+  left_join(subway_directory, by = &quot;subway_line&quot;)</code></pre>
+<pre class="r"><code>#Plots! 
+
+# Distribution of Delay Frequency Responses 
+# Interactive Plotly Stacked Bar Chart 
+
+dist_delay &lt;- rider_data_full |&gt;
+  filter(!is.na(frequency_of_delays)) |&gt;
+  count(subway_line, group_color, frequency_of_delays) |&gt;
+  group_by(subway_line) |&gt;
+  mutate(prop = n / sum(n)) |&gt;
+  ungroup() |&gt;
+  arrange(group_color, subway_line) |&gt;
+  mutate(subway_line = factor(subway_line, levels = unique(subway_line)))
+
+plot_ly(
+data = dist_delay,
+x = ~subway_line,
+y = ~prop,
+type = &quot;bar&quot;,
+color = ~frequency_of_delays,
+colors = viridisLite::viridis(5),
+customdata = ~group_color,
+hovertemplate = paste(
+&quot;Subway Line: %{x}&quot;,
+&quot;Line Group: %{customdata}&quot;,
+&quot;Proportion of Riders: %{y:.1%}&quot;,
+&quot;&quot;
+)
+) |&gt;
+layout(
+barmode = &quot;stack&quot;,
+title = list(
+text = &quot;Distribution of Delay Frequency Responses by Subway Line&quot;,
+x = 0.5
+),
+xaxis = list(title = &quot;Subway Line&quot;),
+yaxis = list(title = &quot;Proportion&quot;, tickformat=&quot;.0%&quot;),
+showlegend = TRUE
+)</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-a15d182d42463f590e44" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-a15d182d42463f590e44">{"x":{"visdat":{"9c982c437c03":["function () ","plotlyVisDat"]},"cur_data":"9c982c437c03","attrs":{"9c982c437c03":{"x":{},"y":{},"customdata":{},"hovertemplate":"Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","color":{},"colors":["#440154FF","#3B528BFF","#21908CFF","#5DC863FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":{"text":"Distribution of Delay Frequency Responses by Subway Line","x":0.5},"xaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","type":"category","categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion","tickformat":".0%"},"showlegend":true,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["L","D","7","1"],"y":[0.0024752475247524753,0.0066666666666666671,0.0038610038610038611,0.0017035775127768314],"customdata":["Gray Line","Orange Line","Purple Line","Red Line"],"hovertemplate":["Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} "],"type":"bar","name":"Never","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","L","4","6","D","F","M","7","1","2","3","N","Q","R"],"y":[0.0063965884861407248,0.0056179775280898875,0.016666666666666666,0.013888888888888888,0.0024752475247524753,0.012121212121212121,0.0089686098654708519,0.0066666666666666671,0.012987012987012988,0.02247191011235955,0.011583011583011582,0.016183986371379896,0.024475524475524476,0.020618556701030927,0.017699115044247787,0.012295081967213115,0.008658008658008658],"customdata":["Blue Line","Blue Line","Blue Line","Brown Line","Gray Line","Green Line","Green Line","Orange Line","Orange Line","Orange Line","Purple Line","Red Line","Red Line","Red Line","Yellow Line","Yellow Line","Yellow Line"],"hovertemplate":["Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} "],"type":"bar","name":"Almost never","marker":{"color":"rgba(93,200,99,1)","line":{"color":"rgba(93,200,99,1)"}},"textfont":{"color":"rgba(93,200,99,1)"},"error_y":{"color":"rgba(93,200,99,1)"},"error_x":{"color":"rgba(93,200,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.15351812366737741,0.21348314606741572,0.20000000000000001,0.125,0.16584158415841585,0.11515151515151516,0.12658227848101267,0.26905829596412556,0.097826086956521743,0.12,0.073333333333333334,0.13506493506493505,0.0449438202247191,0.081081081081081086,0.21124361158432708,0.13286713286713286,0.18556701030927836,0.33333333333333331,0.11946902654867257,0.17622950819672131,0.12121212121212122,0.11538461538461539],"customdata":["Blue Line","Blue Line","Blue Line","Brown Line","Gray Line","Green Line","Green Line","Green Line","Light Green Line","Orange Line","Orange Line","Orange Line","Orange Line","Purple Line","Red Line","Red Line","Red Line","Shuttle","Yellow Line","Yellow Line","Yellow Line","Yellow Line"],"hovertemplate":["Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} "],"type":"bar","name":"Rarely","marker":{"color":"rgba(33,144,140,1)","line":{"color":"rgba(33,144,140,1)"}},"textfont":{"color":"rgba(33,144,140,1)"},"error_y":{"color":"rgba(33,144,140,1)"},"error_x":{"color":"rgba(33,144,140,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.53731343283582089,0.5280898876404494,0.48749999999999999,0.5,1,0.65594059405940597,0.53333333333333333,0.51898734177215189,0.47085201793721976,0.76086956521739135,0.57333333333333336,0.60666666666666669,0.60259740259740258,0.6179775280898876,0.53667953667953672,0.50936967632027252,0.56993006993006989,0.5670103092783505,0.33333333333333331,0.61061946902654862,0.61065573770491799,0.55194805194805197,0.69230769230769229],"customdata":["Blue Line","Blue Line","Blue Line","Brown Line","Brown Line","Gray Line","Green Line","Green Line","Green Line","Light Green Line","Orange Line","Orange Line","Orange Line","Orange Line","Purple Line","Red Line","Red Line","Red Line","Shuttle","Yellow Line","Yellow Line","Yellow Line","Yellow Line"],"hovertemplate":["Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} "],"type":"bar","name":"A few times a week","marker":{"color":"rgba(59,82,139,1)","line":{"color":"rgba(59,82,139,1)"}},"textfont":{"color":"rgba(59,82,139,1)"},"error_y":{"color":"rgba(59,82,139,1)"},"error_x":{"color":"rgba(59,82,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["A","C","E","J","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"y":[0.30277185501066101,0.25280898876404495,0.29583333333333334,0.3611111111111111,0.17326732673267325,0.33939393939393941,0.35443037974683544,0.25112107623318386,0.14130434782608695,0.30666666666666664,0.30666666666666664,0.24935064935064935,0.3146067415730337,0.36679536679536678,0.26149914821124359,0.27272727272727271,0.22680412371134021,0.33333333333333331,0.25221238938053098,0.20081967213114754,0.31818181818181818,0.19230769230769232],"customdata":["Blue Line","Blue Line","Blue Line","Brown Line","Gray Line","Green Line","Green Line","Green Line","Light Green Line","Orange Line","Orange Line","Orange Line","Orange Line","Purple Line","Red Line","Red Line","Red Line","Shuttle","Yellow Line","Yellow Line","Yellow Line","Yellow Line"],"hovertemplate":["Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} ","Subway Line: %{x} Line Group: %{customdata} Proportion of Riders: %{y:.1%} "],"type":"bar","name":"Everyday","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code># To establish proportion of Riders with Long Delays (≥20 min): Define long delay buckets.
+
+# Proportion of Riders with Long Delays (≥20 min)
+# Interactive plotly bar chart
+
+
+
+
+
+
+long_categories &lt;- c(
+&quot;20 - 40 min&quot;, &quot;40 - 60 min&quot;, &quot;60 - 90 min&quot;,
+&quot;90 min - 2 hours&quot;, &quot;&gt; 60 min&quot;
+)
+
+line_order &lt;- subway_directory |&gt;
+arrange(group_color, subway_line) |&gt;
+pull(subway_line)
+
+long_delay_by_line &lt;- rider_data_full |&gt;
+filter(!is.na(average_length_subway_ride)) |&gt;
+mutate(long_delay = average_length_subway_ride %in% long_categories) |&gt;
+count(subway_line, long_delay) |&gt;
+group_by(subway_line) |&gt;
+mutate(prop = n / sum(n)) |&gt;
+filter(long_delay == TRUE) |&gt;
+left_join(subway_directory, by = &quot;subway_line&quot;) |&gt;
+mutate(
+subway_line = factor(subway_line, levels = line_order)
+)
+
+plot_ly(
+data = long_delay_by_line,
+x = ~subway_line,
+y = ~prop,
+type = &quot;bar&quot;,
+marker = list(color = ~hex_color),
+customdata = ~group_color,
+hovertemplate = paste(
+  &quot;&lt;b&gt;Subway Line:&lt;/b&gt; %{x}&lt;br&gt;&quot;,
+  &quot;&lt;b&gt;Long Delay Proportion:&lt;/b&gt; %{y:.2f}&lt;br&gt;&quot;,
+  &quot;&lt;extra&gt;&lt;/extra&gt;&quot;
+)
+) |&gt;
+layout(
+title = &quot;Proportion of Riders Reporting Long Delays (≥20 min)&quot;,
+xaxis = list(title = &quot;Subway Line&quot;, categoryarray = line_order),
+yaxis = list(title = &quot;Proportion&quot;, tickformat=&quot;.0%&quot;),
+bargap = 0.20
+)</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-5da0b264f32282c35352" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-5da0b264f32282c35352">{"x":{"visdat":{"9c9851c13c2d":["function () ","plotlyVisDat"]},"cur_data":"9c9851c13c2d","attrs":{"9c9851c13c2d":{"x":{},"y":{},"marker":{"color":{}},"customdata":{},"hovertemplate":"<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Proportion of Riders Reporting Long Delays (≥20 min)","xaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"],"type":"category","categoryorder":"array"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion","tickformat":".0%"},"bargap":0.20000000000000001,"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["1","2","3","4","5","6","7","A","B","C","D","E","F","G","J","L","M","N","Q","R","S","W"],"y":[0.83986371379897784,0.87412587412587417,0.87628865979381443,0.78787878787878785,0.87341772151898733,0.73991031390134532,0.89575289575289574,0.8869936034115139,0.92000000000000004,0.8033707865168539,0.92000000000000004,0.82499999999999996,0.88831168831168827,0.92391304347826086,0.86111111111111116,0.73514851485148514,0.9662921348314607,0.91150442477876104,0.85245901639344257,0.91558441558441561,0.66666666666666663,0.96153846153846156],"marker":{"color":["#EE352E","#EE352E","#EE352E","#00933C","#00933C","#00933C","#B933AD","#0039A6","#FF6319","#0039A6","#FF6319","#0039A6","#FF6319","#6CBE45","#996633","#A7A9AC","#FF6319","#FCCC0A","#FCCC0A","#FCCC0A","#808183","#FCCC0A"],"line":{"color":"rgba(31,119,180,1)"}},"customdata":["Red Line","Red Line","Red Line","Green Line","Green Line","Green Line","Purple Line","Blue Line","Orange Line","Blue Line","Orange Line","Blue Line","Orange Line","Light Green Line","Brown Line","Gray Line","Orange Line","Yellow Line","Yellow Line","Yellow Line","Shuttle","Yellow Line"],"hovertemplate":["<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>","<b>Subway Line:<\/b> %{x}<br> <b>Long Delay Proportion:<\/b> %{y:.2f}<br> <extra><\/extra>"],"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code># Ordinal frequency of delay responses
+# Interactive plotly heat map
+
+
+keep_delays &lt;- c(
+&quot;Rarely&quot;,
+&quot;A few times a week&quot;,
+&quot;Everyday&quot;
+)
+
+heat_data &lt;- rider_data_full |&gt;
+filter(!is.na(frequency_of_delays)) |&gt;
+filter(frequency_of_delays %in% keep_delays) |&gt;
+count(subway_line, frequency_of_delays) |&gt;
+complete(
+subway_line = unique(subway_directory$subway_line),
+frequency_of_delays = keep_delays,
+fill = list(n = 0)
+) |&gt;
+group_by(subway_line) |&gt;
+mutate(prop = n / sum(n)) |&gt;
+ungroup() |&gt;
+left_join(subway_directory, by = &quot;subway_line&quot;) |&gt;
+arrange(group_color, subway_line) |&gt;
+mutate(
+subway_line = factor(subway_line, levels = unique(subway_line)),
+frequency_of_delays = factor(frequency_of_delays, levels = keep_delays)
+)
+
+plot_ly(
+data = heat_data,
+x = ~frequency_of_delays,
+y = ~subway_line,
+z = ~prop,
+type = &quot;heatmap&quot;,
+colors = viridisLite::viridis(100),
+customdata = ~n,
+hovertemplate = paste(
+&quot;Line: %{y}&quot;,
+&quot;Delay Frequency: %{x}&quot;,
+&quot;Proportion: %{z:.1%}&quot;,
+&quot;Count: %{customdata}&quot;,
+&quot;&quot;
+)
+) |&gt;
+layout(
+title = &quot;Delay Frequency Distribution by Subway Line&quot;,
+xaxis = list(title = &quot;Delay Frequency&quot;),
+yaxis = list(title = &quot;Subway Line&quot;),
+margin = list(l = 90, r = 20, b = 80, t = 80)
+)</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-ce172b23b420002f34c8" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-ce172b23b420002f34c8">{"x":{"visdat":{"9c9878604cd8":["function () ","plotlyVisDat"]},"cur_data":"9c9878604cd8","attrs":{"9c9878604cd8":{"x":{},"y":{},"z":{},"customdata":{},"hovertemplate":"Line: %{y} Delay Frequency: %{x} Proportion: %{z:.1%} Count: %{customdata} ","colors":["#440154FF","#450558FF","#46085CFF","#470D60FF","#471063FF","#481467FF","#481769FF","#481B6DFF","#481E70FF","#482173FF","#482576FF","#482878FF","#472C7AFF","#472F7CFF","#46327EFF","#453581FF","#453882FF","#443B84FF","#433E85FF","#424186FF","#404587FF","#3F4788FF","#3E4A89FF","#3D4D8AFF","#3C508BFF","#3B528BFF","#39558CFF","#38598CFF","#375B8DFF","#355E8DFF","#34608DFF","#33638DFF","#32658EFF","#31688EFF","#2F6B8EFF","#2E6D8EFF","#2D708EFF","#2C718EFF","#2B748EFF","#2A768EFF","#29798EFF","#287C8EFF","#277E8EFF","#26818EFF","#26828EFF","#25858EFF","#24878EFF","#238A8DFF","#228D8DFF","#218F8DFF","#20928CFF","#20938CFF","#1F968BFF","#1F998AFF","#1E9B8AFF","#1F9E89FF","#1FA088FF","#1FA287FF","#20A486FF","#22A785FF","#24AA83FF","#25AC82FF","#28AE80FF","#2BB07FFF","#2EB37CFF","#31B67BFF","#35B779FF","#39BA76FF","#3DBC74FF","#41BE71FF","#47C06FFF","#4CC26CFF","#51C56AFF","#56C667FF","#5BC863FF","#61CA60FF","#67CC5CFF","#6DCD59FF","#73D056FF","#78D152FF","#7FD34EFF","#85D54AFF","#8CD646FF","#92D741FF","#99D83DFF","#A0DA39FF","#A7DB35FF","#ADDC30FF","#B4DE2CFF","#BBDE28FF","#C2DF23FF","#C9E020FF","#D0E11CFF","#D7E219FF","#DDE318FF","#E4E419FF","#EBE51AFF","#F1E51DFF","#F7E620FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"heatmap"}},"layout":{"margin":{"b":80,"l":90,"t":80,"r":20},"title":"Delay Frequency Distribution by Subway Line","xaxis":{"domain":[0,1],"automargin":true,"title":"Delay Frequency","type":"category","categoryorder":"array","categoryarray":["Rarely","A few times a week","Everyday"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Subway Line","type":"category","categoryorder":"array","categoryarray":["A","C","E","J","Z","L","4","5","6","G","B","D","F","M","7","1","2","3","S","N","Q","R","W"]},"scene":{"zaxis":{"title":"prop"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"prop","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(71,17,99,1)"],["0.0833333333333333","rgba(72,31,113,1)"],["0.125","rgba(71,45,123,1)"],["0.166666666666667","rgba(69,58,131,1)"],["0.208333333333333","rgba(63,70,136,1)"],["0.25","rgba(59,82,139,1)"],["0.291666666666667","rgba(53,94,141,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(44,113,142,1)"],["0.416666666666667","rgba(40,124,142,1)"],["0.458333333333333","rgba(37,134,142,1)"],["0.5","rgba(33,144,141,1)"],["0.541666666666667","rgba(30,154,138,1)"],["0.583333333333333","rgba(32,163,134,1)"],["0.625","rgba(40,174,128,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(72,192,111,1)"],["0.75","rgba(93,200,98,1)"],["0.791666666666667","rgba(117,208,85,1)"],["0.833333333333333","rgba(143,215,68,1)"],["0.875","rgba(171,220,50,1)"],["0.916666666666667","rgba(199,224,33,1)"],["0.958333333333333","rgba(227,228,25,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"x":["A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely","A few times a week","Everyday","Rarely"],"y":["A","A","A","C","C","C","E","E","E","J","J","J","Z","Z","Z","L","L","L","4","4","4","5","5","5","6","6","6","G","G","G","B","B","B","D","D","D","F","F","F","M","M","M","7","7","7","1","1","1","2","2","2","3","3","3","S","S","S","N","N","N","Q","Q","Q","R","R","R","W","W","W"],"z":[0.54077253218884125,0.30472103004291845,0.15450643776824036,0.53107344632768361,0.25423728813559321,0.21468926553672316,0.49576271186440679,0.30084745762711862,0.20338983050847459,0.50704225352112675,0.36619718309859156,0.12676056338028169,1,0,0,0.65920398009950254,0.17412935323383086,0.16666666666666666,0.53987730061349692,0.34355828220858897,0.1165644171779141,0.51898734177215189,0.35443037974683544,0.12658227848101267,0.47511312217194568,0.25339366515837103,0.27149321266968324,0.76086956521739135,0.14130434782608695,0.097826086956521743,0.57333333333333336,0.30666666666666664,0.12,0.61486486486486491,0.3108108108108108,0.074324324324324328,0.61052631578947369,0.25263157894736843,0.1368421052631579,0.63218390804597702,0.32183908045977011,0.045977011494252873,0.54509803921568623,0.37254901960784315,0.082352941176470587,0.51864700780572415,0.2662619254119688,0.21509106678230702,0.58422939068100355,0.27956989247311825,0.13620071684587814,0.57894736842105265,0.23157894736842105,0.18947368421052632,0.33333333333333331,0.33333333333333331,0.33333333333333331,0.6216216216216216,0.25675675675675674,0.12162162162162163,0.61825726141078841,0.2033195020746888,0.17842323651452283,0.55676855895196509,0.32096069868995636,0.1222707423580786,0.69230769230769229,0.19230769230769232,0.11538461538461539],"customdata":[252,142,72,94,45,38,117,71,48,36,26,9,1,0,0,265,70,67,88,56,19,41,28,10,105,56,60,70,13,9,43,23,9,91,46,11,232,96,52,55,28,4,139,95,21,598,307,248,163,78,38,55,22,18,1,1,1,138,57,27,149,49,43,255,147,56,18,5,3],"hovertemplate":"Line: %{y} Delay Frequency: %{x} Proportion: %{z:.1%} Count: %{customdata} ","type":"heatmap","xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

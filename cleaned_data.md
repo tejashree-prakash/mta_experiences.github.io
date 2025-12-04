@@ -5,29 +5,20 @@ load packages
 
 ``` r
 library(tidyverse)
+library(lubridate)
+library(readxl)
 ```
-
-    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ## ✔ ggplot2   3.5.2     ✔ tibble    3.3.0
-    ## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-    ## ✔ purrr     1.1.0     
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
 Here I will clean the 2019_subway_rider_data
 
 ``` r
 subway_rider_data = 
-  read_csv("data/2019_subway_rider_data.csv") |> 
+  read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
   janitor::clean_names()
 ```
 
     ## Rows: 10704 Columns: 19
-    ## ── Column specification ────────────────────────────────────────────────────────
+    ## ── Column specification ───────────────────────────────────────────────────────────────────────
     ## Delimiter: ","
     ## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
     ## lgl  (1): is_subway_affordable
@@ -121,29 +112,12 @@ rider_data =
     )
 ```
 
-converting complaints into long format:
-
-``` r
-rider_data =
-  rider_data |> 
-  mutate(
-    top_three_complaints = 
-      str_remove_all(top_three_complaints, "\\[|\\]|'")
-  ) |> 
-  separate_rows(top_three_complaints, sep = ",") |> 
-  mutate(top_three_complaints = 
-           str_trim(top_three_complaints)) |> 
-  rename(complaint = top_three_complaints)
-```
-
 Making some of the variables as a character and some as a factor!
 
 ``` r
 rider_data = 
   rider_data |> 
   mutate(
-    is_subway_affordable = if_else(
-      is_subway_affordable == "Yes", TRUE, FALSE),
     zip_code = as.character(zip_code)
     )
 
@@ -158,6 +132,65 @@ rider_data =
   )
 ```
 
-should approximate delay duration be an ordered factor?
+``` r
+rider_data = 
+  rider_data %>%
+  mutate(
+    top_three_complaints = 
+      str_remove_all(top_three_complaints, "\\[|\\]|'")
+  )
+```
 
-anyways final data set is rider_data
+Converting zip codes into boroughs. I used
+<https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls>
+to get majority of the borough’s zip codes. Any remaining ones, I looked
+up on Google and cross-checked. There were four zip codes that I could
+not find a match for, and were likely miswritten, so I removed those
+data rows.
+
+``` r
+zip_code_data = 
+  read_csv("data/nyc_zipcodes.csv") %>%
+  select(borough, zipcode)
+```
+
+    ## Rows: 343 Columns: 2
+    ## ── Column specification ───────────────────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (2): borough, zipcode
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+#Make sure character variables 
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode)) #make sure it's a character variable 
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+
+#Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+```
+
+    ## Warning in left_join(., zip_code_data, by = c(zip_code = "zipcode")): Detected an unexpected many-to-many relationship between `x` and `y`.
+    ## ℹ Row 6 of `x` matches multiple rows in `y`.
+    ## ℹ Row 109 of `y` matches multiple rows in `x`.
+    ## ℹ If a many-to-many relationship is expected, set `relationship = "many-to-many"` to silence
+    ##   this warning.
+
+``` r
+#Fill borough where missing
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#Remove invalid zip codes
+rider_data_full <- rider_data_full %>%
+  filter(survey_id != 2410) %>% 
+  filter(survey_id != 944) %>% 
+  filter(survey_id != 241) %>% 
+  filter(survey_id != 919) 
+```
+
+# final data set is rider_data_full
