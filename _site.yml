@@ -1,9 +1,14 @@
 name: "mta_experiences"
 output_dir: "."   # keep this since your repo is <name>.github.io
+
+exclude:
+  - nyc_subway_routes.Rmd
+
 navbar:
-  title: "Not All Trains are Created Equal"
-  left:
-    - text: "Home"
+  title: "Home"
+  
+  right:
+    - text: "Welcome"
       href: index.html
 
     - text: "Borough dashboard"
@@ -15,17 +20,15 @@ navbar:
     - text: "Complaint types"
       href: Updated-Dashboard-complaint-types-II.html
 
-    - text: "Subway map & rankings"
-      href: nyc_subway_routes.html
-
-    - text: "Regression analysis"
-      href: ranking_regression_analysis.html
-
-  right:
-    - text: "Report"
-      href: proposal.html
-    - text: "Data source"
-      href: "https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd"
+  left:
+    - text: "About"
+      menu:
+        - text: "Report"
+          href: proposal.html
+        - text: "Regression analysis"
+          href: ranking_regression_analysis.html
+        - text: "Data source"
+          href: "https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd"
 
 output:
   html_document:
