@@ -2,9 +2,11 @@
 title: "Regression Analysis"
 ---
 
-Running regression to develop our subway line ranking system. overall_satisfaction = subway_line_used_most_often + approximate_delay_duration + most_common_reason_for_delay + primary_use_of_subway + frequency_of_delays
+For our regression analysis, we examined how overall rider satisfaction varies by borough and key transit-related factors. The model included average subway ride length, frequency of service delays, approximate delay duration, and the frequency of rerouting events.
 
-All predictors are converted to an ordinal, categorical variable. Assumption, overall satisfaction as a Likert scale 1-5 continuous variable, allowing for linear regression. 
+We focused on these variables because they capture the core elements of rider experience that are most likely to influence satisfaction, while remaining feasible to analyze within the scope of our project. Other potentially informative variables—such as the type of complaint or the most common reason for delays—were not included due to data limitations, but the selected predictors still provide a meaningful view of the factors shaping transit performance and rider perceptions.
+
+All predictors and the outcome were converted to an ordinal, categorical variable, followed by a logistic regression model befitting an ordinal response.
 
 ```{r setup, include=FALSE}
 library(tidyverse)
@@ -16,7 +18,7 @@ library(sjPlot)
 ```
 
 
-```{r}
+```{r, include = FALSE}
 #DATA CLEANING
 subway_rider_data = 
   read_csv("data/2019_subway_rider_data.csv") |> 
@@ -214,8 +216,8 @@ regression_rider_data <-
 ```
 
 
-Distributions  
-```{r}
+Before beginning our regression analysis, we wanted to visualize the distribution of overall satisfaction levels across our total sample. Understanding this distribution provides a baseline for interpreting our regression results, highlights the prevalence of positive, neutral, and negative perceptions, and helps identify patterns or imbalances in rider satisfaction. This step ensures that our subsequent modeling is grounded in a clear understanding of the data, allowing us to better assess how factors such as borough, ride length, and service reliability relate to overall satisfaction.
+```{r, fig.cap="This distribution demonstrates a slightly skewed, but close to normal distribution of overall satisfaction responses."}
 #Pick blue from gradient 
 viridis_blue <- viridis(100)[40]
 
@@ -312,7 +314,7 @@ plot_ly(tidy_model,
         error_x = list(type = 'data', symmetric = FALSE,
                        array = tidy_model$conf.high - tidy_model$odds_ratio,
                        arrayminus = tidy_model$odds_ratio - tidy_model$conf.low)) %>%
-  layout(title = "Significant Predictor Effects on Satisfaction (ORs with 95% CI)",
+  layout(title = "Significant Predictor Effects on Satisfaction (ORs with 95%)",
          xaxis = list(title = "Odds Ratio"),
          yaxis = list(title = "Predictor"))
 ```
