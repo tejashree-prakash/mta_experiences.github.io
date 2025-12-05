@@ -9,7 +9,6 @@ output:
 <div style="text-align:center;">
 
 ![](images/mta_subway_s.webp){width=750px height=500px}
-
 <br>
 <small>
 Image source: <a href="https://tvtropes.org/pmwiki/pmwiki.php/UsefulNotes/NewYorkCitySubway">
@@ -19,11 +18,9 @@ TVTropes – New York City Subway
 
 </div>
 
-
-
-
-
+<p style="font-size: 18px;">
 New York City has a well-known public transportation system, used by thousands every day. Unfortunately, not all trains are created equal. The MTA suggests that fare increases will soon be implemented, but with wavering opinions on the efficiency of the train lines, is this appropriate?
+</p>
 
 ## Interactive Subway Map
 ```{r, include = FALSE}
@@ -61,8 +58,8 @@ subway_directory_display_final
 
 
 
-##### Ranking System
-We were able to rank the various subway lines through a [regression analysis](ranking_regression_analysis.html).
+##### Composite Score
+We were able to rank the various subway lines through a [composite score analysis](ranking_regression_analysis.html).
 
 
 ## Screen Cast

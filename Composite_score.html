@@ -300,839 +300,26 @@ $(document).ready(function () {
 </div>
 
 
-<pre class="r"><code>#load packages
-library(tidyverse)
-library(lubridate)
-library(readxl)
-library(gt)</code></pre>
-<pre><code>## Warning: package &#39;gt&#39; was built under R version 4.5.2</code></pre>
-<pre class="r"><code># Here I will clean the 2019_subway_rider_data 
-subway_rider_data = 
-  read_csv(&quot;data/2019_Subway_Rider_Survey_20251121.csv&quot;) |&gt; 
-  janitor::clean_names()</code></pre>
-<pre><code>## Rows: 10704 Columns: 19
-## ── Column specification ─────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
-## lgl  (1): is_subway_affordable
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>subway_drops =
-  subway_rider_data |&gt; 
-  select(-survey_stop_borough, -survey_stop_location) |&gt; 
-  drop_na() |&gt; 
-  mutate(survey_id = row_number()) |&gt; 
-  relocate(survey_id, .before = 1)</code></pre>
-<pre class="r"><code>#Now I will specifically clean the data within the columns
-
-rider_data =
-  subway_drops |&gt;
+<pre class="r"><code>subway_directory_display_final =
+  subway_directory_display_final %&gt;%
+  arrange(rank) %&gt;%
   mutate(
-    use_of_subway_frequency = case_when(
-      use_of_subway_frequency == &quot;Everyday / Almost everyday&quot; ~ &quot;Every day&quot;,
-      use_of_subway_frequency == &quot;More than once a week, varies&quot; ~ &quot;Several times a week&quot;,
-      use_of_subway_frequency %in% c(&quot;Weekdays, Mon - Fri&quot;, &quot;~5 days per week&quot;) ~ &quot;5 days per week&quot;,
-      use_of_subway_frequency == &quot;Once a week&quot; ~ &quot;Once a week&quot;,
-      use_of_subway_frequency == &quot;Once a month&quot; ~ &quot;Once a month&quot;,
-      use_of_subway_frequency == &quot;Almost never&quot; ~ &quot;Almost never&quot;,
-      use_of_subway_frequency == &quot;Never&quot; ~ &quot;Never&quot;,
-      TRUE ~ NA_character_
-    ),
-    use_of_subway_frequency = 
-      factor(
-        use_of_subway_frequency,
-        levels = c(&quot;Never&quot;, 
-                   &quot;Almost never&quot;, 
-                   &quot;Once a month&quot;, 
-                   &quot;Once a week&quot;,
-                   &quot;Several times a week&quot;, 
-                   &quot;5 days per week&quot;, 
-                   &quot;Every day&quot;),
-        ordered = TRUE)
+    rank = dplyr::case_when(
+      rank == 1 ~ &quot;🥇 1&quot;,
+      rank == 2 ~ &quot;🥈 2&quot;,
+      rank == 3 ~ &quot;🥉 3&quot;,
+      TRUE      ~ as.character(rank)
     )
-
-
-rider_data =
-  subway_drops |&gt; 
-  mutate(average_length_subway_ride = 
-           factor(average_length_subway_ride,
-                  levels = c(&quot;&lt; 20 min&quot;, 
-                             &quot;20 - 40 min&quot;, 
-                             &quot;40 - 60 min&quot;,
-                             &quot;60 - 90 min&quot;, 
-                             &quot;90 min - 2 hours&quot;),
-                  ordered = TRUE))
-
-
-rider_data =
-  subway_drops |&gt;
-  mutate(
-    overall_satisfaction = 
-      recode(
-        overall_satisfaction,
-        &quot;Not satisfied&quot; = &quot;Unsatisfied&quot;),
-    overall_satisfaction = 
-      factor(
-        overall_satisfaction,
-        levels = c(&quot;Highly unsatisfied&quot;,
-                 &quot;Unsatisfied&quot;,
-                 &quot;Neutral&quot;,
-                 &quot;Somewhat satisfied&quot;,
-                 &quot;Very satisfied&quot;),
-      ordered = TRUE)
-    )
-
-
-rider_data =
-  subway_drops |&gt; 
-  mutate(
-    frequency_of_delays = factor(
-      frequency_of_delays,
-      levels = c(&quot;Everyday&quot;,
-                 &quot;A few times a week&quot;,
-                 &quot;Rarely&quot;,
-                 &quot;Almost never&quot;,
-                 &quot;Never&quot;),
-      ordered = TRUE)
-    )</code></pre>
-<pre class="r"><code>#Making some of the variables as a character and some as a factor!
-
-rider_data = 
-  rider_data |&gt; 
-  mutate(
-    zip_code = as.character(zip_code)
-    )
-
-
-rider_data =
-  rider_data |&gt; 
-  mutate(
-    across(c(subway_line_used_most_often,
-             get_to_subway_via,
-             primary_use_of_subway,
-             alternative_transport), as.factor)
-  )</code></pre>
-<pre class="r"><code>rider_data = 
-  rider_data %&gt;%
-  mutate(
-    top_three_complaints = 
-      str_remove_all(top_three_complaints, &quot;\\[|\\]|&#39;&quot;)
-  )</code></pre>
-<pre class="r"><code># Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough&#39;s zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
-
-zip_code_data = 
-  read_csv(&quot;data/nyc_zipcodes.csv&quot;) %&gt;%
-  select(borough, zipcode)</code></pre>
-<pre><code>## Rows: 343 Columns: 2
-## ── Column specification ─────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (2): borough, zipcode
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>#Make sure character variables 
-zip_code_data &lt;- zip_code_data %&gt;%
-  mutate(zipcode = as.character(zipcode)) #make sure it&#39;s a character variable 
-rider_data &lt;- rider_data %&gt;%
-  mutate(zip_code = as.character(zip_code))
-
-#Join
-rider_data_full &lt;- rider_data %&gt;%
-  left_join(zip_code_data, by = c(&quot;zip_code&quot; = &quot;zipcode&quot;))</code></pre>
-<pre><code>## Warning in left_join(., zip_code_data, by = c(zip_code = &quot;zipcode&quot;)): Detected an unexpected many-to-many relationship between `x` and `y`.
-## ℹ Row 6 of `x` matches multiple rows in `y`.
-## ℹ Row 109 of `y` matches multiple rows in `x`.
-## ℹ If a many-to-many relationship is expected, set `relationship =
-##   &quot;many-to-many&quot;` to silence this warning.</code></pre>
-<pre class="r"><code>#Fill borough where missing
-rider_data_full &lt;- rider_data_full %&gt;%
-  mutate(borough = coalesce(borough, as.character(zip_code)))
-
-#Remove invalid zip codes
-rider_data_full &lt;- rider_data_full %&gt;%
-  filter(survey_id != 2410) %&gt;% 
-  filter(survey_id != 944) %&gt;% 
-  filter(survey_id != 241) %&gt;% 
-  filter(survey_id != 919) 
-
-# final data set is rider_data_full</code></pre>
-<pre class="r"><code># Subway Line Directory Table Code:
-
-subway_directory_display &lt;- tribble(
-  ~`Line Family`, ~Lines, ~Color,
-  &quot;Red Line&quot;, &quot;1, 2, 3&quot;, &quot;#EE352E&quot;,
-  &quot;Green Line&quot;, &quot;4, 5, 6&quot;, &quot;#00933C&quot;,
-  &quot;Purple Line&quot;, &quot;7&quot;, &quot;#B933AD&quot;,
-  &quot;Blue Line&quot;, &quot;A, C, E&quot;, &quot;#0039A6&quot;,
-  &quot;Orange Line&quot;, &quot;B, D, F, M&quot;, &quot;#FF6319&quot;,
-  &quot;Yellow Line&quot;, &quot;N, Q, R, W&quot;, &quot;#FCCC0A&quot;,
-  &quot;Light Green Line&quot;, &quot;G&quot;, &quot;#6CBE45&quot;,
-  &quot;Brown Line&quot;, &quot;J, Z&quot;, &quot;#996633&quot;,
-  &quot;Gray Line&quot;, &quot;L&quot;, &quot;#A7A9AC&quot;,
-  &quot;Shuttle&quot;, &quot;S&quot;, &quot;#808183&quot;
-)
-
-subway_directory_display %&gt;%
-  gt() %&gt;%
-  tab_header(title = &quot;NYC Subway Line Directory&quot;) %&gt;%
-  text_transform(
-    locations = cells_body(columns = Color),
-    fn = function(x) {
-      # x = column vector of hex colors
-      mapply(function(col) {
-        html(
-          paste0(
-            &quot;&lt;div style=&#39;background-color:&quot;, col,
-            &quot;; width: 60px; height: 20px; border-radius: 4px&#39;&gt;&lt;/div&gt;&quot;
-          )
-        )
-      }, x)
-    }
   ) %&gt;%
-  cols_width(
-    `Line Family` ~ px(180),
-    Lines ~ px(180),
-    Color ~ px(100)
-  ) %&gt;%
-  opt_table_outline()</code></pre>
-<div id="aqliuyzegt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#aqliuyzegt table {
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#aqliuyzegt thead, #aqliuyzegt tbody, #aqliuyzegt tfoot, #aqliuyzegt tr, #aqliuyzegt td, #aqliuyzegt th {
-  border-style: none;
-}
-
-#aqliuyzegt p {
-  margin: 0;
-  padding: 0;
-}
-
-#aqliuyzegt .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 3px;
-  border-top-color: #D3D3D3;
-  border-right-style: solid;
-  border-right-width: 3px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 3px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: solid;
-  border-left-width: 3px;
-  border-left-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#aqliuyzegt .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#aqliuyzegt .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#aqliuyzegt .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#aqliuyzegt .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#aqliuyzegt .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#aqliuyzegt .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#aqliuyzegt .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#aqliuyzegt .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#aqliuyzegt .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#aqliuyzegt .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#aqliuyzegt .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#aqliuyzegt .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#aqliuyzegt .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#aqliuyzegt .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#aqliuyzegt .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#aqliuyzegt .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#aqliuyzegt .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#aqliuyzegt .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#aqliuyzegt .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#aqliuyzegt .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#aqliuyzegt .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#aqliuyzegt .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#aqliuyzegt .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#aqliuyzegt .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#aqliuyzegt .gt_left {
-  text-align: left;
-}
-
-#aqliuyzegt .gt_center {
-  text-align: center;
-}
-
-#aqliuyzegt .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#aqliuyzegt .gt_font_normal {
-  font-weight: normal;
-}
-
-#aqliuyzegt .gt_font_bold {
-  font-weight: bold;
-}
-
-#aqliuyzegt .gt_font_italic {
-  font-style: italic;
-}
-
-#aqliuyzegt .gt_super {
-  font-size: 65%;
-}
-
-#aqliuyzegt .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#aqliuyzegt .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#aqliuyzegt .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#aqliuyzegt .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#aqliuyzegt .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#aqliuyzegt .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#aqliuyzegt .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#aqliuyzegt .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#aqliuyzegt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-  height: 0px !important;
-}
-</style>
-<table class="gt_table" style="table-layout:fixed;width:0px;" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <colgroup>
-    <col style="width:180px;"/>
-    <col style="width:180px;"/>
-    <col style="width:100px;"/>
-  </colgroup>
-  <thead>
-    <tr class="gt_heading">
-      <td colspan="3" class="gt_heading gt_title gt_font_normal gt_bottom_border" style>NYC Subway Line Directory</td>
-    </tr>
-    
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Line-Family">Line Family</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Lines">Lines</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Color">Color</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="Line Family" class="gt_row gt_left">Red Line</td>
-<td headers="Lines" class="gt_row gt_left">1, 2, 3</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#EE352E; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Green Line</td>
-<td headers="Lines" class="gt_row gt_left">4, 5, 6</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#00933C; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Purple Line</td>
-<td headers="Lines" class="gt_row gt_left">7</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#B933AD; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Blue Line</td>
-<td headers="Lines" class="gt_row gt_left">A, C, E</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#0039A6; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Orange Line</td>
-<td headers="Lines" class="gt_row gt_left">B, D, F, M</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#FF6319; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Yellow Line</td>
-<td headers="Lines" class="gt_row gt_left">N, Q, R, W</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#FCCC0A; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Light Green Line</td>
-<td headers="Lines" class="gt_row gt_left">G</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#6CBE45; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Brown Line</td>
-<td headers="Lines" class="gt_row gt_left">J, Z</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#996633; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Gray Line</td>
-<td headers="Lines" class="gt_row gt_left">L</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#A7A9AC; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Shuttle</td>
-<td headers="Lines" class="gt_row gt_left">S</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#808183; width: 60px; height: 20px; border-radius: 4px'></div></td></tr>
-  </tbody>
-  
-</table>
-</div>
-<pre class="r"><code># Join-ready Subway Line Directory + Join to cleaned dataset
-subway_directory &lt;- tribble(
-~subway_line, ~group_color, ~hex_color,
-&quot;1&quot;,&quot;Red Line&quot;,&quot;#EE352E&quot;,
-&quot;2&quot;,&quot;Red Line&quot;,&quot;#EE352E&quot;,
-&quot;3&quot;,&quot;Red Line&quot;,&quot;#EE352E&quot;,
-&quot;4&quot;,&quot;Green Line&quot;,&quot;#00933C&quot;,
-&quot;5&quot;,&quot;Green Line&quot;,&quot;#00933C&quot;,
-&quot;6&quot;,&quot;Green Line&quot;,&quot;#00933C&quot;,
-&quot;7&quot;,&quot;Purple Line&quot;,&quot;#B933AD&quot;,
-&quot;A&quot;,&quot;Blue Line&quot;,&quot;#0039A6&quot;,
-&quot;C&quot;,&quot;Blue Line&quot;,&quot;#0039A6&quot;,
-&quot;E&quot;,&quot;Blue Line&quot;,&quot;#0039A6&quot;,
-&quot;B&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
-&quot;D&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
-&quot;F&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
-&quot;M&quot;,&quot;Orange Line&quot;,&quot;#FF6319&quot;,
-&quot;N&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
-&quot;Q&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
-&quot;R&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
-&quot;W&quot;,&quot;Yellow Line&quot;,&quot;#FCCC0A&quot;,
-&quot;G&quot;,&quot;Light Green Line&quot;,&quot;#6CBE45&quot;,
-&quot;J&quot;,&quot;Brown Line&quot;,&quot;#996633&quot;,
-&quot;Z&quot;,&quot;Brown Line&quot;,&quot;#996633&quot;,
-&quot;L&quot;,&quot;Gray Line&quot;,&quot;#A7A9AC&quot;,
-&quot;S&quot;,&quot;Shuttle&quot;,&quot;#808183&quot;
-)</code></pre>
-<pre class="r"><code># Categories defining &quot;long delays&quot;
-long_categories &lt;-  c(
-  &quot;20 - 40 min&quot;, &quot;40 - 60 min&quot;, &quot;60 - 90 min&quot;,
-  &quot;90 min - 2 hours&quot;, &quot;&gt; 60 min&quot;
-)
-
-# Ordinal score for frequency of delays
-delay_freq_scores &lt;- c(
-  &quot;Never&quot; = 1,
-  &quot;Almost never&quot; = 2,
-  &quot;Rarely&quot; = 3,
-  &quot;A few times a week&quot; = 4,
-  &quot;Everyday&quot; = 5
-)
-
-# Numeric midpoints for average delay length
-delay_length_scores &lt;- c(
-  &quot;&lt; 20 min&quot;        = 10,     # midpoint choice
-  &quot;20 - 40 min&quot;     = 30,
-  &quot;40 - 60 min&quot;     = 50,
-  &quot;60 - 90 min&quot;     = 75,
-  &quot;90 min - 2 hours&quot; = 105
-)
-
-# Satisfaction ordinal scale
-satisfaction_scores &lt;- c(
-  &quot;Highly unsatisfied&quot; = 1,
-  &quot;Unsatisfied&quot;        = 2,
-  &quot;Neutral&quot;            = 3,
-  &quot;Somewhat satisfied&quot; = 4,
-  &quot;Very satisfied&quot;     = 5
-)</code></pre>
-<pre class="r"><code>scored_data &lt;- rider_data_full |&gt;
-  mutate(
-    subway_line = subway_line_used_most_often |&gt;
-      str_replace_all(&quot;[^A-Za-z0-9]&quot;, &quot;/&quot;) |&gt;
-      str_split(&quot;/&quot;)
-  ) |&gt;
-  unnest(subway_line) |&gt;
-  mutate(
-    subway_line = str_trim(subway_line),
-    subway_line = str_to_upper(subway_line)
-  ) |&gt;
-  filter(subway_line %in% subway_directory$subway_line) |&gt;
-  left_join(subway_directory, by = &quot;subway_line&quot;) |&gt;
-  mutate(
-    long_delay       = average_length_subway_ride %in% long_categories,
-    delay_freq_num   = delay_freq_scores[frequency_of_delays],
-    delay_length_num = delay_length_scores[average_length_subway_ride],   # ← FIX
-    satisfaction_num = satisfaction_scores[overall_satisfaction]
-  )</code></pre>
-<pre class="r"><code>family_scores_raw &lt;- scored_data |&gt;
-  group_by(group_color) |&gt;
-  summarise(
-    pct_long_delay   = mean(long_delay, na.rm = TRUE),
-    avg_delay_freq   = mean(delay_freq_num, na.rm = TRUE),
-    avg_delay_length = mean(delay_length_num, na.rm = TRUE),
-    avg_satisfaction = mean(satisfaction_num, na.rm = TRUE)
-  ) |&gt;
-  ungroup()</code></pre>
-<pre class="r"><code>family_scores_norm &lt;- family_scores_raw |&gt;
-  mutate(
-    z_pct_long_delay   = scale(pct_long_delay)[,1]    * -1,
-    z_delay_freq       = scale(avg_delay_freq)[,1]    * -1,
-    z_delay_length     = scale(avg_delay_length)[,1]  * -1,
-    z_satisfaction     = scale(avg_satisfaction)[,1]
-  )</code></pre>
-<pre class="r"><code>family_composite &lt;- family_scores_raw |&gt;
-  mutate(
-    z_pct_long_delay = scale(-pct_long_delay)[,1],
-    z_delay_freq     = scale(-avg_delay_freq)[,1],
-    z_delay_length   = scale(-avg_delay_length)[,1],
-    z_satisfaction   = scale(avg_satisfaction)[,1]
-  ) |&gt;
-
-  # Replace z-score NAs with 0 (neutral)
-  mutate(
-    across(starts_with(&quot;z_&quot;), ~replace_na(.x, 0))
-  ) |&gt;
-
-  mutate(
-    composite_score = z_pct_long_delay +
-                      z_delay_freq +
-                      z_delay_length +
-                      z_satisfaction
-  ) |&gt;
-  arrange(desc(composite_score)) |&gt;
-  mutate(rank = row_number())</code></pre>
-<pre class="r"><code># Step 2: Remove extra columns &amp; make all scores positive
-family_composite_clean &lt;- family_composite |&gt;
-  mutate(
-    composite_score = composite_score - min(composite_score, na.rm = TRUE)
-  ) |&gt;
-  arrange(desc(composite_score)) |&gt;
-  mutate(rank = row_number()) |&gt;
-  select(group_color, composite_score, rank)</code></pre>
-<pre class="r"><code>subway_directory_display_final &lt;- subway_directory_display |&gt;
-  left_join(family_composite_clean, by = c(&quot;Line Family&quot; = &quot;group_color&quot;))</code></pre>
-<pre class="r"><code>subway_directory_display_final=
-subway_directory_display_final %&gt;%
   gt() %&gt;%
-  tab_header(title = &quot;NYC Subway Line Directory &amp; Score&quot;) %&gt;%
+  tab_header(title = &quot;NYC Subway Line Directory with Composite Score&quot;) %&gt;%
   cols_move(
     columns = c(composite_score, rank),
     after = Color
   ) %&gt;%
   cols_label(
     composite_score = &quot;Score&quot;,
-    rank = &quot;Rank&quot;
+    rank            = &quot;Rank&quot;
   ) %&gt;%
   fmt_number(
     columns = composite_score,
@@ -1152,32 +339,36 @@ subway_directory_display_final %&gt;%
     }
   ) %&gt;%
   cols_width(
-    `Line Family` ~ px(120),
-    Lines ~ px(100),
-    Color ~ px(70),
+    `Line Family`   ~ px(120),
+    Lines           ~ px(100),
+    Color           ~ px(70),
     composite_score ~ px(80),
-    rank ~ px(70)
+    rank            ~ px(70)
+  ) %&gt;%
+  cols_align(
+    align = &quot;center&quot;,
+    columns = rank
   ) %&gt;%
   opt_table_outline()
 
 subway_directory_display_final</code></pre>
-<div id="lcsqhpmqdo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#lcsqhpmqdo table {
+<div id="sfgimuximb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#sfgimuximb table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#lcsqhpmqdo thead, #lcsqhpmqdo tbody, #lcsqhpmqdo tfoot, #lcsqhpmqdo tr, #lcsqhpmqdo td, #lcsqhpmqdo th {
+#sfgimuximb thead, #sfgimuximb tbody, #sfgimuximb tfoot, #sfgimuximb tr, #sfgimuximb td, #sfgimuximb th {
   border-style: none;
 }
 
-#lcsqhpmqdo p {
+#sfgimuximb p {
   margin: 0;
   padding: 0;
 }
 
-#lcsqhpmqdo .gt_table {
+#sfgimuximb .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1203,12 +394,12 @@ subway_directory_display_final</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_caption {
+#sfgimuximb .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#lcsqhpmqdo .gt_title {
+#sfgimuximb .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1220,7 +411,7 @@ subway_directory_display_final</code></pre>
   border-bottom-width: 0;
 }
 
-#lcsqhpmqdo .gt_subtitle {
+#sfgimuximb .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1232,7 +423,7 @@ subway_directory_display_final</code></pre>
   border-top-width: 0;
 }
 
-#lcsqhpmqdo .gt_heading {
+#sfgimuximb .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1244,13 +435,13 @@ subway_directory_display_final</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_bottom_border {
+#sfgimuximb .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_col_headings {
+#sfgimuximb .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1265,7 +456,7 @@ subway_directory_display_final</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_col_heading {
+#sfgimuximb .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1285,7 +476,7 @@ subway_directory_display_final</code></pre>
   overflow-x: hidden;
 }
 
-#lcsqhpmqdo .gt_column_spanner_outer {
+#sfgimuximb .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1297,15 +488,15 @@ subway_directory_display_final</code></pre>
   padding-right: 4px;
 }
 
-#lcsqhpmqdo .gt_column_spanner_outer:first-child {
+#sfgimuximb .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#lcsqhpmqdo .gt_column_spanner_outer:last-child {
+#sfgimuximb .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#lcsqhpmqdo .gt_column_spanner {
+#sfgimuximb .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1317,11 +508,11 @@ subway_directory_display_final</code></pre>
   width: 100%;
 }
 
-#lcsqhpmqdo .gt_spanner_row {
+#sfgimuximb .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#lcsqhpmqdo .gt_group_heading {
+#sfgimuximb .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1347,7 +538,7 @@ subway_directory_display_final</code></pre>
   text-align: left;
 }
 
-#lcsqhpmqdo .gt_empty_group_heading {
+#sfgimuximb .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1362,15 +553,15 @@ subway_directory_display_final</code></pre>
   vertical-align: middle;
 }
 
-#lcsqhpmqdo .gt_from_md > :first-child {
+#sfgimuximb .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#lcsqhpmqdo .gt_from_md > :last-child {
+#sfgimuximb .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#lcsqhpmqdo .gt_row {
+#sfgimuximb .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1389,7 +580,7 @@ subway_directory_display_final</code></pre>
   overflow-x: hidden;
 }
 
-#lcsqhpmqdo .gt_stub {
+#sfgimuximb .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1402,7 +593,7 @@ subway_directory_display_final</code></pre>
   padding-right: 5px;
 }
 
-#lcsqhpmqdo .gt_stub_row_group {
+#sfgimuximb .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1416,15 +607,15 @@ subway_directory_display_final</code></pre>
   vertical-align: top;
 }
 
-#lcsqhpmqdo .gt_row_group_first td {
+#sfgimuximb .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#lcsqhpmqdo .gt_row_group_first th {
+#sfgimuximb .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#lcsqhpmqdo .gt_summary_row {
+#sfgimuximb .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1434,16 +625,16 @@ subway_directory_display_final</code></pre>
   padding-right: 5px;
 }
 
-#lcsqhpmqdo .gt_first_summary_row {
+#sfgimuximb .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_first_summary_row.thick {
+#sfgimuximb .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#lcsqhpmqdo .gt_last_summary_row {
+#sfgimuximb .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1453,7 +644,7 @@ subway_directory_display_final</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_grand_summary_row {
+#sfgimuximb .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1463,7 +654,7 @@ subway_directory_display_final</code></pre>
   padding-right: 5px;
 }
 
-#lcsqhpmqdo .gt_first_grand_summary_row {
+#sfgimuximb .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1473,7 +664,7 @@ subway_directory_display_final</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_last_grand_summary_row_top {
+#sfgimuximb .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1483,11 +674,11 @@ subway_directory_display_final</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_striped {
+#sfgimuximb .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#lcsqhpmqdo .gt_table_body {
+#sfgimuximb .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1496,7 +687,7 @@ subway_directory_display_final</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_footnotes {
+#sfgimuximb .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1510,7 +701,7 @@ subway_directory_display_final</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_footnote {
+#sfgimuximb .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1519,7 +710,7 @@ subway_directory_display_final</code></pre>
   padding-right: 5px;
 }
 
-#lcsqhpmqdo .gt_sourcenotes {
+#sfgimuximb .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1533,7 +724,7 @@ subway_directory_display_final</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#lcsqhpmqdo .gt_sourcenote {
+#sfgimuximb .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1541,72 +732,72 @@ subway_directory_display_final</code></pre>
   padding-right: 5px;
 }
 
-#lcsqhpmqdo .gt_left {
+#sfgimuximb .gt_left {
   text-align: left;
 }
 
-#lcsqhpmqdo .gt_center {
+#sfgimuximb .gt_center {
   text-align: center;
 }
 
-#lcsqhpmqdo .gt_right {
+#sfgimuximb .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#lcsqhpmqdo .gt_font_normal {
+#sfgimuximb .gt_font_normal {
   font-weight: normal;
 }
 
-#lcsqhpmqdo .gt_font_bold {
+#sfgimuximb .gt_font_bold {
   font-weight: bold;
 }
 
-#lcsqhpmqdo .gt_font_italic {
+#sfgimuximb .gt_font_italic {
   font-style: italic;
 }
 
-#lcsqhpmqdo .gt_super {
+#sfgimuximb .gt_super {
   font-size: 65%;
 }
 
-#lcsqhpmqdo .gt_footnote_marks {
+#sfgimuximb .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#lcsqhpmqdo .gt_asterisk {
+#sfgimuximb .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#lcsqhpmqdo .gt_indent_1 {
+#sfgimuximb .gt_indent_1 {
   text-indent: 5px;
 }
 
-#lcsqhpmqdo .gt_indent_2 {
+#sfgimuximb .gt_indent_2 {
   text-indent: 10px;
 }
 
-#lcsqhpmqdo .gt_indent_3 {
+#sfgimuximb .gt_indent_3 {
   text-indent: 15px;
 }
 
-#lcsqhpmqdo .gt_indent_4 {
+#sfgimuximb .gt_indent_4 {
   text-indent: 20px;
 }
 
-#lcsqhpmqdo .gt_indent_5 {
+#sfgimuximb .gt_indent_5 {
   text-indent: 25px;
 }
 
-#lcsqhpmqdo .katex-display {
+#sfgimuximb .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#lcsqhpmqdo div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#sfgimuximb div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1620,7 +811,7 @@ subway_directory_display_final</code></pre>
   </colgroup>
   <thead>
     <tr class="gt_heading">
-      <td colspan="5" class="gt_heading gt_title gt_font_normal gt_bottom_border" style>NYC Subway Line Directory &amp; Score</td>
+      <td colspan="5" class="gt_heading gt_title gt_font_normal gt_bottom_border" style>NYC Subway Line Directory with Composite Score</td>
     </tr>
     
     <tr class="gt_col_headings">
@@ -1628,60 +819,60 @@ subway_directory_display_final</code></pre>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Lines">Lines</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Color">Color</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="composite_score">Score</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="rank">Rank</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="rank">Rank</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr><td headers="Line Family" class="gt_row gt_left">Red Line</td>
-<td headers="Lines" class="gt_row gt_left">1, 2, 3</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#EE352E; width: 60px; height: 20px; border-radius: 4px'></div></td>
-<td headers="composite_score" class="gt_row gt_right">1.31</td>
-<td headers="rank" class="gt_row gt_right">5</td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Green Line</td>
-<td headers="Lines" class="gt_row gt_left">4, 5, 6</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#00933C; width: 60px; height: 20px; border-radius: 4px'></div></td>
-<td headers="composite_score" class="gt_row gt_right">2.72</td>
-<td headers="rank" class="gt_row gt_right">3</td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Purple Line</td>
-<td headers="Lines" class="gt_row gt_left">7</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#B933AD; width: 60px; height: 20px; border-radius: 4px'></div></td>
-<td headers="composite_score" class="gt_row gt_right">1.10</td>
-<td headers="rank" class="gt_row gt_right">7</td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Blue Line</td>
-<td headers="Lines" class="gt_row gt_left">A, C, E</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#0039A6; width: 60px; height: 20px; border-radius: 4px'></div></td>
-<td headers="composite_score" class="gt_row gt_right">1.26</td>
-<td headers="rank" class="gt_row gt_right">6</td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Orange Line</td>
-<td headers="Lines" class="gt_row gt_left">B, D, F, M</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#FF6319; width: 60px; height: 20px; border-radius: 4px'></div></td>
-<td headers="composite_score" class="gt_row gt_right">0.69</td>
-<td headers="rank" class="gt_row gt_right">8</td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Yellow Line</td>
-<td headers="Lines" class="gt_row gt_left">N, Q, R, W</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#FCCC0A; width: 60px; height: 20px; border-radius: 4px'></div></td>
-<td headers="composite_score" class="gt_row gt_right">0.01</td>
-<td headers="rank" class="gt_row gt_right">9</td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Light Green Line</td>
-<td headers="Lines" class="gt_row gt_left">G</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#6CBE45; width: 60px; height: 20px; border-radius: 4px'></div></td>
-<td headers="composite_score" class="gt_row gt_right">0.00</td>
-<td headers="rank" class="gt_row gt_right">10</td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Brown Line</td>
-<td headers="Lines" class="gt_row gt_left">J, Z</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#996633; width: 60px; height: 20px; border-radius: 4px'></div></td>
-<td headers="composite_score" class="gt_row gt_right">1.34</td>
-<td headers="rank" class="gt_row gt_right">4</td></tr>
-    <tr><td headers="Line Family" class="gt_row gt_left">Gray Line</td>
-<td headers="Lines" class="gt_row gt_left">L</td>
-<td headers="Color" class="gt_row gt_left"><div style='background-color:#A7A9AC; width: 60px; height: 20px; border-radius: 4px'></div></td>
-<td headers="composite_score" class="gt_row gt_right">4.20</td>
-<td headers="rank" class="gt_row gt_right">2</td></tr>
     <tr><td headers="Line Family" class="gt_row gt_left">Shuttle</td>
 <td headers="Lines" class="gt_row gt_left">S</td>
 <td headers="Color" class="gt_row gt_left"><div style='background-color:#808183; width: 60px; height: 20px; border-radius: 4px'></div></td>
 <td headers="composite_score" class="gt_row gt_right">5.48</td>
-<td headers="rank" class="gt_row gt_right">1</td></tr>
+<td headers="rank" class="gt_row gt_center">🥇 1</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Gray Line</td>
+<td headers="Lines" class="gt_row gt_left">L</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#A7A9AC; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">4.20</td>
+<td headers="rank" class="gt_row gt_center">🥈 2</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Green Line</td>
+<td headers="Lines" class="gt_row gt_left">4, 5, 6</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#00933C; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">2.72</td>
+<td headers="rank" class="gt_row gt_center">🥉 3</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Brown Line</td>
+<td headers="Lines" class="gt_row gt_left">J, Z</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#996633; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">1.34</td>
+<td headers="rank" class="gt_row gt_center">4</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Red Line</td>
+<td headers="Lines" class="gt_row gt_left">1, 2, 3</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#EE352E; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">1.31</td>
+<td headers="rank" class="gt_row gt_center">5</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Blue Line</td>
+<td headers="Lines" class="gt_row gt_left">A, C, E</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#0039A6; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">1.26</td>
+<td headers="rank" class="gt_row gt_center">6</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Purple Line</td>
+<td headers="Lines" class="gt_row gt_left">7</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#B933AD; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">1.10</td>
+<td headers="rank" class="gt_row gt_center">7</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Orange Line</td>
+<td headers="Lines" class="gt_row gt_left">B, D, F, M</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#FF6319; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">0.69</td>
+<td headers="rank" class="gt_row gt_center">8</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Yellow Line</td>
+<td headers="Lines" class="gt_row gt_left">N, Q, R, W</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#FCCC0A; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">0.01</td>
+<td headers="rank" class="gt_row gt_center">9</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Light Green Line</td>
+<td headers="Lines" class="gt_row gt_left">G</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#6CBE45; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">0.00</td>
+<td headers="rank" class="gt_row gt_center">10</td></tr>
   </tbody>
   
 </table>
