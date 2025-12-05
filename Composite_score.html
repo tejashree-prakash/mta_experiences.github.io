@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Composite_score</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    About
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="proposal.html">Report</a>
+    </li>
+    <li>
+      <a href="data_source.html">Data source</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="data_exploration.html">Data Exploration</a>
+</li>
+<li>
+  <a href="borough_analysis.html">Borough Analysis</a>
+</li>
+<li>
+  <a href="subway_line_analysis.html">Subway Line Analysis</a>
+</li>
+<li>
+  <a href="ranking_regression_analysis.html">Regression analysis</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Composite_score</h1>
+
+</div>
+
+
+<pre class="r"><code>subway_directory_display_final =
+  subway_directory_display_final %&gt;%
+  arrange(rank) %&gt;%
+  mutate(
+    rank = dplyr::case_when(
+      rank == 1 ~ &quot;🥇 1&quot;,
+      rank == 2 ~ &quot;🥈 2&quot;,
+      rank == 3 ~ &quot;🥉 3&quot;,
+      TRUE      ~ as.character(rank)
+    )
+  ) %&gt;%
+  gt() %&gt;%
+  tab_header(title = &quot;NYC Subway Line Directory with Composite Score&quot;) %&gt;%
+  cols_move(
+    columns = c(composite_score, rank),
+    after = Color
+  ) %&gt;%
+  cols_label(
+    composite_score = &quot;Score&quot;,
+    rank            = &quot;Rank&quot;
+  ) %&gt;%
+  fmt_number(
+    columns = composite_score,
+    decimals = 2
+  ) %&gt;%
+  text_transform(
+    locations = cells_body(columns = Color),
+    fn = function(x) {
+      mapply(function(col) {
+        html(
+          paste0(
+            &quot;&lt;div style=&#39;background-color:&quot;, col,
+            &quot;; width: 60px; height: 20px; border-radius: 4px&#39;&gt;&lt;/div&gt;&quot;
+          )
+        )
+      }, x)
+    }
+  ) %&gt;%
+  cols_width(
+    `Line Family`   ~ px(120),
+    Lines           ~ px(100),
+    Color           ~ px(70),
+    composite_score ~ px(80),
+    rank            ~ px(70)
+  ) %&gt;%
+  cols_align(
+    align = &quot;center&quot;,
+    columns = rank
+  ) %&gt;%
+  opt_table_outline()
+
+subway_directory_display_final</code></pre>
+<div id="uuvcqyuvwr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#uuvcqyuvwr table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#uuvcqyuvwr thead, #uuvcqyuvwr tbody, #uuvcqyuvwr tfoot, #uuvcqyuvwr tr, #uuvcqyuvwr td, #uuvcqyuvwr th {
+  border-style: none;
+}
+
+#uuvcqyuvwr p {
+  margin: 0;
+  padding: 0;
+}
+
+#uuvcqyuvwr .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 3px;
+  border-top-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 3px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#uuvcqyuvwr .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#uuvcqyuvwr .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#uuvcqyuvwr .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#uuvcqyuvwr .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#uuvcqyuvwr .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#uuvcqyuvwr .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#uuvcqyuvwr .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#uuvcqyuvwr .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#uuvcqyuvwr .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#uuvcqyuvwr .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#uuvcqyuvwr .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#uuvcqyuvwr .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#uuvcqyuvwr .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#uuvcqyuvwr .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uuvcqyuvwr .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#uuvcqyuvwr .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#uuvcqyuvwr .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#uuvcqyuvwr .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uuvcqyuvwr .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#uuvcqyuvwr .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uuvcqyuvwr .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#uuvcqyuvwr .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uuvcqyuvwr .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#uuvcqyuvwr .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uuvcqyuvwr .gt_left {
+  text-align: left;
+}
+
+#uuvcqyuvwr .gt_center {
+  text-align: center;
+}
+
+#uuvcqyuvwr .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#uuvcqyuvwr .gt_font_normal {
+  font-weight: normal;
+}
+
+#uuvcqyuvwr .gt_font_bold {
+  font-weight: bold;
+}
+
+#uuvcqyuvwr .gt_font_italic {
+  font-style: italic;
+}
+
+#uuvcqyuvwr .gt_super {
+  font-size: 65%;
+}
+
+#uuvcqyuvwr .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#uuvcqyuvwr .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#uuvcqyuvwr .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#uuvcqyuvwr .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#uuvcqyuvwr .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#uuvcqyuvwr .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#uuvcqyuvwr .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#uuvcqyuvwr .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#uuvcqyuvwr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" style="table-layout:fixed;width:0px;" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <colgroup>
+    <col style="width:120px;"/>
+    <col style="width:100px;"/>
+    <col style="width:70px;"/>
+    <col style="width:80px;"/>
+    <col style="width:70px;"/>
+  </colgroup>
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="5" class="gt_heading gt_title gt_font_normal gt_bottom_border" style>NYC Subway Line Directory with Composite Score</td>
+    </tr>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Line-Family">Line Family</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Lines">Lines</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Color">Color</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="composite_score">Score</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="rank">Rank</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="Line Family" class="gt_row gt_left">Shuttle</td>
+<td headers="Lines" class="gt_row gt_left">S</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#808183; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">5.48</td>
+<td headers="rank" class="gt_row gt_center">🥇 1</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Gray Line</td>
+<td headers="Lines" class="gt_row gt_left">L</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#A7A9AC; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">4.20</td>
+<td headers="rank" class="gt_row gt_center">🥈 2</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Green Line</td>
+<td headers="Lines" class="gt_row gt_left">4, 5, 6</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#00933C; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">2.72</td>
+<td headers="rank" class="gt_row gt_center">🥉 3</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Brown Line</td>
+<td headers="Lines" class="gt_row gt_left">J, Z</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#996633; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">1.34</td>
+<td headers="rank" class="gt_row gt_center">4</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Red Line</td>
+<td headers="Lines" class="gt_row gt_left">1, 2, 3</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#EE352E; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">1.31</td>
+<td headers="rank" class="gt_row gt_center">5</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Blue Line</td>
+<td headers="Lines" class="gt_row gt_left">A, C, E</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#0039A6; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">1.26</td>
+<td headers="rank" class="gt_row gt_center">6</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Purple Line</td>
+<td headers="Lines" class="gt_row gt_left">7</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#B933AD; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">1.10</td>
+<td headers="rank" class="gt_row gt_center">7</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Orange Line</td>
+<td headers="Lines" class="gt_row gt_left">B, D, F, M</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#FF6319; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">0.69</td>
+<td headers="rank" class="gt_row gt_center">8</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Yellow Line</td>
+<td headers="Lines" class="gt_row gt_left">N, Q, R, W</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#FCCC0A; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">0.01</td>
+<td headers="rank" class="gt_row gt_center">9</td></tr>
+    <tr><td headers="Line Family" class="gt_row gt_left">Light Green Line</td>
+<td headers="Lines" class="gt_row gt_left">G</td>
+<td headers="Color" class="gt_row gt_left"><div style='background-color:#6CBE45; width: 60px; height: 20px; border-radius: 4px'></div></td>
+<td headers="composite_score" class="gt_row gt_right">0.00</td>
+<td headers="rank" class="gt_row gt_center">10</td></tr>
+  </tbody>
+  
+</table>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

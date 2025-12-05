@@ -1,40 +1,17 @@
 ---
-title: "Proposal"
-output: github_document
+title: "Report"
 ---
 
-### Group Members 
+# Not All Trains Are Created Equal
+#### Authors: Kennedy (kjw2175), Shree (tp2806), Jaia (jw3638),  Yasmine (yme2112)
 
-Kennedy Wade (kjw2175), Tejashree Prakash (tp2806), Yasmine Evang (yme2112), Jaia Wingard (jw3638)
+### Motivation: Provide an overview of the project goals and motivation.
 
-### Tentative Project Title 
+New York City has a well-known public transportation system, used by thousands every day. Unfortunately, not all trains are created equal. As regular subway riders, we are consistently disappointed with our commuting experience and wonder if other riders feel the same way. Recent adjustments to payment systems, track and station closures, as well as inconsistent travel times, prompted us to explore the idea of rider satisfaction and question the efficacy of the MTA. The MTA has announced that there is potential for a fare increase. With wavering opinions on the efficiency of the train lines, is this increase justified? 
+Using rider responses from the NYC Open Data 2019 Subway Rider Survey, we can evaluate the public opinion’s perception of the reliability of NYC’s MTA system. The goal of this project is to uncover patterns in satisfaction, identify factors that influence rider experience, and determine how delays, affordability, and service quality vary among subway lines. Using these ideas, we hope to identify which subway could be the gold standard in daily transportation satisfaction.
 
-*Not All Trains Are Created Equal*
+### Related work: Anything that inspired you, such as a paper, a website, or something we discussed in class.
 
-### Motivation 
-
-New York City has one of the most highly used metropolitan transit systems, used by thousands every day. Unfortunately, not all trains are created equal. As subway riders, we are unsatisfied with our experience and question the efficacy of the MTA. Recent adjustments to payment systems, track and station closures, as well as inconsistent travel times, made us question rider satisfaction. The MTA suggests that fare increases will soon be implemented, but with wavering opinions on the efficiency of the train lines, is this appropriate? Using rider responses from the NYC Open Data 2019 Subway Rider Survey, we can evaluate the public opinion’s perception of the reliability of NYC’s MTA system.  
-
-### Intended Final Product 
-
-Our final product will be a website that includes an interactive dashboard with several visualizations as well as commentary sections to summarize New Yorker’s perceptions of the MTA system based on our analyses. 
-
-### Anticipated Data Sources
-
-NYC Open Data 2019 Subway Rider Survey is a survey intended to understand New Yorker’s experiences with the MTA system. We intend to analyze: subway lines used most often, frequency of subway use, overall satisfaction, frequency of delays, and common complaints. 
-
-### Planned Analyses and Anticipated Challenges
-
-Our analyses will be understanding how individual variables interact with each other within this dataset. For example, we will analyze how the time of transit use (proxied with time of day the survey was taken) affects the type of delay or complaint stated. Interactive plotly is a tool that we will use to demonstrate, for example, preferences of transportation by neighborhood (using respondent zip code data). Neighborhood information will allow us to also understand how perceptions of fare increases and affordability of public transit differ across communities, even letting us supplement this with other open-source data about income, racial backgrounds, and education levels.<br> 
-
-From our initial peruse of this dataset, we anticipate there to be challenges in ensuring standardized categorization of categorical variables and challenges in how to approach missing or NA cells. 
-
-### Timeline 
-
-1. Week of Nov 9: Meet as a group to review the dataset, finalize research questions, assign roles, and discuss cleaning and analysis plans.
-  
-2. Week of Nov 16: Perform and discuss results and key trends from data cleaning and exploratory data analysis. 
-3. Week of Nov 23: Develop visualizations, statistical summaries, and refine main findings. Start drafting report sections.
-4. Week of Dec 1:  Finalize report, webpage, and screencast. Review and polish all materials for submission.
+When exploring examples of final projects from previous years, the intricacy and quality of the graphs and variables allowed us to visualize a detailed outcome for our research. These projects made it clear that we needed a dataset robust enough to support multiple types of graphs and exploratory questions. Particularly, the projects “Squirrels in Central Park,” “Emma’s Marathon Training,” and “Operation Lorax” inspired us to look into a topic that could be represented as a visual map distribution of  New York City. Our deep dive into NYC Open Data sparked investigative ideas, which led us to the Subway Rider Experience Survey. This 2019 survey stood out because it contained many variables per respondent and other measures that could be meaningfully visualized. Lastly, we created a fun and competitive theme for the website using our subway line ranking initiative. May the best track win!
 
 

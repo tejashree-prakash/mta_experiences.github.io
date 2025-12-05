@@ -1,0 +1,48 @@
+---
+title: "Data Information"
+output: html_document
+---
+
+## About Our Data
+
+Our analysis is based on NYC Open Data’s [NYC Open Data’s 2019 Subway Rider Survey](https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd)
+, a public dataset that captures how New Yorkers feel about subway service, delays, affordability, and overall satisfaction.
+
+
+In addition to the survey data, we incorporate:
+
+- **Official subway line colors** from NYC Open Data’s MTA colors dataset (2025) to match line families to their familiar hex color codes in our tables and visualizations.
+- **Subway route geometry** from the NYU Spatial Data Repository (2016 NYC Subway Routes) to recreate an interactive subway map for exploring composite scores and rankings by line family.
+
+
+---
+
+## Data Dictionary
+
+Our cleaned dataset `rider_data_full` contains 5,417 rows and 19 main variables:
+
+- `survey_id`: Unique numeric identifier for each survey response.
+- `subway_line_used_most_often`: Subway line the respondent reports using most often.
+- `use_of_subway_frequency`: How frequently the respondent uses the subway (e.g., every day, several times a week).
+- `get_to_subway_via`: Primary way the respondent travels to the subway (e.g., walking, bus, bike).
+- `primary_use_of_subway`: Main reason for using the subway (e.g., commuting to work or school, leisure, errands).
+- `average_length_subway_ride`: Typical duration of a subway ride for the respondent.
+- `overall_satisfaction`: Self-reported satisfaction with subway service (e.g., satisfied, neutral, unsatisfied).
+- `frequency_of_delays`: How often the respondent experiences subway delays.
+- `approximate_delay_duration`: Typical length of delays when they occur (e.g., under 10 minutes, 10–20 minutes, more than 20 minutes).
+- `alternative_transport`: What the respondent is likely to do if a delay greater than 15 minutes occurs while waiting for a train (e.g., wait, take another route, use rideshare or taxi).
+- `frequency_of_rerouting`: How often the respondent experiences service changes or rerouting (planned or unplanned).
+- `top_three_complaints`: Text field summarizing the respondent’s main concerns or complaints about transit service.
+- `most_common_reason_for_delay`: The most common reason given for delays (e.g., signal problems, train traffic, mechanical issues), as reported by the respondent.
+- `is_subway_affordable`: Respondent’s perception of whether subway fares are affordable.
+- `opinion_on_increased_fares`: Respondent’s opinion about proposed MTA fare increases (e.g., support, oppose, neutral).
+- `submitted_at`: Date and time when the survey response was submitted.
+- `survey_stop_borough`: Borough where the survey was conducted for in-person responses (retained in some intermediate datasets but dropped from the final analysis dataset).
+- `survey_stop_location`: Station where the survey was filled in for in-person responses (also removed from the final analysis dataset).
+- `zip_code`: Respondent’s ZIP code, used to derive borough and explore spatial patterns.
+- `collection_method`: How the response was collected (e.g., online or in-person).
+- `borough`: Borough associated with the respondent’s ZIP code (including some ZIP codes outside the five core NYC boroughs, labeled accordingly).
+
+---
+
+

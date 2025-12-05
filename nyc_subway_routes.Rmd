@@ -4,9 +4,14 @@ output: html_document
 date: "2025-12-02"
 ---
 
-```{r}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
 ```
+
 
 ```{r}
 library(tidyverse)
@@ -18,9 +23,9 @@ library(readxl)
 library(gt)
 ```
 
-Here I will clean the 2019_subway_rider_data 
 
 ```{r}
+# Here I will clean the 2019_subway_rider_data
 subway_rider_data = 
   read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
   janitor::clean_names()
@@ -35,10 +40,10 @@ subway_drops =
   
 ```
 
-Now I will specifically clean the data within the columns
 
-Cleaned rider frequency table: 
 ```{r}
+#Now I will specifically clean the data within the columns
+
 rider_data =
   subway_drops |>
   mutate(
@@ -113,10 +118,9 @@ rider_data =
 ```
 
 
-Making some of the variables as a character and some as a factor!
-
 
 ```{r}
+# Making some of the variables as a character and some as a factor!
 rider_data = 
   rider_data |> 
   mutate(
@@ -145,9 +149,10 @@ rider_data =
 ```
 
 
-Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows. 
 
 ```{r}
+# Converting zip codes into boroughs. I used https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls to get majority of the borough's zip codes. Any remaining ones, I looked up on Google and cross-checked. There were four zip codes that I could not find a match for, and were likely miswritten, so I removed those data rows.
+
 zip_code_data = 
   read_csv("data/nyc_zipcodes.csv") %>%
   select(borough, zipcode)
@@ -173,13 +178,15 @@ rider_data_full <- rider_data_full %>%
   filter(survey_id != 944) %>% 
   filter(survey_id != 241) %>% 
   filter(survey_id != 919) 
+#final data set is rider_data_full
 ```
 
-final data set is rider_data_full
 
-These next two pieces of code came from composite_score.rmd
-Join-ready Subway Line Directory + Join to cleaned dataset
+
+
 ```{r}
+# These next two pieces of code came from composite_score.rmd
+# Join-ready Subway Line Directory + Join to cleaned dataset
 subway_directory <- tribble(
 ~subway_line, ~group_color, ~hex_color,
 "1","Red Line","#EE352E",
@@ -327,12 +334,8 @@ family_composite_clean <- family_composite |>
 ```
 
 
-
-Back to schedules programming:
-
-
-
 ```{r}
+# Back to schedules programming:
 zip_path = "data/nyu_2451_34758.zip"
 
 if (!file.exists("data/routes_nyc_subway_may2016.shp")) 
@@ -341,9 +344,9 @@ if (!file.exists("data/routes_nyc_subway_may2016.shp"))
 ```
 
 
-```{r}
+```{r, echo = FALSE, message = FALSE, warning = FALSE }
 subway_routes = 
-  sf::st_read("data/routes_nyc_subway_may2016.shp")
+  sf::st_read("data/routes_nyc_subway_may2016.shp", quiet = TRUE)
 
 
 subway_routes = 
@@ -353,8 +356,8 @@ subway_routes =
 ```
 
 
-Using our color palette
 ```{r}
+# Using our color palette
 palette_df = 
   tibble::tribble(
     ~route_id, ~color,

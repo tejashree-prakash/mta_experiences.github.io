@@ -1,14 +1,32 @@
-name: "Yay internet!"
-output_dir: "."
+name: "mta_experiences"
+output_dir: "."   # keep this since your repo is <name>.github.io
+
+exclude:
+  - nyc_subway_routes.Rmd
+  - Composite_score.Rmd
+
 navbar:
   title: "Home"
+  
   right:
+    - text: "Data Exploration"
+      href: data_exploration.html
+    - text: "Borough Analysis"
+      href: borough_analysis.html
+    - text: "Subway Line Analysis"
+      href: subway_line_analysis.html
+    - text: "Regression analysis"
+      href: ranking_regression_analysis.html
+
+  left:
     - text: "About"
-      href: about.html
-    - icon: fa-envelope fa-lg
-      href: mailto:<you@youremail.com>
-    - icon: fa-github fa-lg
-      href: http://github.com/<YOUR_GH_NAME>/
+      menu:
+        - text: "Report"
+          href: proposal.html
+        - text: "Data source"
+          href: data_source.html
+
 output:
   html_document:
-    theme: cerulean
+    theme: sandstone
+    code_folding: hide

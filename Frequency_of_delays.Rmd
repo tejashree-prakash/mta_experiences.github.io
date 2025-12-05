@@ -1,10 +1,5 @@
 ---
 title: "Frequency of Delays by Subway Line"
-output:
-  flexdashboard::flex_dashboard:
-    orientation: rows
-    vertical_layout: fill
-    theme: flatly
 ---
 
 This is an interactive visualization representing the frequency of delays by subway line.
