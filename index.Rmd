@@ -6,7 +6,22 @@ output:
     toc_float: true
 ---
 
+<div style="text-align:center;">
+
 ![](images/mta_subway_s.webp){width=750px height=500px}
+
+<br>
+<small>
+Image source: <a href="https://tvtropes.org/pmwiki/pmwiki.php/UsefulNotes/NewYorkCitySubway">
+TVTropes – New York City Subway
+</a>
+</small>
+
+</div>
+
+
+
+
 
 New York City has a well-known public transportation system, used by thousands every day. Unfortunately, not all trains are created equal. The MTA suggests that fare increases will soon be implemented, but with wavering opinions on the efficiency of the train lines, is this appropriate?
 
