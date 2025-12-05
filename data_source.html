@@ -297,9 +297,80 @@ $(document).ready(function () {
 </div>
 
 
-<p>“<a
-href="https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd"
-class="uri">https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd</a>”</p>
+<div id="about-our-data" class="section level2">
+<h2>About Our Data</h2>
+<p>Our analysis is based on NYC Open Data’s <a
+href="https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd">NYC
+Open Data’s 2019 Subway Rider Survey</a> , a public dataset that
+captures how New Yorkers feel about subway service, delays,
+affordability, and overall satisfaction.</p>
+<p>In addition to the survey data, we incorporate:</p>
+<ul>
+<li><strong>Official subway line colors</strong> from NYC Open Data’s
+MTA colors dataset (2025) to match line families to their familiar hex
+color codes in our tables and visualizations.</li>
+<li><strong>Subway route geometry</strong> from the NYU Spatial Data
+Repository (2016 NYC Subway Routes) to recreate an interactive subway
+map for exploring composite scores and rankings by line family.</li>
+</ul>
+<hr />
+</div>
+<div id="data-dictionary" class="section level2">
+<h2>Data Dictionary</h2>
+<p>Our cleaned dataset <code>rider_data_full</code> contains 5,417 rows
+and 19 main variables:</p>
+<ul>
+<li><code>survey_id</code>: Unique numeric identifier for each survey
+response.</li>
+<li><code>subway_line_used_most_often</code>: Subway line the respondent
+reports using most often.</li>
+<li><code>use_of_subway_frequency</code>: How frequently the respondent
+uses the subway (e.g., every day, several times a week).</li>
+<li><code>get_to_subway_via</code>: Primary way the respondent travels
+to the subway (e.g., walking, bus, bike).</li>
+<li><code>primary_use_of_subway</code>: Main reason for using the subway
+(e.g., commuting to work or school, leisure, errands).</li>
+<li><code>average_length_subway_ride</code>: Typical duration of a
+subway ride for the respondent.</li>
+<li><code>overall_satisfaction</code>: Self-reported satisfaction with
+subway service (e.g., satisfied, neutral, unsatisfied).</li>
+<li><code>frequency_of_delays</code>: How often the respondent
+experiences subway delays.</li>
+<li><code>approximate_delay_duration</code>: Typical length of delays
+when they occur (e.g., under 10 minutes, 10–20 minutes, more than 20
+minutes).</li>
+<li><code>alternative_transport</code>: What the respondent is likely to
+do if a delay greater than 15 minutes occurs while waiting for a train
+(e.g., wait, take another route, use rideshare or taxi).</li>
+<li><code>frequency_of_rerouting</code>: How often the respondent
+experiences service changes or rerouting (planned or unplanned).</li>
+<li><code>top_three_complaints</code>: Text field summarizing the
+respondent’s main concerns or complaints about transit service.</li>
+<li><code>most_common_reason_for_delay</code>: The most common reason
+given for delays (e.g., signal problems, train traffic, mechanical
+issues), as reported by the respondent.</li>
+<li><code>is_subway_affordable</code>: Respondent’s perception of
+whether subway fares are affordable.</li>
+<li><code>opinion_on_increased_fares</code>: Respondent’s opinion about
+proposed MTA fare increases (e.g., support, oppose, neutral).</li>
+<li><code>submitted_at</code>: Date and time when the survey response
+was submitted.</li>
+<li><code>survey_stop_borough</code>: Borough where the survey was
+conducted for in-person responses (retained in some intermediate
+datasets but dropped from the final analysis dataset).</li>
+<li><code>survey_stop_location</code>: Station where the survey was
+filled in for in-person responses (also removed from the final analysis
+dataset).</li>
+<li><code>zip_code</code>: Respondent’s ZIP code, used to derive borough
+and explore spatial patterns.</li>
+<li><code>collection_method</code>: How the response was collected
+(e.g., online or in-person).</li>
+<li><code>borough</code>: Borough associated with the respondent’s ZIP
+code (including some ZIP codes outside the five core NYC boroughs,
+labeled accordingly).</li>
+</ul>
+<hr />
+</div>
 
 
 

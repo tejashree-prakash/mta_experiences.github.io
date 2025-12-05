@@ -611,7 +611,7 @@ padding-top: 0px;
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">read_csv</span>(<span class="st">&quot;data/2019_Subway_Rider_Survey_20251121.csv&quot;</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span></code></pre></div>
 <pre><code>## Rows: 10704 Columns: 19
-## ── Column specification ───────────────
+## ── Column specification ─────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
 ## lgl  (1): is_subway_affordable
@@ -727,7 +727,7 @@ data rows.</p>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">read_csv</span>(<span class="st">&quot;data/nyc_zipcodes.csv&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">select</span>(borough, zipcode)</span></code></pre></div>
 <pre><code>## Rows: 343 Columns: 2
-## ── Column specification ───────────────
+## ── Column specification ─────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (2): borough, zipcode
 ## 
@@ -742,16 +742,12 @@ data rows.</p>
 <span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#Join</span></span>
 <span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>rider_data_full <span class="ot">&lt;-</span> rider_data <span class="sc">%&gt;%</span></span>
 <span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  <span class="fu">left_join</span>(zip_code_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;zip_code&quot;</span> <span class="ot">=</span> <span class="st">&quot;zipcode&quot;</span>))</span></code></pre></div>
-<pre><code>## Warning in left_join(., zip_code_data, by = c(zip_code = &quot;zipcode&quot;)): Detected an unexpected many-to-many
-## relationship between `x` and `y`.
-## ℹ Row 6 of `x` matches multiple rows
-##   in `y`.
-## ℹ Row 109 of `y` matches multiple rows
-##   in `x`.
-## ℹ If a many-to-many relationship is
-##   expected, set `relationship =
-##   &quot;many-to-many&quot;` to silence this
-##   warning.</code></pre>
+<pre><code>## Warning in left_join(., zip_code_data, by = c(zip_code = &quot;zipcode&quot;)): Detected an unexpected many-to-many relationship between `x` and
+## `y`.
+## ℹ Row 6 of `x` matches multiple rows in `y`.
+## ℹ Row 109 of `y` matches multiple rows in `x`.
+## ℹ If a many-to-many relationship is expected, set `relationship =
+##   &quot;many-to-many&quot;` to silence this warning.</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">#Fill borough where missing</span></span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>rider_data_full <span class="ot">&lt;-</span> rider_data_full <span class="sc">%&gt;%</span></span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">borough =</span> <span class="fu">coalesce</span>(borough, <span class="fu">as.character</span>(zip_code)))</span>
