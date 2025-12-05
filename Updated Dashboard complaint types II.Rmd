@@ -207,7 +207,10 @@ complaint_data_time <- rider_data_full |>
 
 ### Complaint Percent by Line and Time
 
+**Figure:** This chart provides a detailed breakdown of subway complaints by both the specific transit line and the time of day (morning, afternoon, evening, night).The stacked bar graphs reveal how the distribution of primary complaints (such as delays, overcrowding, and crime) shifts significantly throughout the day, highlighting the distinct challenges during peak versus off-peak hours.The visualization allows for clear comparison across the system, showing which issues are most acute for each line at different times.
 ```{r, fig.width=15, fig.height=8}
+
+
 complaint_summary <- complaint_data_time |> 
   count(subway_line_used_most_often, time_of_day, complaint) |> 
   group_by(subway_line_used_most_often, time_of_day) |> 
@@ -220,7 +223,7 @@ library(viridis)
 all_complaints <- sort(unique(complaint_summary$complaint))
 viridis_colors <- viridis(length(all_complaints))
 names(viridis_colors) <- all_complaints
-# --------------------------
+
 
 times <- unique(complaint_summary$time_of_day)
 
@@ -298,12 +301,15 @@ plot |> layout(
   )
 )
 
-
 ```
 
 
 
+
 ### Summary of top complaints 
+
+
+**Figure:**  This graph shows the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs.
 
 ```{r, fig.width=15, fig.height=8}
 
@@ -338,7 +344,9 @@ bar_plot
 
 ### Summary of top complaints by Borough
 
-```{r,fig.width=15, fig.height=8}
+**Figure:** This chart compares the most common subway complaints, broken up by the 5  New York City boroughs. As we can see, delays and overcrowded trains dominate in every borough, with Brooklyn and Manhattan reporting the highest volumes overall. Meanwhile, issues like crime/safety and old trains appear less frequently but still show notable variation across boroughs.
+
+```{r, fig.width=15, fig.height=8}
 #  Chart D - Summary of top complaints by Borough
 
 valid_boroughs <- c("Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island")
