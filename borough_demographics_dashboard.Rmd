@@ -2,7 +2,9 @@
 title: "Borough Dashboard"
 ---
 
-This analysis was conducted to examine how perceptions of the MTA and operational metrics vary across the five boroughs of New York City as well as regions outside of NYC. The goal of this borough analysis is to highlight meaningful differences in rider sentiment and system performance that may help us understand how influential borough is in how MTA and its different subway lines are perceived.
+The Borough Analysis was conducted to examine how perceptions of the MTA and operational metrics vary across the five boroughs of New York City as well as regions outside of NYC. The goal of this borough analysis is to highlight meaningful differences in rider sentiment and system performance that may help us understand how influential borough is in how MTA and its different subway lines are perceived.
+<br><br>
+Explore how subway use patterns, average ride lengths, and the most commonly used lines differ across boroughs, along with borough-level views on affordability, satisfaction, and potential fare increases. Together, these comparisons help illustrate how rider attitudes and travel behaviors vary across the city.
 
 
 ```{r setup, include=FALSE}
@@ -13,7 +15,7 @@ library(viridis)
 ```
 
 
-```{r set, include=FALSE}
+```{r, include=FALSE}
 #Clean data
 subway_rider_data = 
   read_csv("data/2019_subway_rider_data.csv") |> 
@@ -126,9 +128,8 @@ rider_data_full <- rider_data_full %>%
   filter(survey_id != 919) 
 ```
 
-
-First, we want to understand the survey respondents by borough. 
-```{r}
+First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts.
+```{r, fig.cap=""}
 #Location distribution 
 borough_df <- rider_data_full %>% 
   count(borough)
@@ -152,10 +153,33 @@ plot_ly(
     autosize = TRUE
   )
 ```
+<br>
+### Aggregated Satisfaction Levels 
+```{r, fig.cap="This section summarizes overall rider satisfaction across all boroughs and regions. By aggregating responses on overall satisfaction, it provides a clear snapshot of how satisfied riders are with their subway experience at a high level.<br><br>The data show that a majority of riders (36.6%) are not satisfied with their experience using the MTA, while an additional 24.9% are highly unsatisfied. Together, this indicates that over 60% of respondents have a negative view of the subway system. Fewer riders reported being neutral or satisfied, highlighting significant room for improvement. These patterns will be further dissected through borough analysis, subway line analysis, and regression analysis. Understanding these differences can help identify targeted areas for service enhancements and better meet the needs of riders across the city."}
+#Satisfaction 
+satis_overall <- rider_data_full %>%
+  count(overall_satisfaction) %>%
+  mutate(prop = n / sum(n),
+         percent = paste0(round(prop*100,1), "%"))
 
+#Set colors to gradient manually 
+viridis_colors <- viridis(nrow(satis_overall))
 
-### Primary Subway Use by Borough
-```{r, fig.height=14}
+plot_ly(
+  satis_overall,
+  labels = ~overall_satisfaction,
+  values = ~prop,
+  type = "pie",
+  hole = .5,
+  textinfo = "label+percent",
+  marker = list(colors = viridis_colors),   # ← APPLY VIRIDIS HERE
+  hovertemplate = "%{label}<br>%{percent}<extra></extra>"
+) %>%
+  layout(title = "Aggregated Satisfaction Levels")
+```
+
+<br>
+```{r, fig.cap="Overall, work was reported the most often for primary use of subway across all boroughs. This observation makes sense for the obvious commuters, those who live outside of NYC, but this trend remained across this survey's top boroughs of Brooklyn, Manhattan, and Queens. Brooklyn and Long Island had the greatest proportion of subway use for work. Regions outside of NYC listed 'other' as their primary use, which could include tourism activities. Due to the structure of this survey's questions, we do not know the exact other reasons outside of work and school."}
 #Primary use of subway 
 primary_df <- rider_data_full %>%
   count(borough, primary_use_of_subway) %>%
@@ -185,11 +209,11 @@ plot_ly(
   ) %>%
   layout(autosize = TRUE)
 ```
-<br>Overall, work was reported the most often for primary use of subway across all boroughs. Specifically,
+<br><br>
 
 
 ### Ride Length Distribution by Borough
-```{r, fig.height=14}
+```{r, fig.cap="Medium-length commutes were the most common across all boroughs. Given that work was the primary reason respondents used the subway and that Midtown Manhattan is a major employment hub, this pattern suggests many riders travel moderate distances from their home boroughs into central job centers. This remains true for Brooklyn and Manhattan, which have the greatest proportion for medium-length commutes. The longest commute time of 90+ minutes was most often reported by commuters from Queens.<br><br>We expected to see the New York State respondent pool distributed more evenly across the longer ride‐length categories, especially given that work was identified as the primary reason for subway use. Longer commutes are typically associated with workers traveling from outside the city into core employment areas, so a more balanced or long‐skewed pattern would have aligned with that assumption. However, this expectation was not fully supported by the data. Instead, New York State respondents—much like those from the city’s boroughs—reported the highest frequencies in the medium ride‐length categories. This suggests that even riders traveling from outside the five boroughs may not be journeying as far as anticipated, possibly reflecting shorter regional commutes, park-and-ride behavior, or the presence of work destinations dispersed beyond Midtown Manhattan."}
 #Average subway ride length 
 ride_df <- rider_data_full %>%
   count(borough, average_length_subway_ride)
@@ -218,10 +242,10 @@ plot_ly(
     yaxis = list(title = "Count")
   )
 ```
-
+<br>
 
 ### Most Used Subway Lines by Borough
-```{r, fig.height=14}
+```{r, fig.cap="Subway line usage varied greatly at an aggregated level as well as across boroughs. If you hover over each dot at the end of the subway line, you can see its breakdown of total respondents and breakdown of respondent counts by borough. The 1 train was the most reported subway line that was used (N=1174). This was followed by the A line (N=469), but with a pretty significant drop in total counts. Both the 1 and A line had the greatest reports from Manhattan, at N=614 and N=295, respectively."}
 #Most used line 
 line_df <- rider_data_full %>%
   count(borough, subway_line_used_most_often)
@@ -291,10 +315,10 @@ plot_ly(hover_df) %>%
   )
 
 ```
-
+<br>
 
 ### Affordability Perception by Borough
-```{r, fig.height=14}
+```{r, fig.cap="Slightly less than half of respondents in each borough consider the subway to be affordable. Interestingly, riders from outside New York reported the highest perception of affordability compared with any of the city’s boroughs, suggesting that those traveling in from surrounding regions may view subway costs more favorably relative to their usual public transportation options in the U.S., which are likely not as expansive as the MTA system. The Bronx (47.7%%) and New York State (50%) had the smallest proportion of affordability perception relative to other boroughs. When considering the fact that many of these riders are work commuters, this higher perception of affordability may reflect the value they place on the subway as a cost-effective option with their transportation needs."}
 #Perception of affordability 
 afford_df <- rider_data_full %>%
   count(borough, is_subway_affordable) %>%
@@ -327,11 +351,11 @@ plot_ly(
   )
 
 ```
+<br>
 
-
-### Opinions on Increased Fairs by Borough
-```{r, fig.height=14}
-#Opinion on increased fair 
+### Opinions on Increased Fares by Borough
+```{r, fig.cap="This heat map illustrates the distribution of negative, neutral, and positive opinions regarding potential subway fare increases. There was insufficient data from the regions outside of NY and Long Island which led to gaps in the heat map.<br><br>Surprisingly, a majority of respondents expressed positive opinions about the possibility of higher fares, suggesting that many riders may recognize the value of investing in the system or perceive the benefits of fare adjustments as outweighing the costs. Queens and New Jersey respondents had the highest proportion of positive opinions on increased fares, at 62.6% and 65.8%, respectively. The Bronx, Long Island, and Staten Island had the highest proportion of negative opinions at 29.5%, 27.3%, and 22.2% respectively. There was a portion of respondents who either had no opinion or was unaware of the issue.<br><br>It's important to note that despite these reports of positive opinions on increased fares, the overall satisfaction of MTA ridership is quite poor, recall that about 60% of riders are unsatisfied with their MTA experience. Though there is not qualitative data to confirm this, we suspect that respondents may believe increased fares could lead to improved services, potentially solving the poor satisfaction they have for the overall MTA system."}
+#Opinion on increased fare 
 opinion_df <- rider_data_full %>%
   count(borough, opinion_on_increased_fares) %>%
   group_by(borough) %>%
@@ -378,34 +402,10 @@ plot_ly(
   )
 
 ```
-
-### Aggregated Satisfaction Levels 
-```{r, fig.height=14}
-#Satisfaction 
-satis_overall <- rider_data_full %>%
-  count(overall_satisfaction) %>%
-  mutate(prop = n / sum(n),
-         percent = paste0(round(prop*100,1), "%"))
-
-#Set colors to gradient manually 
-viridis_colors <- viridis(nrow(satis_overall))
-
-plot_ly(
-  satis_overall,
-  labels = ~overall_satisfaction,
-  values = ~prop,
-  type = "pie",
-  hole = .5,
-  textinfo = "label+percent",
-  marker = list(colors = viridis_colors),   # ← APPLY VIRIDIS HERE
-  hovertemplate = "%{label}<br>%{percent}<extra></extra>"
-) %>%
-  layout(title = "Aggregated Satisfaction Levels")
-```
-
+<br>
 
 ### Satisfaction Levels by Borough
-```{r}
+```{r, fig.cap="This section summarizes overall rider satisfaction by borough. Exploratory data analysis highlighted aggregated satisfaction response, and we wanted to further understand how this differs across geographic region and visualize patterns. This heat map echoes what was previously seen with the abundance of dissatisfaction by ridership. Approximately 39% of Queens ridership is not satisfied, similar to 38.1% of Brooklyn ridership and 35.2% of Manhattan ridership. Given that a large portion of these riders are commuting to work, these levels of dissatisfaction are particularly noteworthy. Commuters rely on the subway daily to reach their jobs efficiently and reliably, so negative experiences can have tangible impacts on their work performance, stress levels, and overall perception of the transit system. Performing this at the end of our borough analysis allowed us to keep the other trends in focus while interpreting the results of this analysis."}
 # Prep data
 satis_df <- rider_data_full %>%
   count(borough, overall_satisfaction) %>%
