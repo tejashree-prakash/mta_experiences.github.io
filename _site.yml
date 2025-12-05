@@ -10,19 +10,11 @@ navbar:
   
   right:
     - text: "Data Exploration"
+      href: data_exploration.html
     - text: "Borough Analysis"
+      href: borough_analysis.html
     - text: "Subway Line Analysis"
-    
-    
-    - text: "Borough dashboard"
-      href: borough_demographics_dashboard.html
-
-    - text: "Delay frequency"
-      href: Frequency_of_delays.html
-
-    - text: "Complaint types"
-      href: Updated-Dashboard-complaint-types-II.html
-      
+      href: subway_line_analysis.html
     - text: "Regression analysis"
       href: ranking_regression_analysis.html
 
@@ -32,7 +24,7 @@ navbar:
         - text: "Report"
           href: proposal.html
         - text: "Data source"
-          href: "https://data.cityofnewyork.us/City-Government/2019-Subway-Rider-Survey/4y8i-pbvd"
+          href: data_source.html
 
 output:
   html_document:
