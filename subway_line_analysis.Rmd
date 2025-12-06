@@ -564,7 +564,10 @@ complaints_long <- complaint_data_time |>
   ) |>
   tidyr::unnest(complaint) |>
   mutate(
-    complaint = str_trim(complaint),
+    # remove [, ], and ' anywhere in the string
+    complaint = str_replace_all(complaint, "\\[|\\]|'", ""),
+    # collapse multiple spaces and trim
+    complaint = str_squish(complaint),
     complaint = na_if(complaint, "")
   ) |>
   filter(!is.na(complaint))
