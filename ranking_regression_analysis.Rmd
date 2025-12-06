@@ -233,7 +233,7 @@ plot_ly(regression_rider_data,
 ```
 
 
-```{r, message=FALSE}
+```{r, fig.cap="The residual plot from the linear regression model is highly ordered and is heterscedastic. Therefore, we decided to proceed with a logistic regression model instead."}
 #Run the model 
 fit <- lm(overall_satisfaction ~ average_length_subway_ride + frequency_of_delays + approximate_delay_duration + frequency_of_rerouting + borough, data = regression_rider_data)
 
@@ -255,11 +255,11 @@ regression_rider_data |>
     plot.title = element_text(hjust = 0.5)
   )
 ```
+<br>
 
+## Running a Logistic Regression Model Instead
 
-## Logistic Regession Model
-
-```{r, warning=FALSE, message=FALSE}
+```{r, fig.cap="To run a logistic regression model, we ordered our overall satisfaction variable to maintain its ordinal status. Then, we ran a *clm model*, a type of logistic regression that is specific to ordinal outcomes.<br><br>We see from our regression results here that all of our predictors were significant at the 5% level, as shown by the bold. Due to the nature of the clm model, linear, quadratic, and cubic polynomial scale effects were performed for each predictor that was ordinal, as we see in this model output. These different scale effects represent different potential trends in how the ordered predictor affects the outcome. A significant linear coefficient suggests a consistent directional change across levels, whereas a significant quadratic coefficient suggests an acceleration or deceleration curve, and a cubic coefficient suggests a complex, S-shaped curve. <br><br>Borough had the greatest odds ratio [OR: 1.14, CL: (1.03-1.26)] relative to the other predictors, indicating it has the largest influence on overall satisfaction relative to the other predictors. This was followed by average length of subway ride [OR: 0.66, CL: (0.50-0.88)], frequency of rerouting [OR: 0.53, CL: (0.46-0.61)], approximate delay duration [OR: 0.36, CL: (0.24-0.55)], then frequency of delays [OR: 0.01, CL: (0.00-0.03)]."}
 #Recode overall satisfaction (outcome) to be ordered 
 regression_rider_data <- regression_rider_data %>%
   mutate(
@@ -282,20 +282,16 @@ model <- clm(
   link = "logit"
 )
 
-#Summary of model
-model_df <- broom::tidy(model, conf.int = TRUE) |>
-  dplyr::mutate(across(where(is.numeric), round, 3)) 
-
 #Publication style table 
 tab_model(model, 
           title = "Ordinal Regression Model Results")
 ```
-
+<br>
 
 ## Visualizing effect size - 
 
-Here we can see if predictors increase or decrease satisfaction odds.
-```{r}
+Do predictors increase or decrease satisfaction odds?
+```{r, fig.cap="All of the significant predictors increase the odds of experiencing satisfaction, which makes sense since we ordered our variables from the lowest to highest level appropriate to the survey answers.<br><br>As we continue our analysis, we chose to focus on the linear scale effects of each ordinal predictor, as they are more interpretable and provide a clearer understanding of the directional relationship between each predictor and overall satisfaction."}
 tidy_model <- broom::tidy(model) %>%
   filter(!grepl("\\|", term)) %>%
   mutate(odds_ratio = exp(estimate),
@@ -320,13 +316,12 @@ plot_ly(tidy_model,
          xaxis = list(title = "Odds Ratio"),
          yaxis = list(title = "Predictor"))
 ```
-
-## Predicting Probability of Satisfaction
 <br>
 
+## Predicting Probability of Satisfaction by Linearity 
 #### How satisfied is a rider based on the length of their subway ride?
 
-```{r}
+```{r, fig.cap="We chose to represent prediction with the two predictors that are significant at the linear level, indicating a proportional relationship that can be represented through a prediction heat map. This plot allows us to understand how likely the probability of a very satisfied outcome is based on what borough a respondent is from and the average length of subway ride. Regardless of borough, shorter subway rides tend to have a greater chance of being more satisfied!"}
 #Create grid of predicted probabilities 
 grid <- expand.grid(
   average_length_subway_ride = levels(regression_rider_data$average_length_subway_ride),
@@ -396,8 +391,10 @@ plot_ly(pred_long,
         )
 ```
 
+<br>
+
 #### How satisfied is a rider based on the frequency of delays?
-```{r}
+```{r, fig.cap="Similar to the last plot, we wanted to see how this prediction is represented for frequency delay data. Across all boroughs, the shorter the frequency delay, the higher the probability of satisfaction! Makes sense!"}
 #Create grid of predicted probabilities with frequency of delay as variable now
 grid_delays <- expand.grid(
   frequency_of_delays = levels(regression_rider_data$frequency_of_delays), 

@@ -181,7 +181,7 @@ complaint_data_time <- rider_data_full |>
 The Borough Analysis was conducted to examine how perceptions of the MTA and operational metrics vary across the five boroughs of New York City as well as regions outside of NYC. The goal of this borough analysis is to highlight meaningful differences in rider sentiment and system performance that may help us understand how influential borough is in how MTA and its different subway lines are perceived.
 <br><br>
 Explore how subway use patterns, average ride lengths, and the most commonly used lines differ across boroughs, along with borough-level views on affordability, satisfaction, and potential fare increases. Together, these comparisons help illustrate how rider attitudes and travel behaviors vary across the city.
-
+<br>
 ## Who are the critics?
 
 ```{r, fig.cap="First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts."}
@@ -189,18 +189,26 @@ Explore how subway use patterns, average ride lengths, and the most commonly use
 borough_df <- rider_data_full %>% 
   count(borough)
 
+#Pick blue from gradient 
+viridis_blue <- viridis(100)[40]
+
+#Produce plot
 plot_ly(
   borough_df,
   x = ~borough,
   y = ~n,
   type = "bar",
+  marker = list(color = viridis_blue),
   hovertemplate = "Borough: %{x}<br>Count: %{y}<extra></extra>"
 ) %>%
-  layout(title = "Survey Respondents by Borough",
-         xaxis = list(title = "Borough"),
-         yaxis = list(title = "Count"))
+  layout(
+    title = "Survey Respondents by Borough",
+    xaxis = list(title = "Borough"),
+    yaxis = list(title = "Count"),
+    autosize = TRUE
+  )
 ```
-
+<br>
 
 ## What do the people think?
 
@@ -252,7 +260,7 @@ plot_ly(
   )
 
 ```
-
+<br>
 
 ## Why are they taking the subway? 
 ```{r, fig.cap="Overall, work was reported the most often for primary use of subway across all boroughs. This observation makes sense for the obvious commuters, those who live outside of NYC, but this trend remained across this survey's top boroughs of Brooklyn, Manhattan, and Queens. Brooklyn and Long Island had the greatest proportion of subway use for work. Regions outside of NYC listed 'other' as their primary use, which could include tourism activities. Due to the structure of this survey's questions, we do not know the exact other reasons outside of work and school."}
@@ -262,83 +270,151 @@ primary_df <- rider_data_full %>%
   group_by(borough) %>%
   mutate(prop = n / sum(n))
 
+#Set colors for the categorical variable 
+uses <- unique(primary_df$primary_use_of_subway)
+vir_cols <- viridis(length(uses))
+names(vir_cols) <- uses
+
 plot_ly(
   primary_df,
   x = ~borough,
   y = ~prop,
   color = ~primary_use_of_subway,
   type = "bar",
-  hovertemplate = 
+  colors = vir_cols,
+  hovertemplate =
     "Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra></extra>",
   customdata = ~primary_use_of_subway
 ) %>%
   layout(
     barmode = "stack",
-    title = "Primary Subway Use by Borough (Proportions)",
+    title = "Primary Subway Use by Borough",
     yaxis = list(tickformat = ".0%", title = "Proportion")
-  )
+  ) %>%
+  layout(autosize = TRUE)
 ```
-
+<br>
 ## How long do people stay on the train?
 
 ```{r, fig.cap="Medium-length commutes were the most common across all boroughs. Given that work was the primary reason respondents used the subway and that Midtown Manhattan is a major employment hub, this pattern suggests many riders travel moderate distances from their home boroughs into central job centers. This remains true for Brooklyn and Manhattan, which have the greatest proportion for medium-length commutes. The longest commute time of 90+ minutes was most often reported by commuters from Queens.<br><br>We expected to see the New York State respondent pool distributed more evenly across the longer ride‐length categories, especially given that work was identified as the primary reason for subway use. Longer commutes are typically associated with workers traveling from outside the city into core employment areas, so a more balanced or long‐skewed pattern would have aligned with that assumption. However, this expectation was not fully supported by the data. Instead, New York State respondents—much like those from the city’s boroughs—reported the highest frequencies in the medium ride‐length categories. This suggests that even riders traveling from outside the five boroughs may not be journeying as far as anticipated, possibly reflecting shorter regional commutes, park-and-ride behavior, or the presence of work destinations dispersed beyond Midtown Manhattan."}
 #Average subway ride length 
-ride_df <- rider_data_full %>% count(average_length_subway_ride)
+ride_df <- rider_data_full %>%
+  count(borough, average_length_subway_ride)
 
+#Set colors for the categorical variable 
+boroughs <- unique(ride_df$borough)
+vir_cols <- viridis(length(boroughs)) #one color for each borough
+names(vir_cols) <- boroughs  
+
+#Produce plot
 plot_ly(
   ride_df,
   x = ~average_length_subway_ride,
   y = ~n,
+  color = ~borough,
   type = "bar",
-  hovertemplate = "%{x}<br>Count: %{y}<extra></extra>"
+  colors = vir_cols,
+  text = ~borough, #adding so the borough name will populate in the hover text
+  textposition = "none", #hide the label from printing onto the bar plot 
+  hovertemplate = "Borough: %{text}<br>Ride Length: %{x}<br>Count: %{y}<extra></extra>"
 ) %>%
-  layout(title = "Ride Length Distribution",
-         xaxis = list(title = "Ride Length Category"),
-         yaxis = list(title = "Count"))
-
+  layout(
+    barmode = "stack",
+    title = "Ride Length Distribution by Borough",
+    xaxis = list(title = "Ride Length Category"),
+    yaxis = list(title = "Count")
+  )
 ```
-
+<br>
 ## Which subway line is the most used?
 
 ```{r, fig.cap="Subway line usage varied greatly at an aggregated level as well as across boroughs. If you hover over each dot at the end of the subway line, you can see its breakdown of total respondents and breakdown of respondent counts by borough. The 1 train was the most reported subway line that was used (N=1174). This was followed by the A line (N=469), but with a pretty significant drop in total counts. Both the 1 and A line had the greatest reports from Manhattan, at N=614 and N=295, respectively."}
-
 #Most used line 
-line_df <- rider_data_full %>% 
-  count(subway_line_used_most_often)
+line_df <- rider_data_full %>%
+  count(borough, subway_line_used_most_often)
 
-plot_ly() %>%
-  add_segments(
-    data = line_df,
-    x = 0,
-    xend = ~n,
-    y = ~reorder(subway_line_used_most_often, n),
-    yend = ~reorder(subway_line_used_most_often, n),
-    hoverinfo = "none"
-  ) %>%
-  add_markers(
-    data = line_df,
-    x = ~n,
-    y = ~reorder(subway_line_used_most_often, n),
-    hovertemplate = "Line: %{y}<br>Count: %{x}<extra></extra>"
-  ) %>%
-  layout(
-    title = "Most Used Subway Lines",
-    xaxis = list(title = "Count"),
-    yaxis = list(title = "Line")
+#Make the hover show counts per borough
+hover_df <- line_df %>%
+  group_by(subway_line_used_most_often) %>%
+  summarise(
+    total_count = sum(n),
+    borough_info = paste0(borough, ": ", n, collapse = "<br>")
   )
 
+#Add colors for each subway line 
+line_colors <- tibble::tribble(
+  ~subway_line, ~color,
+  "1", "#EE352E",
+  "2", "#EE352E",
+  "3", "#EE352E",
+  "4", "#00933C",
+  "5", "#00933C",
+  "6", "#00933C",
+  "7", "#B933AD",
+  "A", "#0039A6",
+  "C", "#0039A6",
+  "E", "#0039A6",
+  "B", "#FF6319",
+  "D", "#FF6319",
+  "F", "#FF6319",
+  "M", "#FF6319",
+  "N", "#FCCC0A",
+  "Q", "#FCCC0A",
+  "R", "#FCCC0A",
+  "W", "#FCCC0A",
+  "G", "#6CBE45",
+  "J", "#996633",
+  "Z", "#996633",
+  "L", "#A7A9AC",
+  "S", "#808183"
+)
+hover_df <- hover_df %>%
+  left_join(line_colors, by = c("subway_line_used_most_often" = "subway_line"))
 
+
+#Produce plot
+plot_ly(hover_df) %>%
+  add_segments(
+    x = 0,
+    xend = ~total_count,
+    y = ~reorder(subway_line_used_most_often, total_count),
+    yend = ~reorder(subway_line_used_most_often, total_count),
+    line = list(color = ~color),
+    hoverinfo = "none",
+    showlegend = FALSE 
+  ) %>%
+  add_markers(
+    x = ~total_count,
+    y = ~reorder(subway_line_used_most_often, total_count),
+    marker = list(color = ~color),
+    hovertemplate = "Line: %{y}<br>Total Count: %{x}<br>%{customdata}<extra></extra>",
+    customdata = ~borough_info,
+    showlegend = FALSE
+  ) %>%
+  layout(
+    title = "Most Used Subway Lines by Borough",
+    xaxis = list(title = "Count"),
+    yaxis = list(title = "Subway Line")
+  )
 ```
-
+<br>
 ## Do people think the subway is affordable?
 
 ```{r, fig.cap="Slightly less than half of respondents in each borough consider the subway to be affordable. Interestingly, riders from outside New York reported the highest perception of affordability compared with any of the city’s boroughs, suggesting that those traveling in from surrounding regions may view subway costs more favorably relative to their usual public transportation options in the U.S., which are likely not as expansive as the MTA system. The Bronx (47.7%%) and New York State (50%) had the smallest proportion of affordability perception relative to other boroughs. When considering the fact that many of these riders are work commuters, this higher perception of affordability may reflect the value they place on the subway as a cost-effective option with their transportation needs."}
-
 #Perception of affordability 
 afford_df <- rider_data_full %>%
   count(borough, is_subway_affordable) %>%
   group_by(borough) %>%
   mutate(prop = n / sum(n))
+
+#Initialize to see unique TRUE/FALSE values 
+vals <- unique(afford_df$is_subway_affordable)
+
+#Make colors for each categorical option
+vals <- unique(afford_df$is_subway_affordable)
+vir_cols <- viridis(length(vals))     
+names(vir_cols) <- vals                        
+
 
 plot_ly(
   afford_df,
@@ -346,9 +422,9 @@ plot_ly(
   y = ~prop,
   color = ~is_subway_affordable,
   type = "bar",
-  hovertemplate = 
-    "Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra></extra>",
-  customdata = ~is_subway_affordable
+  colors = vir_cols,                         
+  customdata = ~is_subway_affordable,
+  hovertemplate = "Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra></extra>"
 ) %>%
   layout(
     barmode = "stack",
@@ -357,61 +433,62 @@ plot_ly(
   )
 
 ```
-
+<br>
 ## Is it fair to increase fares?
 
 ```{r, fig.cap="This heat map illustrates the distribution of negative, neutral, and positive opinions regarding potential subway fare increases. There was insufficient data from the regions outside of NY and Long Island which led to gaps in the heat map.<br><br>Surprisingly, a majority of respondents expressed positive opinions about the possibility of higher fares, suggesting that many riders may recognize the value of investing in the system or perceive the benefits of fare adjustments as outweighing the costs. Queens and New Jersey respondents had the highest proportion of positive opinions on increased fares, at 62.6% and 65.8%, respectively. The Bronx, Long Island, and Staten Island had the highest proportion of negative opinions at 29.5%, 27.3%, and 22.2% respectively. There was a portion of respondents who either had no opinion or was unaware of the issue.<br><br>It's important to note that despite these reports of positive opinions on increased fares, the overall satisfaction of MTA ridership is quite poor, recall that about 60% of riders are unsatisfied with their MTA experience. Though there is not qualitative data to confirm this, we suspect that respondents may believe increased fares could lead to improved services, potentially solving the poor satisfaction they have for the overall MTA system."}
-#Opinion on increased fair 
-satis_df <- rider_data_full %>%
+#Opinion on increased fare 
+opinion_df <- rider_data_full %>%
   count(borough, opinion_on_increased_fares) %>%
   group_by(borough) %>%
   mutate(
     prop = n / sum(n),
-    percent_label = paste0(round(prop * 100, 1), "%")
+    hover_text = paste0(
+      "Borough: ", borough, "<br>",
+      "Opinion: ", opinion_on_increased_fares, "<br>",
+      "Count: ", n, "<br>",
+      "Proportion: ", scales::percent(prop, accuracy = 0.1)
+    )
   ) %>%
   ungroup()
 
-library(plotly)
-
-boroughs <- unique(satis_df$borough)
-plot <- plot_ly()
-
-for (i in seq_along(boroughs)) {
-  
-  b <- boroughs[i]
-  df_b <- filter(satis_df, borough == b)
-  
-  plot <- add_trace(
-    plot,
-    data = df_b,
-    labels = ~opinion_on_increased_fares,
-    values = ~prop,
-    type = "pie",
-    hole = 0.2 + (i - 1) * 0.15,
-    textinfo = "none",
-    hovertemplate = paste(
-      "<b>Borough:</b> ", b, "<br>",
-      "<b>Opinion:</b> %{label}<br>",
-      "<b>Percent:</b> %{customdata}<extra></extra>"
-    ),
-    customdata = ~percent_label,
-    showlegend = (i == 1)
+#Convert to wide
+heat_matrix <- opinion_df %>%
+  select(borough, opinion_on_increased_fares, prop) %>%
+  pivot_wider(
+    names_from = opinion_on_increased_fares,
+    values_from = prop
   )
-}
 
-plot <- layout(
-  plot,
-  title = "Opinion on Increased Fares (Multi-Ring Donut)",
-  margin = list(l=20, r=20, t=60, b=20)
-)
+#Convert to wide for the hovering information
+hover_matrix <- opinion_df %>%
+  select(borough, opinion_on_increased_fares, hover_text) %>%
+  pivot_wider(
+    names_from = opinion_on_increased_fares,
+    values_from = hover_text
+  )
 
-plot
+#Produce plot
+plot_ly(
+  x = colnames(heat_matrix)[-1],
+  y = heat_matrix$borough,
+  z = as.matrix(heat_matrix[,-1]),
+  text = as.matrix(hover_matrix[,-1]),
+  type = "heatmap",
+  hoverinfo = "text",
+  colorscale = "Viridis") %>%
+  layout(
+    title = "Opinions on Increased Fares by Borough",
+    xaxis = list(title = "Opinion"),
+    yaxis = list(title = "Borough")
+  )
+
 ```
+<br>
 
+## What are the top complaints?
 
-## Check out the Top Complaints:
-
-```{r,fig.width=9, fig.height=6, fig.cap=" As we can see, delays and overcrowded trains dominate in every borough, with Brooklyn and Manhattan reporting the highest volumes overall. Meanwhile, issues like crime/safety and old trains appear less frequently but still show notable variation across boroughs."}
+```{r,fig.width=9, fig.height=6, fig.cap="Delays and overcrowded trains dominate in every borough, with Brooklyn and Manhattan reporting the highest volumes overall. Meanwhile, issues like crime/safety and old trains appear less frequently but still show notable variation across boroughs."}
 #  Chart D - Summary of top complaints by Borough
 
 valid_boroughs <- c("Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island")
