@@ -256,7 +256,7 @@ bar_plot
 ```
 
 <br>
-## How do riders feel about their delays?
+<h3>How do riders feel about their delays?</h3>
 
 ```{r, include=FALSE}
 delay_reason =

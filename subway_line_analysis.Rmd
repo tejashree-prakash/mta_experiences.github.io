@@ -15,7 +15,7 @@ library(treemapify)
 library(dplyr)
 library(gt)
 ```
-
+<br>
 The Subway Line Analysis explores how rider experiences, delay patterns, and service perceptions differ across New York City’s subway lines. Our goal is to identify which lines offer smoother commutes, which struggle with chronic delays, and how these differences shape overall rider satisfaction.
 
 Across multiple visualizations, we examine how frequently riders on each line report delays, how often those delays exceed 20 minutes, and how complaint patterns vary by route. The composite score table summarizes overall performance across four key service indicators, offering a system-wide ranking of line families. Together, these interactive graphics reveal both consistent system-wide trends, such as unusually high everyday delays on lines like the 7 or the severe long-delay burden on the Z train. 
@@ -430,8 +430,8 @@ subway_directory_display_final
 
 <br><br>
 
-## How often are these trains delayed?
-```{r}
+<h3>How often are these trains delayed?</h3>
+```{r, fig.cap="Two different visualizations of delay frequency distribution by subway line: The Stacked bar chart reveals the phenomenon that riders on most lines report delays a few times a week, though the share of everyday delays varies widely. The delay frequency is on J and 7 lines. Use the interactive hover label to view exact proportions for clearer line-by-line comparisons. The heat map highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell."}
 #Plots! 
 
 # Distribution of Delay Frequency Responses 
@@ -551,16 +551,9 @@ subplot(
   )
 
 ```
-2 different visualizations of delay frequency distribution by subway line: 
-
-The Stacked bar chart reveals the phenomenon that riders on most lines report delays a few times a week, though the share of everyday delays varies widely. The delay frequency is on J and 7 lines. Use the interactive hover label to view exact proportions for clearer line-by-line comparisons.
-
-The heat map highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell.
-
 
 <br><br>
-
-## Are Riders experiencing delays?
+<h3>Are riders experiencing delays?</h3>
 
 ```{r}
 
@@ -617,7 +610,7 @@ This bar chart shows the share of riders on each line who report experiencing lo
 
 <br><br>
 
-## Which trains are the worst with delays?
+<h3>Which trains are the worst with delays?</h3>
 
 ```{r, include=FALSE}
 delay_counts =
@@ -662,9 +655,7 @@ delay_counts_plot
 
 <br><br>
 
-## Subway Complaints {.tabset}
-
-### Complaint Percent by Line and Time
+<h3>What are the subway complaints reported?</h3>
 
 ```{r, fig.width=9, fig.height=6, fig.cap= " This chart provides a detailed breakdown of subway complaints by both the specific transit line and the time of day (morning, afternoon, evening, night).The stacked bar graphs reveal how the distribution of primary complaints (such as delays, overcrowding, and crime) shifts significantly throughout the day, highlighting the distinct challenges during peak versus off-peak hours.The visualization allows for clear comparison across the system, showing which issues are most pressing for each line at different times." }
 

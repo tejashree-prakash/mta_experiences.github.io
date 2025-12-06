@@ -173,7 +173,7 @@ The Borough Analysis was conducted to examine how perceptions of the MTA and ope
 Explore how subway use patterns, average ride lengths, and the most commonly used lines differ across boroughs, along with borough-level views on affordability, satisfaction, and potential fare increases. Together, these comparisons help illustrate how rider attitudes and travel behaviors vary across the city.
 
 <br>
-## Who are the critics?
+<h3>Who are the critics?</h3>
 
 ```{r, fig.cap="First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts."}
 #Location distribution 
@@ -202,7 +202,7 @@ plot_ly(
 
 <br>
 
-## Which subway line is the most used?
+<h3>Which subway line is the most used?</h3>
 
 ```{r, fig.cap="Subway line usage varied greatly at an aggregated level as well as across boroughs. If you hover over each dot at the end of the subway line, you can see its breakdown of total respondents and breakdown of respondent counts by borough. The 1 train was the most reported subway line that was used (N=1174). This was followed by the A line (N=469), but with a pretty significant drop in total counts. Both the 1 and A line had the greatest reports from Manhattan, at N=614 and N=295, respectively."}
 #Most used line 
@@ -275,7 +275,7 @@ plot_ly(hover_df) %>%
 ```
 <br>
 
-## Why are they taking the subway? 
+<h3>Why are they taking the subway?</h3>
 ```{r, fig.cap="Overall, work was reported the most often for primary use of subway across all boroughs. This observation makes sense for the obvious commuters, those who live outside of NYC, but this trend remained across this survey's top boroughs of Brooklyn, Manhattan, and Queens. Brooklyn and Long Island had the greatest proportion of subway use for work. Regions outside of NYC listed 'other' as their primary use, which could include tourism activities. Due to the structure of this survey's questions, we do not know the exact other reasons outside of work and school."}
 #Primary use of subway 
 primary_df <- rider_data_full %>%
@@ -307,7 +307,7 @@ plot_ly(
   layout(autosize = TRUE)
 ```
 <br>
-## How long do people stay on the train?
+<h3>How long do people stay on the train?</h3>
 
 ```{r, fig.cap="Medium-length commutes were the most common across all boroughs. Given that work was the primary reason respondents used the subway and that Midtown Manhattan is a major employment hub, this pattern suggests many riders travel moderate distances from their home boroughs into central job centers. This remains true for Brooklyn and Manhattan, which have the greatest proportion for medium-length commutes. The longest commute time of 90+ minutes was most often reported by commuters from Queens.<br><br>We expected to see the New York State respondent pool distributed more evenly across the longer ride‐length categories, especially given that work was identified as the primary reason for subway use. Longer commutes are typically associated with workers traveling from outside the city into core employment areas, so a more balanced or long‐skewed pattern would have aligned with that assumption. However, this expectation was not fully supported by the data. Instead, New York State respondents—much like those from the city’s boroughs—reported the highest frequencies in the medium ride‐length categories. This suggests that even riders traveling from outside the five boroughs may not be journeying as far as anticipated, possibly reflecting shorter regional commutes, park-and-ride behavior, or the presence of work destinations dispersed beyond Midtown Manhattan."}
 #Average subway ride length 
@@ -341,7 +341,7 @@ plot_ly(
 
 <br>
 
-## What are the top complaints?
+<h3>What are the top complaints?</h3>
 
 ```{r,fig.width=9, fig.height=6, fig.cap="Delays and overcrowded trains dominate in every borough, with Brooklyn and Manhattan reporting the highest volumes overall. Meanwhile, issues like crime/safety and old trains appear less frequently but still show notable variation across boroughs."}
 #  Chart D - Summary of top complaints by Borough
@@ -392,7 +392,7 @@ plot_top_borough
 ```
 <br>
 
-## Do people think the subway is affordable?
+<h3>Do people think the subway is affordable?</h3>
 
 ```{r, fig.cap="Slightly less than half of respondents in each borough consider the subway to be affordable. Interestingly, riders from outside New York reported the highest perception of affordability compared with any of the city’s boroughs, suggesting that those traveling in from surrounding regions may view subway costs more favorably relative to their usual public transportation options in the U.S., which are likely not as expansive as the MTA system. The Bronx (47.7%%) and New York State (50%) had the smallest proportion of affordability perception relative to other boroughs. When considering the fact that many of these riders are work commuters, this higher perception of affordability may reflect the value they place on the subway as a cost-effective option with their transportation needs."}
 #Perception of affordability 
@@ -428,7 +428,7 @@ plot_ly(
 
 ```
 <br>
-## Is it fair to increase fares?
+<h3>Is it fair to increase fares?</h3>
 
 ```{r, fig.cap="This heat map illustrates the distribution of negative, neutral, and positive opinions regarding potential subway fare increases. There was insufficient data from the regions outside of NY and Long Island which led to gaps in the heat map.<br><br>Surprisingly, a majority of respondents expressed positive opinions about the possibility of higher fares, suggesting that many riders may recognize the value of investing in the system or perceive the benefits of fare adjustments as outweighing the costs. Queens and New Jersey respondents had the highest proportion of positive opinions on increased fares, at 62.6% and 65.8%, respectively. The Bronx, Long Island, and Staten Island had the highest proportion of negative opinions at 29.5%, 27.3%, and 22.2% respectively. There was a portion of respondents who either had no opinion or was unaware of the issue.<br><br>It's important to note that despite these reports of positive opinions on increased fares, the overall satisfaction of MTA ridership is quite poor, recall that about 60% of riders are unsatisfied with their MTA experience. Though there is not qualitative data to confirm this, we suspect that respondents may believe increased fares could lead to improved services, potentially solving the poor satisfaction they have for the overall MTA system."}
 #Opinion on increased fare 
@@ -481,7 +481,7 @@ plot_ly(
 <br>
 
 
-## Now that we know this information, what do the people overall think about their MTA experience?
+<h3>Now that we know this information, what do the people overall think about their MTA experience?</h3>
 
 ```{r, fig.cap="This section summarizes overall rider satisfaction by borough. Exploratory data analysis highlighted aggregated satisfaction response, and we wanted to further understand how this differs across geographic region and visualize patterns. This heat map echoes what was previously seen with the abundance of dissatisfaction by ridership. Approximately 39% of Queens ridership is not satisfied, similar to 38.1% of Brooklyn ridership and 35.2% of Manhattan ridership. Given that a large portion of these riders are commuting to work, these levels of dissatisfaction are particularly noteworthy. Commuters rely on the subway daily to reach their jobs efficiently and reliably, so negative experiences can have tangible impacts on their work performance, stress levels, and overall perception of the transit system. Performing this at the end of our borough analysis allowed us to keep the other trends in focus while interpreting the results of this analysis."}
 # Prep data
