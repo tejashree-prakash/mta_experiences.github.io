@@ -17,6 +17,8 @@ navbar:
       href: subway_line_analysis.html
     - text: "Regression analysis"
       href: ranking_regression_analysis.html
+    - icon: fa-github fa-lg
+      href: "https://github.com/tejashree-prakash/mta_experiences.github.io"
 
   left:
     - text: "About"
@@ -25,6 +27,7 @@ navbar:
           href: proposal.html
         - text: "Data source"
           href: data_source.html
+        - text: "Github"
 
 output:
   html_document:
