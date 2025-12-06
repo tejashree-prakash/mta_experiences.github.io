@@ -177,9 +177,9 @@ complaint_data_time <- rider_data_full |>
 
 ```
 
-
-## Generic Findings
-
+<br>
+This section gives a quick look at how riders feel about the subway overall, what their top complaints are, and how delays affect satisfaction. It sets the stage for digging deeper into what’s driving rider experiences through our next analyses! 
+<br>
 ```{r, fig.cap= "First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts."}
 #Location distribution 
 borough_df <- rider_data_full %>% 
@@ -205,6 +205,9 @@ satis_overall <- rider_data_full %>%
   mutate(prop = n / sum(n),
          percent = paste0(round(prop*100,1), "%"))
 
+#Set colors to gradient manually 
+viridis_colors <- viridis(nrow(satis_overall))
+
 plot_ly(
   satis_overall,
   labels = ~overall_satisfaction,
@@ -212,10 +215,10 @@ plot_ly(
   type = "pie",
   hole = .5,
   textinfo = "label+percent",
+  marker = list(colors = viridis_colors),   # ← APPLY VIRIDIS HERE
   hovertemplate = "%{label}<br>%{percent}<extra></extra>"
 ) %>%
-  layout(title = "Overall Satisfaction Levels")
-
+  layout(title = "Aggregated Satisfaction Levels")
 ```
 
 
