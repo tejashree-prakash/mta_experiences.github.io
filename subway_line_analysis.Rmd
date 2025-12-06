@@ -611,23 +611,33 @@ This bar chart shows the share of riders on each line who report experiencing lo
 delay_counts =
   rider_data |>
   filter(frequency_of_delays %in% c("Everyday", "A few times a week")) |>
-  count(subway_line_used_most_often, sort = TRUE)
+  count(subway_line_used_most_often, sort = TRUE) |>
+  left_join(
+    subway_directory,
+    by = c("subway_line_used_most_often" = "subway_line")
+  )
 ```
 
 
 ```{r, fig.cap= "The 1 Train seems to have a signficant amount of delays compare to the other trains. It has double the amount of complaints compared to the second train with the most complaints, the R train. Is there a reason why these trains seem to have the most delay issues? I guess we will have to do a future survey to find out."}
 delay_counts_plot =
   plot_ly(
-  delay_counts,
-  labels = ~subway_line_used_most_often,
-  values = ~n,
-  type = "pie"
-) |>
+    delay_counts,
+    labels = ~subway_line_used_most_often,
+    values = ~n,
+    type   = "pie",
+    marker = list(
+      colors = delay_counts |> dplyr::pull(hex_color)
+    ),
+    text = ~group_color,
+    hoverinfo = "label+value+percent+text"
+  ) |>
   layout(
     title = "Subway Lines with the Most Delays"
   )
 
 delay_counts_plot
+
 
 ```
 
