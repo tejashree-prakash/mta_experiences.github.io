@@ -216,8 +216,7 @@ regression_rider_data <-
 ```
 
 
-Before beginning our regression analysis, we wanted to visualize the distribution of overall satisfaction levels across our total sample. Understanding this distribution provides a baseline for interpreting our regression results, highlights the prevalence of positive, neutral, and negative perceptions, and helps identify patterns or imbalances in rider satisfaction. This step ensures that our subsequent modeling is grounded in a clear understanding of the data, allowing us to better assess how factors such as borough, ride length, and service reliability relate to overall satisfaction.
-```{r, fig.cap="This distribution demonstrates a slightly skewed, but close to normal distribution of overall satisfaction responses."}
+```{r, fig.cap="We began our regression analysis by visualizing the overall satisfaction levels across our sample. Understanding this provides a baseline for our regression results, highlights the prevalence of positive, neutral, and negative perceptions, and helps identify patterns or imbalances in rider satisfaction. This step ensures that our subsequent modeling is grounded in a clear understanding of the data, allowing us to better assess how factors such as borough, ride length, and service reliability relate to overall satisfaction. We observe that the graph demonstrates a slightly skewed, but close to normal distribution of overall satisfaction responses."}
 #Pick blue from gradient 
 viridis_blue <- viridis(100)[40]
 
@@ -233,8 +232,8 @@ plot_ly(regression_rider_data,
 
 ```
 
-Running linear model 
-```{r}
+
+```{r, message=FALSE}
 #Run the model 
 fit <- lm(overall_satisfaction ~ average_length_subway_ride + frequency_of_delays + approximate_delay_duration + frequency_of_rerouting + borough, data = regression_rider_data)
 
@@ -258,9 +257,9 @@ regression_rider_data |>
 ```
 
 
-We should do a logistic regression model. 
+## Logistic Regession Model
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 #Recode overall satisfaction (outcome) to be ordered 
 regression_rider_data <- regression_rider_data %>%
   mutate(
@@ -292,7 +291,10 @@ tab_model(model,
           title = "Ordinal Regression Model Results")
 ```
 
-Visualizing effect size - if predictors increase or decrease satisfaction odds.
+
+## Visualizing effect size - 
+
+Here we can see if predictors increase or decrease satisfaction odds.
 ```{r}
 tidy_model <- broom::tidy(model) %>%
   filter(!grepl("\\|", term)) %>%
@@ -319,8 +321,11 @@ plot_ly(tidy_model,
          yaxis = list(title = "Predictor"))
 ```
 
+## Predicting Probability of Satisfaction
+<br>
 
-Predicted probabilities with average subway length and satisfaction 
+#### How satisfied is a rider based on the length of their subway ride?
+
 ```{r}
 #Create grid of predicted probabilities 
 grid <- expand.grid(
@@ -391,7 +396,7 @@ plot_ly(pred_long,
         )
 ```
 
-
+#### How satisfied is a rider based on the frequency of delays?
 ```{r}
 #Create grid of predicted probabilities with frequency of delay as variable now
 grid_delays <- expand.grid(

@@ -178,9 +178,9 @@ complaint_data_time <- rider_data_full |>
 ```
 
 
-# Let's ....
+## Generic Findings
 
-```{r, include=FALSE}
+```{r, fig.cap= "First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts."}
 #Location distribution 
 borough_df <- rider_data_full %>% 
   count(borough)
@@ -215,6 +215,7 @@ plot_ly(
   hovertemplate = "%{label}<br>%{percent}<extra></extra>"
 ) %>%
   layout(title = "Overall Satisfaction Levels")
+
 ```
 
 
@@ -222,7 +223,7 @@ plot_ly(
 
 ### Summary of top complaints 
 
-```{r, fig.width=15, fig.height=8}
+```{r, fig.width=9, fig.height=6}
 
 #  Chart B - Summary of top complaints overall
 
@@ -252,7 +253,7 @@ bar_plot
 
 ```
 
-**Figure:**  This graph shows the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs.
+Above we see the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs.
 
 ## How do riders feel about their delays?
 
@@ -267,7 +268,7 @@ delay_reason =
 ```
 
 
-```{r}
+```{r, fig.cap= " We can quickly notice that the top delay reason is train traffic. Within the train traffic bar, we can see that 1,526/2,608 people which is about 59% reported that they were unsatistfied with the train due to train traffic. It seems that the delay reason might have an impact on the overall satisfaction, but it may just be a piece to the puzzle." }
 delay_reason_plot =
   plot_ly(
     delay_reason,
@@ -294,7 +295,6 @@ delay_reason_plot
 
 ```
 
-This graph shows...
 
 
 

@@ -423,8 +423,6 @@ subway_directory_display_final
 ```
 
 ## How often are these trains delayed?
-
-
 ```{r}
 #Plots! 
 
@@ -441,7 +439,8 @@ dist_delay <- scored_data |>
     subway_line = factor(subway_line, levels = unique(subway_line))
   )
 
-plot_ly(
+dist_delay_plot =
+  plot_ly(
   data = dist_delay,
   x = ~subway_line,
   y = ~prop,
@@ -467,14 +466,9 @@ plot_ly(
     showlegend = TRUE
   )
 
-```
-
-
-```{r}
 
 # Ordinal frequency of delay responses
 # Interactive plotly heat map
-
 
 keep_delays <- c(
   "Rarely",
@@ -500,6 +494,7 @@ heat_data <- scored_data |>
     frequency_of_delays = factor(frequency_of_delays, levels = keep_delays)
   )
 
+heat_data_plot =
 plot_ly(
   data = heat_data,
   x = ~frequency_of_delays,
@@ -523,8 +518,18 @@ plot_ly(
     margin = list(l = 90, r = 20, b = 80, t = 80)
   )
 
-```
 
+subplot(
+  dist_delay_plot,
+  heat_data_plot,
+  nrows = 1,  
+  shareY = FALSE,  
+  titleX = TRUE,
+  titleY = TRUE,
+  margin = 0.05
+)
+
+```
 
 
 This heatmap highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell.
@@ -596,7 +601,7 @@ delay_counts =
 ```
 
 
-```{r}
+```{r, fig.cap= "The 1 Train seems to have a signficant amount of delays compare to the other trains. It has double the amount of complaints compared to the second train with the most complaints, the R train. Is there a reason why these trains seem to have the most delay issues? I guess we will have to do a future survey to find out."}
 delay_counts_plot =
   plot_ly(
   delay_counts,
