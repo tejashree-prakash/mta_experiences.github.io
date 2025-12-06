@@ -27,7 +27,6 @@ navbar:
           href: proposal.html
         - text: "Data source"
           href: data_source.html
-        - text: "Github"
 
 output:
   html_document:
