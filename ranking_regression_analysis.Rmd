@@ -233,7 +233,7 @@ plot_ly(regression_rider_data,
 ```
 
 
-```{r, fig.cap="The residual plot from the linear regression model is highly ordered and is heterscedastic. Therefore, we decided to proceed with a logistic regression model instead."}
+```{r, include=FALSE}
 #Run the model 
 fit <- lm(overall_satisfaction ~ average_length_subway_ride + frequency_of_delays + approximate_delay_duration + frequency_of_rerouting + borough, data = regression_rider_data)
 
@@ -241,7 +241,10 @@ fit <- lm(overall_satisfaction ~ average_length_subway_ride + frequency_of_delay
 fit |> 
   broom::tidy() |> 
   select(term, estimate, p.value)
+```
 
+
+```{r, fig.cap="The residual plot from the linear regression model is highly ordered and is heterscedastic. Therefore, we decided to proceed with a logistic regression model instead."}
 #Visualizations
 regression_rider_data |> 
   modelr::add_residuals(fit) |> 
