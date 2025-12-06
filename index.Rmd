@@ -59,6 +59,7 @@ subway_directory_display_final
 
 
 <br>
+
 ##### Composite Score
 We ranked the various subway lines through a [composite score analysis](ranking_regression_analysis.html) based on rider-reported service quality
 indicators to compare line color performance across the system. See more information
