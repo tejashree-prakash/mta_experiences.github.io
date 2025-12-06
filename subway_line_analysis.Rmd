@@ -556,141 +556,126 @@ delay_counts_plot
 
 <br><br>
 
-<h3>What are the subway complaints reported?</h3>
-
-
-```{r}
-# I added this ( adding the complaint variable)
-rider_data_full <- rider_data_full |>
+```{r, include=FALSE}
+# Long-format complaints data with time of day
+complaints_long <- complaint_data_time |>
   mutate(
     complaint = str_split(top_three_complaints, ",\\s*")
   ) |>
-  tidyr::unnest(complaint)
-```
-
-
-```{r}
-# Creating a complaint_data_time dataset (I added this)
-complaint_data_time <- rider_data_full |> 
+  tidyr::unnest(complaint) |>
   mutate(
-    submitted_at = mdy_hm(submitted_at),
-    hour = hour(submitted_at),
-    time_of_day = case_when(
-      hour >= 6 & hour < 12 ~ "Morning",  #6 am to 11:59 am
-      hour >= 12 & hour < 17 ~ "Afternoon", #12 pm to 4:59 pm
-      hour >= 17 & hour < 21 ~ "Evening",  #5pm to 8:59 pm
-      TRUE ~ "Night" # 9pm to 5:59 am 
-    ),
-    time_of_day = factor(time_of_day, 
-                        levels = c("Morning", "Afternoon", "Evening", "Night"))
-  )
+    complaint = str_trim(complaint),
+    complaint = na_if(complaint, "")
+  ) |>
+  filter(!is.na(complaint))
 ```
 
 
+<h3>What are the subway complaints reported?</h3>
 
-```{r, fig.width=9, fig.height=6, fig.cap= " This chart provides a detailed breakdown of subway complaints by both the specific transit line and the time of day (morning, afternoon, evening, night).The stacked bar graphs reveal how the distribution of primary complaints (such as delays, overcrowding, and crime) shifts significantly throughout the day, highlighting the distinct challenges during peak versus off-peak hours.The visualization allows for clear comparison across the system, showing which issues are most pressing for each line at different times." } 
+```{r, fig.width=9, fig.height= 6, fig.cap= "This interactive chart shows the distribution of reported subway complaints by line and time of day (morning, afternoon, evening, night). For each time period, riders’ top complaints—such as delays, overcrowding, and safety concerns—are shown as stacked horizontal bars, allowing you to compare which issues dominate on each line during different parts of the day."}
 
-complaint_summary <- complaint_data_time |> 
-  count(subway_line_used_most_often, time_of_day, complaint) |> 
-  group_by(subway_line_used_most_often, time_of_day) |> 
-  mutate(percent = n / sum(n) * 100) |> 
+# Summarize complaints by line, time of day, and complaint type
+complaint_summary <- complaints_long |>
+  count(subway_line_used_most_often, time_of_day, complaint, name = "n") |>
+  group_by(subway_line_used_most_often, time_of_day) |>
+  mutate(percent = n / sum(n) * 100) |>
   ungroup()
-
 
 library(viridis)
 
-all_complaints <- sort(unique(complaint_summary$complaint))
+# Order complaint types by total frequency (so legend is stable)
+all_complaints <- complaint_summary |>
+  group_by(complaint) |>
+  summarise(total_n = sum(n), .groups = "drop") |>
+  arrange(desc(total_n)) |>
+  pull(complaint)
+
 viridis_colors <- viridis(length(all_complaints))
 names(viridis_colors) <- all_complaints
 
-
-times <- unique(complaint_summary$time_of_day)
+# Time-of-day ordering
+times <- levels(complaint_summary$time_of_day)
+if (is.null(times)) {
+  times <- unique(complaint_summary$time_of_day)
+}
 
 plot <- plot_ly()
-i <- 0
+n_traces_per_time <- length(all_complaints)
 
+# Build one set of stacked bars per time of day
 for (t in times) {
-  df_t <- complaint_summary |> filter(time_of_day == t)
+  df_t <- complaint_summary |>
+    filter(time_of_day == t)
   
-  for (comp in unique(df_t$complaint)) {
-    df_tc <- df_t |> filter(complaint == comp)
+  for (comp in all_complaints) {
+    df_tc <- df_t |>
+      filter(complaint == comp)
     
-    plot <- plot |> add_trace(
-      data = df_tc,
-      x = ~percent,
-      y = ~subway_line_used_most_often,
-      type = "bar",
-      orientation = "h",
-      name = comp,
-      hovertemplate = paste(
-        "Time: ", t,
-        "<br>Line: %{y}",
-        "<br>Complaint: ", comp,
-        "<br>Count: %{customdata}",
-        "<br>Percent: %{x:.1f}%",
-        "<extra></extra>"
-      ),
-      customdata = ~n,
-      marker = list(color = viridis_colors[comp]),
-      visible = ifelse(t == times[1], TRUE, FALSE),
-      legendgroup = comp
-    )
-    
-    i <- i + 1
+    plot <- plot |>
+      add_trace(
+        data        = df_tc,
+        x           = ~percent,
+        y           = ~subway_line_used_most_often,
+        type        = "bar",
+        orientation = "h",
+        name        = comp,
+        marker      = list(color = viridis_colors[comp]),
+        customdata  = ~n,
+        hovertemplate = paste(
+          "Time: ", t,
+          "<br>Line: %{y}",
+          "<br>Complaint: ", comp,
+          "<br>Count: %{customdata}",
+          "<br>Percent: %{x:.1f}%",
+          "<extra></extra>"
+        ),
+        legendgroup = comp,
+        showlegend  = ifelse(t == times[1], TRUE, FALSE),
+        visible     = ifelse(t == times[1], TRUE, FALSE)
+      )
   }
 }
 
-# Build dropdown buttons
-buttons <- list()
+# Total number of traces = complaints × times
+total_traces <- n_traces_per_time * length(times)
+
+# Dropdown buttons to switch between times of day
+buttons <- vector("list", length(times))
+
 for (k in seq_along(times)) {
-  vis <- rep(FALSE, length(unique(complaint_summary$complaint)) * length(times))
-  
-  start <- (k - 1) * length(unique(complaint_summary$complaint)) + 1
-  end <- start + length(unique(complaint_summary$complaint)) - 1
-  
-  vis[start:end] <- TRUE
+  visible_vec <- rep(FALSE, total_traces)
+  start <- (k - 1) * n_traces_per_time + 1
+  end   <- k * n_traces_per_time
+  visible_vec[start:end] <- TRUE
   
   buttons[[k]] <- list(
     method = "restyle",
-    args = list("visible", vis),
-    label = times[k]
+    args   = list("visible", visible_vec),
+    label  = times[k]
   )
 }
 
-# Final layout with dropdown moved
-plot |> layout(
-  title = "Complaint Percent by Subway Line and Time of Day",
-  xaxis = list(title = "Percent of Complaints"),
-  yaxis = list(title = "Subway Line"),
-  barmode = "stack",
-  # Move legend if needed (optional)
-  legend = list(
-    x = 1.1,
-    y = 0.5
-  ),
-  updatemenus = list(
-    list(
-      y = 0.98,        # Move to top right, below title
-      x = 0.98,        # Right side
-      buttons = buttons,
-      type = "dropdown",
-      xanchor = "left",  # Anchor to left side
-      yanchor = "top"     # Anchor to top
+plot |>
+  layout(
+    title = "Complaint Percent by Subway Line and Time of Day",
+    xaxis = list(title = "Percent of Complaints"),
+    yaxis = list(title = "Subway Line"),
+    barmode = "stack",
+    legend = list(x = 1.05, y = 0.5),
+    updatemenus = list(
+      list(
+        type    = "dropdown",
+        x       = 0.98,
+        y       = 0.98,
+        xanchor = "left",
+        yanchor = "top",
+        buttons = buttons
+      )
     )
   )
-)
 
 ```
-
-
-
-
-
-
-
-
-
-
 
 
 
