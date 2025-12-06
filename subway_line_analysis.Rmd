@@ -635,19 +635,23 @@ delay_counts_plot =
       colors = delay_counts |> dplyr::pull(hex_color)
     ),
     text = ~paste0(subway_line_used_most_often, " Train"),
-    textinfo = "text+percent",
+    textinfo = "percent",     
+    textposition = "inside",
     hovertext = ~paste0(
       "Line: ", subway_line_used_most_often,
       " (", group_color, ")",
       "<br>Count: ", n
     ),
-    hoverinfo = "text"
+    hoverinfo = "text",
+    showlegend = FALSE            
   ) |>
   layout(
-    title = "Subway Lines with the Most Delays"
+    title = "Subway Lines with the Most Delays",
+    margin = list(l = 40, r = 40, b = 40, t = 80)
   )
 
 delay_counts_plot
+
 
 
 
