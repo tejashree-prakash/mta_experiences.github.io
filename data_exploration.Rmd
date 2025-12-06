@@ -283,7 +283,8 @@ delay_reason_plot =
       "<br>Satisfaction:", overall_satisfaction,
       "<br>Riders:", n
     ),
-    hoverinfo = "text"
+    hoverinfo = "text",
+    textposition = "none" 
   ) |>
   layout(
     barmode = "stack",
@@ -293,6 +294,7 @@ delay_reason_plot =
   )
 
 delay_reason_plot
+
 
 ```
 
