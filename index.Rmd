@@ -59,7 +59,10 @@ subway_directory_display_final
 
 
 ##### Composite Score
-We were able to rank the various subway lines through a [composite score analysis](ranking_regression_analysis.html).
+We ranked the various subway lines through a [composite score analysis](ranking_regression_analysis.html) based on rider-reported service quality
+indicators to compare line color performance across the system. See more information
+in the [report tab](proposal.html). Hover over each line in this map of New York
+City to see how your most-used line ranks among the rest!
 
 
 ## Screen Cast
