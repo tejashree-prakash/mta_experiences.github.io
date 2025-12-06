@@ -16,6 +16,11 @@ library(dplyr)
 library(gt)
 ```
 
+The Subway Line Analysis explores how rider experiences, delay patterns, and service perceptions differ across New York City’s subway lines. Our goal is to identify which lines offer smoother commutes, which struggle with chronic delays, and how these differences shape overall rider satisfaction.
+
+Across multiple visualizations, we examine how frequently riders on each line report delays, how often those delays exceed 20 minutes, and how complaint patterns vary by route. The composite score table summarizes overall performance across four key service indicators, offering a system-wide ranking of line families. Together, these interactive graphics reveal both consistent system-wide trends, such as unusually high everyday delays on lines like the 7 or the severe long-delay burden on the Z train. 
+
+
 ```{r, include=FALSE}
 subway_rider_data = 
   read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
@@ -515,7 +520,7 @@ plot_ly(
     title = "Delay Frequency Distribution by Subway Line",
     xaxis = list(title = "Delay Frequency"),
     yaxis = list(title = "Subway Line"),
-    margin = list(l = 90, r = 20, b = 80, t = 80)
+    margin = list(l = 110, r = 20, b = 80, t = 80)
   )
 
 
@@ -526,13 +531,15 @@ subplot(
   shareY = FALSE,  
   titleX = TRUE,
   titleY = TRUE,
-  margin = 0.05
+  margin = 0.12
 )
 
 ```
+2 different visualizations of delay frequency distribution by subway line: 
 
+The Stacked bar chart reveals the phenomenon that riders on most lines report delays a few times a week, though the share of everyday delays varies widely. The delay frequency is on J and 7 lines. Use the interactive hover label to view exact proportions for clearer line-by-line comparisons.
 
-This heatmap highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell.
+Th heatmap highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell.
 
 
 ## Are Riders experiencing delays?
