@@ -216,7 +216,7 @@ regression_rider_data <-
 ```
 
 
-```{r, fig.cap="We began our regression analysis by visualizing the overall satisfaction levels across our sample. Understanding this provides a baseline for our regression results, highlights the prevalence of positive, neutral, and negative perceptions, and helps identify patterns or imbalances in rider satisfaction. This step ensures that our subsequent modeling is grounded in a clear understanding of the data, allowing us to better assess how factors such as borough, ride length, and service reliability relate to overall satisfaction. We observe that the graph demonstrates a slightly skewed, but close to normal distribution of overall satisfaction responses."}
+```{r, fig.cap="We began our regression analysis by visualizing the overall satisfaction levels across our sample. Understanding this provides a baseline for our regression results, highlights the prevalence of positive, neutral, and negative perceptions, and helps identify patterns or imbalances in rider satisfaction. This step ensures that our modeling is grounded in a clear understanding of the data, allowing us to effectively assess how different predictors like borough and ride length relate to overall satisfaction. We observe that the graph demonstrates a slightly skewed, but close to normal distribution of overall satisfaction responses."}
 #Pick blue from gradient 
 viridis_blue <- viridis(100)[40]
 
@@ -226,7 +226,7 @@ plot_ly(regression_rider_data,
          marker = list(color = viridis_blue)) %>%
   layout(title = "Distribution of Overall Satisfication Levels",
          xaxis = list(title = "Satisfaction Level",
-                      tickvals = 0:5,      
+                      tickvals = 1:5,      
                       ticktext = c("Highly Unsatisfied", "Not Satisfied", "Neutral", "Somewhat Satisfied", "Very Satisfied")),
          yaxis = list(title = "Count"))
 

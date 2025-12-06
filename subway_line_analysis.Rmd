@@ -21,6 +21,7 @@ The Subway Line Analysis explores how rider experiences, delay patterns, and ser
 Across multiple visualizations, we examine how frequently riders on each line report delays, how often those delays exceed 20 minutes, and how complaint patterns vary by route. The composite score table summarizes overall performance across four key service indicators, offering a system-wide ranking of line families. Together, these interactive graphics reveal both consistent system-wide trends, such as unusually high everyday delays on lines like the 7 or the severe long-delay burden on the Z train. 
 
 
+
 ```{r, include=FALSE}
 subway_rider_data = 
   read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
@@ -427,6 +428,8 @@ subway_directory_display_final
 
 ```
 
+
+
 ## How often are these trains delayed?
 ```{r}
 #Plots! 
@@ -539,7 +542,9 @@ subplot(
 
 The Stacked bar chart reveals the phenomenon that riders on most lines report delays a few times a week, though the share of everyday delays varies widely. The delay frequency is on J and 7 lines. Use the interactive hover label to view exact proportions for clearer line-by-line comparisons.
 
-Th heatmap highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell.
+The heat map highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell.
+
+
 
 
 ## Are Riders experiencing delays?
@@ -598,29 +603,41 @@ plot_ly(
 
 This bar chart shows the share of riders on each line who report experiencing long delays of 20 minutes or longer. While most lines cluster between 10-20%, the Z line stands out with the highest proportion, indicating substantially more severe delays among its riders. Interactive hover labels display each line’s exact proportion and color group for more detailed comparison.
 
+
+
 ## Which trains are the worst with delays?
 
 ```{r, include=FALSE}
 delay_counts =
   rider_data |>
   filter(frequency_of_delays %in% c("Everyday", "A few times a week")) |>
-  count(subway_line_used_most_often, sort = TRUE)
+  count(subway_line_used_most_often, sort = TRUE) |>
+  left_join(
+    subway_directory,
+    by = c("subway_line_used_most_often" = "subway_line")
+  )
 ```
 
 
 ```{r, fig.cap= "The 1 Train seems to have a signficant amount of delays compare to the other trains. It has double the amount of complaints compared to the second train with the most complaints, the R train. Is there a reason why these trains seem to have the most delay issues? I guess we will have to do a future survey to find out."}
 delay_counts_plot =
   plot_ly(
-  delay_counts,
-  labels = ~subway_line_used_most_often,
-  values = ~n,
-  type = "pie"
-) |>
+    delay_counts,
+    labels = ~subway_line_used_most_often,
+    values = ~n,
+    type   = "pie",
+    marker = list(
+      colors = delay_counts |> dplyr::pull(hex_color)
+    ),
+    text = ~group_color,
+    hoverinfo = "label+value+percent+text"
+  ) |>
   layout(
     title = "Subway Lines with the Most Delays"
   )
 
 delay_counts_plot
+
 
 ```
 
