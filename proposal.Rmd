@@ -1,17 +1,142 @@
----
-title: "Report"
----
+<h1>Not All Trains Are Created Equal</h1>
+Authors: Kennedy Wade  (kjw2175), Shree Prakash  (tp2806), Jaia Wingard  (jw3638),  Yasmine Evang (yme2112)
+<br>
+<h3>Motivation For This Project</h3>
 
-# Not All Trains Are Created Equal
-#### Authors: Kennedy (kjw2175), Shree (tp2806), Jaia (jw3638),  Yasmine (yme2112)
+New York City has a well-known public transportation system, used by thousands every day. Unfortunately, not all trains are created equal. As regular subway riders, we are consistently disappointed with our commuting experience and wonder if other riders feel the same way. Recent adjustments to payment systems, track and station closures, as well as inconsistent travel times, prompted us to explore the idea of rider satisfaction and question the efficacy of the MTA. The MTA has announced that there is a fare increase going into effect in January 2026. With wavering opinions on the efficiency of the train lines, is this increase in cost justified? 
 
-### Motivation: Provide an overview of the project goals and motivation.
-
-New York City has a well-known public transportation system, used by thousands every day. Unfortunately, not all trains are created equal. As regular subway riders, we are consistently disappointed with our commuting experience and wonder if other riders feel the same way. Recent adjustments to payment systems, track and station closures, as well as inconsistent travel times, prompted us to explore the idea of rider satisfaction and question the efficacy of the MTA. The MTA has announced that there is potential for a fare increase. With wavering opinions on the efficiency of the train lines, is this increase justified? 
 Using rider responses from the NYC Open Data 2019 Subway Rider Survey, we can evaluate the public opinion’s perception of the reliability of NYC’s MTA system. The goal of this project is to uncover patterns in satisfaction, identify factors that influence rider experience, and determine how delays, affordability, and service quality vary among subway lines. Using these ideas, we hope to identify which subway could be the gold standard in daily transportation satisfaction.
+<br><br>
+<h3>Our Inspiration</h3>
 
-### Related work: Anything that inspired you, such as a paper, a website, or something we discussed in class.
+Because so much of the New Yorker experience is interwoven in the use of public transit, we thought it would be interesting to analyze subway system data. In turn, we explored examples of final projects from previous years with a “New York City” theme. The “Squirrels in Central Park,” “Emma’s Marathon Training,” and “Operation Lorax” projects inspired us to find data that would allow us to create an interactive map of New York City to display our analyses. This prompted us to look into NYC Open Data, where we found the Subway Rider Experience Survey. We liked how this dataset would allow us to create such a visual map and included a large number of variables per respondent, giving us the ability to explore a vast number of comparisons. To create a fun and competitive theme for the website, we decided to make a subway line ranking initiative. May the best track win!
+<br><br>
+<h3>Initial Project Questions:</h3>
 
-When exploring examples of final projects from previous years, the intricacy and quality of the graphs and variables allowed us to visualize a detailed outcome for our research. These projects made it clear that we needed a dataset robust enough to support multiple types of graphs and exploratory questions. Particularly, the projects “Squirrels in Central Park,” “Emma’s Marathon Training,” and “Operation Lorax” inspired us to look into a topic that could be represented as a visual map distribution of  New York City. Our deep dive into NYC Open Data sparked investigative ideas, which led us to the Subway Rider Experience Survey. This 2019 survey stood out because it contained many variables per respondent and other measures that could be meaningfully visualized. Lastly, we created a fun and competitive theme for the website using our subway line ranking initiative. May the best track win!
+Using the survey data, we were intrigued to visually demonstrate which subways provide the best user experience for New Yorkers.  
+
+- Which subway line is the best?  
+- How do riders feel about their subway experience?  
+- Does the subway experience impact the view on transportation affordability? 
+
+As we continued our research, we began to consider not only what subway line was best, but why riders felt the way that they did.  
+
+- What factors shape the perception of riders?  
+- Are subway riders satisfied with their transportation experience due to which external/complaint factors?  
+- How do rider complaints shift across different times of day ( Morning, Afternoon, Evening, night)?  
+- What are the most common complaints system-wide? How do complaint profiles differ by subway line and borough?
+<br><br>
+
+<h3>Data Sources</h3>
+
+<h4>Primary dataset: NYC Open Data’s 2019 Subway Rider Survey.</h3>
+
+The original survey data had 10,704 observations and 19 variables. The data cleaning process included the removal of two unused columns, dropping of missing data, merging of an external NYC zip code dataset, creation of a new borough variable, and removal of any invalid zip codes. 
+<br>
+
+<h5>Details on Cleaning:</h5>
+
+- Created a survey_id to represent each row for each unique participant response  
+- Deleted survey_stop_borough and survey_stop_location variables, as they  were not critical to our analysis  
+- Recoded use_of_subway_frequency into clearer, unified labels ( “Everyday / Almost every day” → “Every day”; “More than once a week, varies” → “Several times a week”).  
+- Simplified overall_satisfaction wording from “Not satisfied” to “Unsatisfied.”  
+- Standardize variable types by converting into a character or into factors as necessary  
+- Cleaned top_three_complaints by removing extra brackets and quotes  
+- Used an external NYC zip code reference file (nyc_zipcodes.csv) from NYC Planning data and implemented the remaining zip codes.  
+- Created borough variable using ZIP code information from the NYC government website. Additional zip code information that was not included in this dataset was obtained from the top Google results.  
+- Removed missing values from the entire data set. 
+<br>
+Using RStudio/RMarkdown, we utilized tidyverse and janitor packages to create our final complete dataset called rider_data_full, which has 5417 observations and 19 variables.
+<br>
+
+<h5>Variables:</h5> 
+
+- survey_id: unique numeric identifier for each survey response  
+- subway_line_used_most_often: Which subway line do you use most often?  
+- use_of_subway_frequency: How frequently do you use the subway?  
+- get_to_subway_via: How do you get to the subway?  
+- primary_use_of_subway: What is the primary reason you use the subway?  
+- average_length_subway_ride:  What is the average length of your subway ride?  
+- overall_satisfaction: How satisfied are you with the subway service?  
+- frequency_of_delays:  How frequently do you experience subway delays?  
+- approximate_delay_duration: If you experience delays, approximately how long are you delayed?  
+- alternative_transport: If you experience a delay greater than 15 minutes while waiting for a train, are you likely to…?  
+- frequency_of_rerouting: How frequently do you experience service changes/re-routing?  
+- top_three_complaints:  What are your concerns or complaints about transit service?  
+- most_common_reason_for_delay: What are your concerns or complaints about transit service?  
+- is_subway_affordable: If you are delayed on a train, what is the most common reason given by a conductor?  
+- opinion_on_increased_fares: What do you think about the fare increases being proposed by the MTA?  
+- submitted_at: Time and date of submission  
+- survey_stop_borough: If the survey was collected in person, this represents the borough in which the survey was conducted  
+- survey_stop_location: If the survey was collected in person, this represents the name of the subway station at which the survey was filled in.  
+- zip_code: The zip code of the respondent.  
+- collection_method: How the survey response was collected  
+- borough:  Borough associated with the respondent’s zip code, including zip codes outside of NYC 
+
+<br>
+<h4>Secondary Dataset: MTA Colors</h4>
+
+We created a polished appearance that matches the official MTA colors using the hex codes from the NY Open Data MTA colors dataset and the gt package (https://data.ny.gov/Transportation/MTA-Colors/3uhz-sej2/about_data).
+
+<br>
+<h4>Additional Dataset: NYU Spatial Data Repository</h4> 
+
+We recreate the iconic MTA subway map with an interactive element to showcase the composite score and ranking of each line. Note that the borrowed data is from 2016, so there have been track updates and train differences since (https://geo.nyu.edu/catalog/nyu-2451-34758).
+
+<br>
+<h4>Additional Dataset: NYC Planning Office</h4>
+
+This data was used to get zip code information to create our borough variable. Additional zip code information that was not included in this dataset was obtained from top Google results respective to each additional zip code. (https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls) 
+
+<br>
+<h3>Exploratory Analysis</h3>
+
+Our exploratory analysis focuses on understanding high-level patterns in complaints and satisfaction across the whole sample. By identifying the most common issues riders report and the general sentiment trend, we have been able to establish context for the rest of the report. These initial insights help shape our expectations for the [borough-level](borough_analysis.html) and [subway line-level](subway_line_analysis.html) analyses that follow, and they provide a meaningful starting point for the regression modeling conducted later. 
+
+<br>
+<h3>Additional Analyses</h3>
+
+<h4>Composite Scores</h4>
+
+See [home page](index.html) for ranking!
+
+To compare subway line performance across the system, we constructed a composite score that aggregates four rider-reported service quality indicators in the dataset: frequency of delays, length of delays, percentage of riders experiencing long delays, and overall satisfaction. Each variable was converted into a numeric metric using either ordinal scoring systems (for frequency and satisfaction) or midpoint-based values (for delay length). These metrics were then averaged at the line-family level and standardized using z-scores. The sum of the four standardized values creates a composite performance score with the lowest score set to zero, so they are all positive values. Higher composite scores correspond to better rider experience on that train.
+
+Notably, the G Line shows the lowest composite score across all line families, which reflects consistently negative rider-reported metrics across indicators. G line riders reported extremely high rates of long delays (nearly 92% reporting a long delay), low satisfaction scores, and weaker delay-frequency ratings compared to other lines. These combined factors produce strongly negative z-scores across all service dimensions, which results in the G line anchoring the bottom of the ranking. The Yellow Line (N, Q, R, W) also falls near the bottom of the composite distribution because it has a relatively high percentage of long delays and below-average satisfaction ratings.
+
+The Green and Yellow lines’ scores illustrate the sensitivity of the composite score to rider perceptions because it relies on rider-reported data rather than operational metrics. In turn, the score should be interpreted as a representation of the subjective experience of surveyed riders rather than definitive performance outcomes for each route.
+
+<br>
+<h4>Regression Analysis</h4> 
+See [regression page](regression.html) for more!
+
+We began our regression analysis using the borough variable and a set of categorical predictors with an outcome of overall satisfaction. Specifically, our model incorporated average subway ride length, frequency of service delays, approximate delay duration, and the frequency of rerouting events. We selected this model primarily due to feasibility constraints. Many of the other potentially informative variables, such as the type of complaint or the most common reason for delay, were too resource-intensive to compile within the scope of our project. As a result, we opted for a model built from data that were still representative of the key factors likely to influence transit performance and rider experience from our dataset.
+Beginning with a linear regression model, we chose to factor our predictors due to their ordinal nature and kept overall satisfaction continuous. To confirm the appropriateness of this method, we developed its residual plot and found strong heteroscedasticity, and therefore, we decided to continue with a logistic regression model.
+
+Our logistic regression model began with converting overall satisfaction to be an ordinal categorical variable. Specifically, we performed a cumulative link model (clm) because of the ordinal nature of the outcome. From this model, we saw that all five predictors were significant at the 5% level. Borough had the greatest odds ratio [OR: 1.14, CL: (1.03-1.26)] relative to the other predictors, indicating it has the largest influence on overall satisfaction relative to the other predictors. This was followed by average length of subway ride [OR: 0.66, CL: (0.50-0.88)], frequency of rerouting [OR: 0.53, CL: (0.46-0.61)], approximate delay duration [OR: 0.36, CL: (0.24-0.55)], then frequency of delays [OR: 0.01, CL: (0.00-0.03)].
+
+Due to the nature of the clm model, linear, quadratic, and cubic polynomial scale effects were performed for each predictor that was ordinal. Therefore, the regression model output contains a linear, quadratic, cubic, and even 4th degree scale effect for each ordinal categorical predictor. These different scale effects represent different potential trends in how the ordered predictor affects the outcome. A significant linear coefficient suggests a consistent directional change across levels, whereas a significant quadratic coefficient suggests an acceleration or deceleration curve, and a cubic coefficient suggests a complex, S-shaped curve. We chose to focus on the linear scale effects of each ordinal predictor, as they are more interpretable and provide a clearer understanding of the directional relationship between each predictor and overall satisfaction.
+The average length of subway ride and frequency of delays were significant only at the linear scale effect level. With our two linearly significant predictors and borough, we developed a heatmap that demonstrates the predictive probability each ordinal predictor with borough has on overall satisfaction. We were able to conclude that, overall, between average length of subway ride and frequency of delays, the shorter the ride or delay was, the greater the probability of experiencing higher overall satisfaction.
+
+Further analyses could explore the predictors that exhibited more complex, nonlinear effects, as well as additional variables not included in the present model that may also meaningfully influence overall satisfaction.
+<br><br>
 
 
+<h3>Discussion</h3>
+
+Our descriptive, composite-score, and regression analyses together provide a multi-layered understanding of how riders experience the MTA. Across boroughs, there were high levels of dissatisfaction with work as the most frequently cited reason for subway use. This indicates that riders are often evaluating the system to be poor in the context of essential daily commutes. The 1 train was the most commonly used subway line, underscoring its central role in daily transit patterns. Borough-level comparisons showed relatively consistent perceptions of affordability and mixed opinions on potential fare increases, suggesting that cost concerns are widespread even when current fares are often viewed as affordable. 
+
+The composite score highlights substantial perceived performance differences between line families: lines such as the G and the Yellow Line (N, Q, R, W) fall near the bottom of the distribution because they combine high proportions of long delays with below-average satisfaction ratings and weaker delay-frequency scores. The cumulative link regression model indicates that borough, average length of subway ride, frequency of service delays, approximate delay duration, and frequency of rerouting all significantly influence overall satisfaction, with shorter rides and fewer or shorter delays associated with higher satisfaction. 
+
+Taken together, our results suggest that riders’ perceptions of the MTA are shaped both by local service characteristics, how often and how severely their trains are delayed, and by broader structural features that are shared across the MTA system. Improving reliability and delay management may be just as important as fare policy in shaping how New Yorkers evaluate their subway experience.
+<br><br>
+
+<h3>Limitations</h3>
+
+Although the 2019 Subway Rider Survey provides meaningful insight into rider perceptions, it also has important limitations that shape how we interpret our results. Most notably, the survey took place before the COVID-19 pandemic and the significant economic and behavioral shifts that have occurred since. As a result, experiences and sentiments are likely to have changed in this time. The data are self-reported and subjective, which may not reflect true operational performance. 
+
+Several variables contained missing values, so removing incomplete cases reduced our sample size by half. The data was cleaned to only include full variable information for each survey, which trimmed the data set by slightly less than half, decreasing our sample size. Some subway lines, particularly the J/Z and S are sparsely represented, limiting the reliability of line-level comparisons and skewing rankings. This is especially evident for the S line, a less frequented line that contains minimal complaint data, providing an insufficient basis for meaningful pattern identification. 
+
+Zip code information was incomplete and required external merging, leaving potential misclassification in borough-level analyses. Additional zip code information that was not included in the NYC Planning dataset was obtained from top Google results for each additional zip code. The interactive subway map also relies on 2016 spatial data, which may not reflect current track configurations. 
+
+Responses for several variables were condensed to be exclusive ordinal categories, potentially limiting variability seen in responses. These constraints mean our results capture perceived rider experience rather than definitive measures of MTA service quality and limit the extent to which we can generalize patterns, particularly for lower-ridership lines, detailed temporal patterns, and fine-grained geographic distinctions.

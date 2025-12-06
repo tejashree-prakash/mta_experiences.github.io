@@ -23,7 +23,7 @@ TVTropes – New York City Subway
 New York City has a well-known public transportation system, used by thousands every day. Unfortunately, not all trains are created equal. The MTA suggests that fare increases will soon be implemented, but with wavering opinions on the efficiency of the train lines, is this appropriate?
 </p>
 <br>
-## Interactive Subway Map
+<h2>Interactive Subway Map</h2>
 ```{r, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
@@ -60,35 +60,24 @@ subway_directory_display_final
 
 <br>
 
-##### Composite Score
-We ranked the various subway lines through a [composite score analysis](ranking_regression_analysis.html) based on rider-reported service quality
+<h3>Composite Score</h3>
+We ranked the various subway lines through a composite score analysis based on rider-reported service quality
 indicators to compare line color performance across the system. See more information
-in the [report tab](proposal.html). Hover over each line in this map of New York
+in the [report tab](proposal.html#composite-score). Hover over each line in this map of New York
 City to see how your most-used line ranks among the rest!
 
 <br>
-## Screen Cast
+<h2>Screen Cast</h2>
 
 Take a look at our website!
 
 (https://example.com/your-video-link) <!-- replace with real link -->
 
 <br>
-## Creators
+<h2>Creators</h2>
 
 | ![](images/shree.jpg){width=200px height=160px}| ![](images/jaia.png){width=200px height=160px} | ![](images/kennedy.jpg){width=200px height=160px}| ![](images/yasmine.jpg){width=200px height=160px}|
 |-----------------------------------|------------------------------------|--------------------------------------|----------------------------------------|
 | **Shree** <br> MPH Candidate in Population and Family Health, Certificate in Applied Biostatistics  | **Jaia** <br> MPH Candidate in Epidemiology and Applied Biostatistics   | **Kennedy** <br> MPH Candidate in Epidemiology, Certificate in Applied Biostatistics and Public Health Data Science | **Yasmine** <br> MS Candidate in Epidemiology |
-
-
-
-
-
-
-
-
-
-
-
 
 

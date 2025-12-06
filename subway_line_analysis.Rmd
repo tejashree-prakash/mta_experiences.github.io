@@ -15,7 +15,7 @@ library(treemapify)
 library(dplyr)
 library(gt)
 ```
-
+<br>
 The Subway Line Analysis explores how rider experiences, delay patterns, and service perceptions differ across New York City’s subway lines. Our goal is to identify which lines offer smoother commutes, which struggle with chronic delays, and how these differences shape overall rider satisfaction.
 
 Across multiple visualizations, we examine how frequently riders on each line report delays, how often those delays exceed 20 minutes, and how complaint patterns vary by route. The composite score table summarizes overall performance across four key service indicators, offering a system-wide ranking of line families. Together, these interactive graphics reveal both consistent system-wide trends, such as unusually high everyday delays on lines like the 7 or the severe long-delay burden on the Z train. 
@@ -23,8 +23,9 @@ Across multiple visualizations, we examine how frequently riders on each line re
 
 
 ```{r, include=FALSE}
+#Clean data
 subway_rider_data = 
-  read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
+  read_csv("data/2019_subway_rider_data.csv") |> 
   janitor::clean_names()
 
 
@@ -34,8 +35,7 @@ subway_drops =
   drop_na() |> 
   mutate(survey_id = row_number()) |> 
   relocate(survey_id, .before = 1)
-
-
+  
 rider_data =
   subway_drops |>
   mutate(
@@ -106,65 +106,33 @@ rider_data =
                  "Never"),
       ordered = TRUE)
     )
-
-
-rider_data = 
-  rider_data |> 
-  mutate(
-    is_subway_affordable = if_else(
-      is_subway_affordable == "Yes", TRUE, FALSE),
-    zip_code = as.character(zip_code)
-    )
-
-
-rider_data =
-  rider_data |> 
-  mutate(
-    across(c(subway_line_used_most_often,
-             get_to_subway_via,
-             primary_use_of_subway,
-             alternative_transport), as.factor)
-  )
-
-rider_data = 
-  rider_data %>%
-  mutate(
-    top_three_complaints = 
-      str_remove_all(top_three_complaints, "\\[|\\]|'")
-  )
+    
+#Zip code --> borough 
 
 zip_code_data = 
   read_csv("data/nyc_zipcodes.csv") %>%
   select(borough, zipcode)
 
-
-#Make sure character variables 
-zip_code_data <- zip_code_data %>%
-  mutate(zipcode = as.character(zipcode)) #make sure it's a character variable 
+#Make sure character type
 rider_data <- rider_data %>%
   mutate(zip_code = as.character(zip_code))
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode))
 
 #Join
 rider_data_full <- rider_data %>%
   left_join(zip_code_data, by = c("zip_code" = "zipcode"))
 
-#Fill borough where missing
+#If there's no match, we want to keep the zip_code in the borough column, so we use coalesce to handle this
 rider_data_full <- rider_data_full %>%
   mutate(borough = coalesce(borough, as.character(zip_code)))
 
-#Remove invalid zip codes
+#manually go through remaining zip codes - removing 11135 11290 12105 as they are not real zip codes & also removing one observation that didn't have zip code 
 rider_data_full <- rider_data_full %>%
   filter(survey_id != 2410) %>% 
   filter(survey_id != 944) %>% 
   filter(survey_id != 241) %>% 
   filter(survey_id != 919) 
-
-# I added this ( adding the complaint variable)
-rider_data_full <- rider_data_full |>
-  mutate(
-    complaint = str_split(top_three_complaints, ",\\s*")
-  ) |>
-  tidyr::unnest(complaint)
 
 # Creating a complaint_data_time dataset (I added this)
 complaint_data_time <- rider_data_full |> 
@@ -180,7 +148,6 @@ complaint_data_time <- rider_data_full |>
     time_of_day = factor(time_of_day, 
                         levels = c("Morning", "Afternoon", "Evening", "Night"))
   )
-
 
 
 ```
@@ -428,61 +395,14 @@ subway_directory_display_final
 
 ```
 
+<br><br>
 
+<h3>How often are these trains delayed?</h3>
 
-## How often are these trains delayed?
-```{r}
-#Plots! 
+```{r, fig.cap="This heat map highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the G and the Z. Hover details reveal the precise counts and proportions underlying each cell."}
+# Distribution of delay frequency -- heat map
 
-# Distribution of Delay Frequency Responses 
-# Interactive Plotly Stacked Bar Chart 
-
-dist_delay <- scored_data |>
-  filter(!is.na(frequency_of_delays)) |>
-  count(subway_line, group_color, frequency_of_delays, name = "n") |>
-  group_by(subway_line, group_color) |>
-  mutate(prop = n / sum(n)) |>
-  ungroup() |>
-  mutate(
-    subway_line = factor(subway_line, levels = unique(subway_line))
-  )
-
-dist_delay_plot =
-  plot_ly(
-  data = dist_delay,
-  x = ~subway_line,
-  y = ~prop,
-  type = "bar",
-  color = ~frequency_of_delays,
-  colors = viridisLite::viridis(5),
-  customdata = ~group_color,
-  hovertemplate = paste(
-    "Subway Line: %{x}<br>",
-    "Line Group: %{customdata}<br>",
-    "Proportion of Riders: %{y:.1%}<br>",
-    "<extra></extra>"
-  )
-) |>
-  layout(
-    barmode = "stack",
-    title = list(
-      text = "Distribution of Delay Frequency Responses by Subway Line",
-      x = 0.5
-    ),
-    xaxis = list(title = "Subway Line"),
-    yaxis = list(title = "Proportion", tickformat = ".0%"),
-    showlegend = TRUE
-  )
-
-
-# Ordinal frequency of delay responses
-# Interactive plotly heat map
-
-keep_delays <- c(
-  "Rarely",
-  "A few times a week",
-  "Everyday"
-)
+keep_delays <- c("Rarely", "A few times a week", "Everyday")
 
 heat_data <- scored_data |>
   filter(!is.na(frequency_of_delays)) |>
@@ -502,8 +422,7 @@ heat_data <- scored_data |>
     frequency_of_delays = factor(frequency_of_delays, levels = keep_delays)
   )
 
-heat_data_plot =
-plot_ly(
+heat_data_plot <- plot_ly(
   data = heat_data,
   x = ~frequency_of_delays,
   y = ~subway_line,
@@ -526,28 +445,12 @@ plot_ly(
     margin = list(l = 110, r = 20, b = 80, t = 80)
   )
 
-
-subplot(
-  dist_delay_plot,
-  heat_data_plot,
-  nrows = 1,  
-  shareY = FALSE,  
-  titleX = TRUE,
-  titleY = TRUE,
-  margin = 0.12
-)
-
+heat_data_plot
 ```
-2 different visualizations of delay frequency distribution by subway line: 
-
-The Stacked bar chart reveals the phenomenon that riders on most lines report delays a few times a week, though the share of everyday delays varies widely. The delay frequency is on J and 7 lines. Use the interactive hover label to view exact proportions for clearer line-by-line comparisons.
-
-The heat map highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell.
 
 
-
-
-## Are Riders experiencing delays?
+<br><br>
+<h3>Are riders experiencing delays?</h3>
 
 ```{r}
 
@@ -602,9 +505,9 @@ plot_ly(
 
 This bar chart shows the share of riders on each line who report experiencing long delays of 20 minutes or longer. While most lines cluster between 10-20%, the Z line stands out with the highest proportion, indicating substantially more severe delays among its riders. Interactive hover labels display each line’s exact proportion and color group for more detailed comparison.
 
+<br><br>
 
-
-## Which trains are the worst with delays?
+<h3>Which trains are the worst with delays?</h3>
 
 ```{r, include=FALSE}
 delay_counts =
@@ -629,28 +532,31 @@ delay_counts_plot =
       colors = delay_counts |> dplyr::pull(hex_color)
     ),
     text = ~paste0(subway_line_used_most_often, " Train"),
-    textinfo = "text+percent",
+    textinfo = "percent",     
+    textposition = "inside",
     hovertext = ~paste0(
       "Line: ", subway_line_used_most_often,
       " (", group_color, ")",
       "<br>Count: ", n
     ),
-    hoverinfo = "text"
+    hoverinfo = "text",
+    showlegend = FALSE            
   ) |>
   layout(
-    title = "Subway Lines with the Most Delays"
+    title = "Subway Lines with the Most Delays",
+    margin = list(l = 40, r = 40, b = 40, t = 80)
   )
 
 delay_counts_plot
 
 
 
+
 ```
 
+<br><br>
 
-## Subway Complaints {.tabset}
-
-### Complaint Percent by Line and Time
+<h3>What are the subway complaints reported?</h3>
 
 ```{r, fig.width=9, fig.height=6, fig.cap= " This chart provides a detailed breakdown of subway complaints by both the specific transit line and the time of day (morning, afternoon, evening, night).The stacked bar graphs reveal how the distribution of primary complaints (such as delays, overcrowding, and crime) shifts significantly throughout the day, highlighting the distinct challenges during peak versus off-peak hours.The visualization allows for clear comparison across the system, showing which issues are most pressing for each line at different times." }
 

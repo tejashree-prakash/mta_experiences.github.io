@@ -3,6 +3,8 @@ title: "Data Exploration"
 output: html_document
 ---
 
+<br>
+This section gives a quick look at how riders feel about the subway overall, what their top complaints are, and how delays affect satisfaction. It sets the stage for digging deeper into what’s driving rider experiences through our next analyses!
 ```{r, include=FALSE}
 library(flexdashboard)
 library(tidyverse)
@@ -15,8 +17,9 @@ library(dplyr)
 ```
 
 ```{r, include=FALSE}
+#Clean data
 subway_rider_data = 
-  read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
+  read_csv("data/2019_subway_rider_data.csv") |> 
   janitor::clean_names()
 
 
@@ -26,8 +29,7 @@ subway_drops =
   drop_na() |> 
   mutate(survey_id = row_number()) |> 
   relocate(survey_id, .before = 1)
-
-
+  
 rider_data =
   subway_drops |>
   mutate(
@@ -98,65 +100,33 @@ rider_data =
                  "Never"),
       ordered = TRUE)
     )
-
-
-rider_data = 
-  rider_data |> 
-  mutate(
-    is_subway_affordable = if_else(
-      is_subway_affordable == "Yes", TRUE, FALSE),
-    zip_code = as.character(zip_code)
-    )
-
-
-rider_data =
-  rider_data |> 
-  mutate(
-    across(c(subway_line_used_most_often,
-             get_to_subway_via,
-             primary_use_of_subway,
-             alternative_transport), as.factor)
-  )
-
-rider_data = 
-  rider_data %>%
-  mutate(
-    top_three_complaints = 
-      str_remove_all(top_three_complaints, "\\[|\\]|'")
-  )
+    
+#Zip code --> borough 
 
 zip_code_data = 
   read_csv("data/nyc_zipcodes.csv") %>%
   select(borough, zipcode)
 
-
-#Make sure character variables 
-zip_code_data <- zip_code_data %>%
-  mutate(zipcode = as.character(zipcode)) #make sure it's a character variable 
+#Make sure character type
 rider_data <- rider_data %>%
   mutate(zip_code = as.character(zip_code))
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode))
 
 #Join
 rider_data_full <- rider_data %>%
   left_join(zip_code_data, by = c("zip_code" = "zipcode"))
 
-#Fill borough where missing
+#If there's no match, we want to keep the zip_code in the borough column, so we use coalesce to handle this
 rider_data_full <- rider_data_full %>%
   mutate(borough = coalesce(borough, as.character(zip_code)))
 
-#Remove invalid zip codes
+#manually go through remaining zip codes - removing 11135 11290 12105 as they are not real zip codes & also removing one observation that didn't have zip code 
 rider_data_full <- rider_data_full %>%
   filter(survey_id != 2410) %>% 
   filter(survey_id != 944) %>% 
   filter(survey_id != 241) %>% 
   filter(survey_id != 919) 
-
-# I added this ( adding the complaint variable)
-rider_data_full <- rider_data_full |>
-  mutate(
-    complaint = str_split(top_three_complaints, ",\\s*")
-  ) |>
-  tidyr::unnest(complaint)
 
 # Creating a complaint_data_time dataset (I added this)
 complaint_data_time <- rider_data_full |> 
@@ -174,13 +144,11 @@ complaint_data_time <- rider_data_full |>
   )
 
 
-
 ```
 
 <br>
-This section gives a quick look at how riders feel about the subway overall, what their top complaints are, and how delays affect satisfaction. It sets the stage for digging deeper into what’s driving rider experiences through our next analyses! 
-<br>
-```{r, fig.cap= "First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts."}
+First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. 
+```{r, fig.cap= "This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts."}
 #Location distribution 
 borough_df <- rider_data_full %>% 
   count(borough)
@@ -196,9 +164,11 @@ plot_ly(
          xaxis = list(title = "Borough"),
          yaxis = list(title = "Count"))
 ```
+<br>
 
-
-```{r, fig.cap="This section summarizes overall rider satisfaction across all boroughs and regions. By aggregating responses on overall satisfaction, it provides a clear snapshot of how satisfied riders are with their subway experience at a high level.<br><br>The data show that a majority of riders (36.6%) are not satisfied with their experience using the MTA, while an additional 24.9% are highly unsatisfied. Together, this indicates that over 60% of respondents have a negative view of the subway system. Fewer riders reported being neutral or satisfied, highlighting significant room for improvement. These patterns will be further dissected through borough analysis, subway line analysis, and regression analysis. Understanding these differences can help identify targeted areas for service enhancements and better meet the needs of riders across the city."}
+<h3>How do riders feel about their MTA experience?</h3>
+This section summarizes overall rider satisfaction across all boroughs and regions. By aggregating responses on overall satisfaction, it provides a clear snapshot of how satisfied riders are with their subway experience at a high level.
+```{r, fig.cap="The data show that a majority of riders (36.6%) are not satisfied with their experience using the MTA, while an additional 24.9% are highly unsatisfied. Together, this indicates that over 60% of respondents have a negative view of the subway system. Fewer riders reported being neutral or satisfied, highlighting significant room for improvement. These patterns will be further dissected through borough analysis, subway line analysis, and regression analysis. Understanding these differences can help identify targeted areas for service enhancements and better meet the needs of riders across the city."}
 #Satisfaction 
 satis_overall <- rider_data_full %>%
   count(overall_satisfaction) %>%
@@ -224,7 +194,7 @@ plot_ly(
 
 <br>
 
-### Summary of top complaints 
+<h3>What are rider's main complaints?</h3>
 
 ```{r, fig.cap= " Above we see the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs." }
 #  Chart B - Summary of top complaints overall
@@ -256,7 +226,7 @@ bar_plot
 ```
 
 <br>
-## How do riders feel about their delays?
+<h3>How do riders feel about their delays?</h3>
 
 ```{r, include=FALSE}
 delay_reason =
@@ -297,19 +267,6 @@ delay_reason_plot
 
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
