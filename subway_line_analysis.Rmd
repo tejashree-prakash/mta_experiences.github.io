@@ -549,7 +549,6 @@ The heat map highlights system-wide patterns, showing consistently high weekly d
 
 ## Are Riders experiencing delays?
 
-
 ```{r}
 
 # To establish proportion of Riders with Long Delays (≥20 min): Define long delay buckets.
@@ -645,6 +644,106 @@ delay_counts_plot =
 delay_counts_plot
 
 
+
+```
+
+
+## Subway Complaints {.tabset}
+
+### Complaint Percent by Line and Time
+
+```{r, fig.width=15, fig.height=8, fig.cap= " This chart provides a detailed breakdown of subway complaints by both the specific transit line and the time of day (morning, afternoon, evening, night).The stacked bar graphs reveal how the distribution of primary complaints (such as delays, overcrowding, and crime) shifts significantly throughout the day, highlighting the distinct challenges during peak versus off-peak hours.The visualization allows for clear comparison across the system, showing which issues are most pressing for each line at different times." }
+
+
+complaint_summary <- complaint_data_time |> 
+  count(subway_line_used_most_often, time_of_day, complaint) |> 
+  group_by(subway_line_used_most_often, time_of_day) |> 
+  mutate(percent = n / sum(n) * 100) |> 
+  ungroup()
+
+
+library(viridis)
+
+all_complaints <- sort(unique(complaint_summary$complaint))
+viridis_colors <- viridis(length(all_complaints))
+names(viridis_colors) <- all_complaints
+
+
+times <- unique(complaint_summary$time_of_day)
+
+plot <- plot_ly()
+i <- 0
+
+for (t in times) {
+  df_t <- complaint_summary |> filter(time_of_day == t)
+  
+  for (comp in unique(df_t$complaint)) {
+    df_tc <- df_t |> filter(complaint == comp)
+    
+    plot <- plot |> add_trace(
+      data = df_tc,
+      x = ~percent,
+      y = ~subway_line_used_most_often,
+      type = "bar",
+      orientation = "h",
+      name = comp,
+      hovertemplate = paste(
+        "Time: ", t,
+        "<br>Line: %{y}",
+        "<br>Complaint: ", comp,
+        "<br>Count: %{customdata}",
+        "<br>Percent: %{x:.1f}%",
+        "<extra></extra>"
+      ),
+      customdata = ~n,
+      marker = list(color = viridis_colors[comp]),
+      visible = ifelse(t == times[1], TRUE, FALSE),
+      legendgroup = comp
+    )
+    
+    i <- i + 1
+  }
+}
+
+# Build dropdown buttons
+buttons <- list()
+for (k in seq_along(times)) {
+  vis <- rep(FALSE, length(unique(complaint_summary$complaint)) * length(times))
+  
+  start <- (k - 1) * length(unique(complaint_summary$complaint)) + 1
+  end <- start + length(unique(complaint_summary$complaint)) - 1
+  
+  vis[start:end] <- TRUE
+  
+  buttons[[k]] <- list(
+    method = "restyle",
+    args = list("visible", vis),
+    label = times[k]
+  )
+}
+
+# Final layout with dropdown moved
+plot |> layout(
+  title = "Complaint Percent by Subway Line and Time of Day",
+  xaxis = list(title = "Percent of Complaints"),
+  yaxis = list(title = "Subway Line"),
+  barmode = "stack",
+  # Move legend if needed (optional)
+  legend = list(
+    x = 1.1,
+    y = 0.5
+  ),
+  updatemenus = list(
+    list(
+      y = 0.98,        # Move to top right, below title
+      x = 0.98,        # Right side
+      buttons = buttons,
+      type = "dropdown",
+      xanchor = "left",  # Anchor to left side
+      yanchor = "top"     # Anchor to top
+    )
+  )
+)
 
 ```
 
