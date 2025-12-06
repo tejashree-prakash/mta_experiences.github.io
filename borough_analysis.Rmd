@@ -16,8 +16,9 @@ library(dplyr)
 ```
 
 ```{r, include=FALSE}
+#Clean data
 subway_rider_data = 
-  read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
+  read_csv("data/2019_subway_rider_data.csv") |> 
   janitor::clean_names()
 
 
@@ -27,8 +28,7 @@ subway_drops =
   drop_na() |> 
   mutate(survey_id = row_number()) |> 
   relocate(survey_id, .before = 1)
-
-
+  
 rider_data =
   subway_drops |>
   mutate(
@@ -99,55 +99,33 @@ rider_data =
                  "Never"),
       ordered = TRUE)
     )
-
-rider_data =
-  rider_data |> 
-  mutate(
-    across(c(subway_line_used_most_often,
-             get_to_subway_via,
-             primary_use_of_subway,
-             alternative_transport), as.factor)
-  )
-
-rider_data = 
-  rider_data %>%
-  mutate(
-    top_three_complaints = 
-      str_remove_all(top_three_complaints, "\\[|\\]|'")
-  )
+    
+#Zip code --> borough 
 
 zip_code_data = 
   read_csv("data/nyc_zipcodes.csv") %>%
   select(borough, zipcode)
 
-
-#Make sure character variables 
-zip_code_data <- zip_code_data %>%
-  mutate(zipcode = as.character(zipcode)) #make sure it's a character variable 
+#Make sure character type
 rider_data <- rider_data %>%
   mutate(zip_code = as.character(zip_code))
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode))
 
 #Join
 rider_data_full <- rider_data %>%
   left_join(zip_code_data, by = c("zip_code" = "zipcode"))
 
-#Fill borough where missing
+#If there's no match, we want to keep the zip_code in the borough column, so we use coalesce to handle this
 rider_data_full <- rider_data_full %>%
   mutate(borough = coalesce(borough, as.character(zip_code)))
 
-#Remove invalid zip codes
+#manually go through remaining zip codes - removing 11135 11290 12105 as they are not real zip codes & also removing one observation that didn't have zip code 
 rider_data_full <- rider_data_full %>%
   filter(survey_id != 2410) %>% 
   filter(survey_id != 944) %>% 
   filter(survey_id != 241) %>% 
   filter(survey_id != 919) 
-
-# I added this ( adding the complaint variable)
-rider_data_full <- rider_data_full |>
-  mutate(
-    complaint = str_split(top_three_complaints, ",\\s*")
-  ) |>
-  tidyr::unnest(complaint)
 
 # Creating a complaint_data_time dataset (I added this)
 complaint_data_time <- rider_data_full |> 
