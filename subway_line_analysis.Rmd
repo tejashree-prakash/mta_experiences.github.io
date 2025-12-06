@@ -432,7 +432,7 @@ subway_directory_display_final
 
 <h3>How often are these trains delayed?</h3>
 
-```{r, fig.cap="This heat map highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell."}
+```{r, fig.cap="This heat map highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the G and the Z. Hover details reveal the precise counts and proportions underlying each cell."}
 # Distribution of delay frequency -- heat map
 
 keep_delays <- c("Rarely", "A few times a week", "Everyday")

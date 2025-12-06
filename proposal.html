@@ -309,9 +309,9 @@ Not All Trains Are Created Equal
 </h1>
 Authors: Kennedy Wade (kjw2175), Shree Prakash (tp2806), Jaia Wingard
 (jw3638), Yasmine Evang (yme2112) <br>
-<h2>
+<h3>
 Motivation For This Project
-</h2>
+</h3>
 <p>New York City has a well-known public transportation system, used by
 thousands every day. Unfortunately, not all trains are created equal. As
 regular subway riders, we are consistently disappointed with our
@@ -329,9 +329,9 @@ satisfaction, identify factors that influence rider experience, and
 determine how delays, affordability, and service quality vary among
 subway lines. Using these ideas, we hope to identify which subway could
 be the gold standard in daily transportation satisfaction. <br><br>
-<h2>
+<h3>
 Our Inspiration
-</h2>
+</h3>
 Because so much of the New Yorker experience is interwoven in the use of
 public transit, we thought it would be interesting to analyze subway
 system data. In turn, we explored examples of final projects from
@@ -345,9 +345,9 @@ included a large number of variables per respondent, giving us the
 ability to explore a vast number of comparisons. To create a fun and
 competitive theme for the website, we decided to make a subway line
 ranking initiative. May the best track win! <br><br>
-<h2>
+<h3>
 Initial Project Questions:
-</h2>
+</h3>
 <p>Using the survey data, we were intrigued to visually demonstrate
 which subways provide the best user experience for New Yorkers.</p>
 <ul>
@@ -372,9 +372,9 @@ Morning, Afternoon, Evening, night)?<br />
 <li>What are the most common complaints system-wide? How do complaint
 profiles differ by subway line and borough? <br><br></li>
 </ul>
-<h2>
+<h3>
 Data Sources
-</h2>
+</h3>
 <h4>
 Primary dataset: NYC Open Data’s 2019 Subway Rider Survey.
 </h3>
@@ -413,9 +413,9 @@ NYC Planning data and implemented the remaining zip codes.<br />
 government website. Additional zip code information that was not
 included in this dataset was obtained from the top Google results.<br />
 </li>
-<li>Removed missing values from the entire data set. <br> Using RStudio/
-RMarkdown, we utilized tidyverse and janitor packages to create our
-final complete dataset called rider_data_full, which has 5417
+<li>Removed missing values from the entire data set. <br> Using
+RStudio/RMarkdown, we utilized tidyverse and janitor packages to create
+our final complete dataset called rider_data_full, which has 5417
 observations and 19 variables. <br></li>
 </ul>
 <h5>
@@ -508,69 +508,39 @@ dataset was obtained from top Google results respective to each
 additional zip code. (<a
 href="https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls"
 class="uri">https://www.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2000/sf1p11.xls</a>)</p>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; Updated upstream ## Exploratory
-Analysis</p>
-<div
-id="our-exploratory-analysis-focuses-on-understanding-high-level-patterns-in-complaints-and-satisfaction-across-the-whole-sample.-by-identifying-the-most-common-issues-riders-report-and-the-general-sentiment-trend-we-have-been-able-to-establish-context-for-the-rest-of-the-report.-these-initial-insights-help-shape-our-expectations-for-the-borough-level-and-subway-line-level-analyses-that-follow-and-they-provide-a-meaningful-starting-point-for-the-regression-modeling-conducted-later."
-class="section level1">
-<h1>Our exploratory analysis focuses on understanding high-level
-patterns in complaints and satisfaction across the whole sample. By
-identifying the most common issues riders report and the general
-sentiment trend, we have been able to establish context for the rest of
-the report. These initial insights help shape our expectations for the
-<a href="borough_analysis.html">borough-level</a> and <a
-href="subway_line_analysis.html">subway line-level</a> analyses that
-follow, and they provide a meaningful starting point for the regression
-modeling conducted later.</h1>
 <br>
-<h2>
+<h3>
 Exploratory Analysis
-</h2>
+</h3>
 <p>Our exploratory analysis focuses on understanding high-level patterns
 in complaints and satisfaction across the whole sample. By identifying
 the most common issues riders report and the general sentiment trend, we
 have been able to establish context for the rest of the report. These
-initial insights help shape our expectations for the borough-level and
-line-level comparisons that follow, and they provide a meaningful
-starting point for the regression modeling conducted later.
-&gt;&gt;&gt;&gt;&gt;&gt;&gt; Stashed changes</p>
+initial insights help shape our expectations for the <a
+href="borough_analysis.html">borough-level</a> and <a
+href="subway_line_analysis.html">subway line-level</a> analyses that
+follow, and they provide a meaningful starting point for the regression
+modeling conducted later.</p>
 <br>
-<h2>
-Additional Analyses
-</h2>
 <h3>
-Composite Scores
+Additional Analyses
 </h3>
-</div>
-<div id="updated-upstream" class="section level1">
-<h1>&lt;&lt;&lt;&lt;&lt;&lt;&lt; Updated upstream</h1>
+<h4>
+Composite Scores
+</h4>
 <p>See <a href="index.html">home page</a> for ranking!</p>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>Stashed changes To compare subway line performance across the system,
-we constructed a composite score that aggregates four rider-reported
-service quality indicators in the dataset: frequency of delays, length
-of delays, percentage of riders experiencing long delays, and overall
-satisfaction. Each variable was converted into a numeric metric using
-either ordinal scoring systems (for frequency and satisfaction) or
-midpoint-based values (for delay length). These metrics were then
-averaged at the line-family level and standardized using z-scores. The
-sum of the four standardized values creates a composite performance
-score with the lowest score set to zero, so they are all positive
-values. Higher composite scores correspond to better rider experience on
-that train.</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
+<p>To compare subway line performance across the system, we constructed
+a composite score that aggregates four rider-reported service quality
+indicators in the dataset: frequency of delays, length of delays,
+percentage of riders experiencing long delays, and overall satisfaction.
+Each variable was converted into a numeric metric using either ordinal
+scoring systems (for frequency and satisfaction) or midpoint-based
+values (for delay length). These metrics were then averaged at the
+line-family level and standardized using z-scores. The sum of the four
+standardized values creates a composite performance score with the
+lowest score set to zero, so they are all positive values. Higher
+composite scores correspond to better rider experience on that
+train.</p>
 <p>Notably, the G Line shows the lowest composite score across all line
 families, which reflects consistently negative rider-reported metrics
 across indicators. G line riders reported extremely high rates of long
@@ -585,18 +555,12 @@ long delays and below-average satisfaction ratings.</p>
 composite score to rider perceptions because it relies on rider-reported
 data rather than operational metrics. In turn, the score should be
 interpreted as a representation of the subjective experience of surveyed
-riders rather than definitive performance outcomes for each route.
-<br></p>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; Updated upstream See <a
-href="index.html">home page</a> for ranking</p>
-</div>
-<div id="regression" class="section level1">
-<h1>### Regression</h1>
-<h3>
+riders rather than definitive performance outcomes for each route.</p>
+<br>
+<h4>
 Regression Analysis
-</h3>
-<p><a href="regression.html">See regression page</a>!
-&gt;&gt;&gt;&gt;&gt;&gt;&gt; Stashed changes</p>
+</h4>
+<p>See <a href="regression.html">regression page</a> for more!</p>
 <p>We began our regression analysis using the borough variable and a set
 of categorical predictors with an outcome of overall satisfaction.
 Specifically, our model incorporated average subway ride length,
@@ -648,29 +612,9 @@ probability of experiencing higher overall satisfaction.</p>
 complex, nonlinear effects, as well as additional variables not included
 in the present model that may also meaningfully influence overall
 satisfaction. <br><br></p>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; Updated upstream See <a
-href="regression.html">regression page</a></p>
-</div>
-<div id="discussion" class="section level1">
-<h1>## Discussion</h1>
-<h2>
+<h3>
 Discussion
-</h2>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>Stashed changes</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
+</h3>
 <p>Our descriptive, composite-score, and regression analyses together
 provide a multi-layered understanding of how riders experience the MTA.
 Across boroughs, there were high levels of dissatisfaction with work as
@@ -698,9 +642,9 @@ severely their trains are delayed, and by broader structural features
 that are shared across the MTA system. Improving reliability and delay
 management may be just as important as fare policy in shaping how New
 Yorkers evaluate their subway experience. <br><br></p>
-<h2>
+<h3>
 Limitations
-</h2>
+</h3>
 <p>Although the 2019 Subway Rider Survey provides meaningful insight
 into rider perceptions, it also has important limitations that shape how
 we interpret our results. Most notably, the survey took place before the
@@ -730,7 +674,6 @@ rather than definitive measures of MTA service quality and limit the
 extent to which we can generalize patterns, particularly for
 lower-ridership lines, detailed temporal patterns, and fine-grained
 geographic distinctions.</p>
-</div>
 
 
 
