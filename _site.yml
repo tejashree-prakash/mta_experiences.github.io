@@ -1,5 +1,5 @@
 name: "mta_experiences"
-output_dir: "."   # keep this since your repo is <name>.github.io
+output_dir: "."   
 
 exclude:
   - nyc_subway_routes.Rmd

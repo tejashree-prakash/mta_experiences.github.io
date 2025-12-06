@@ -3,3 +3,428 @@ title: "Borough Analysis"
 output: html_document
 ---
 
+
+```{r, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(lubridate)
+library(plotly)
+library(viridis)
+library(readxl)
+library(treemapify)
+library(dplyr)
+```
+
+```{r, include=FALSE}
+subway_rider_data = 
+  read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
+  janitor::clean_names()
+
+
+subway_drops =
+  subway_rider_data |> 
+  select(-survey_stop_borough, -survey_stop_location) |> 
+  drop_na() |> 
+  mutate(survey_id = row_number()) |> 
+  relocate(survey_id, .before = 1)
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    use_of_subway_frequency = case_when(
+      use_of_subway_frequency == "Everyday / Almost everyday" ~ "Every day",
+      use_of_subway_frequency == "More than once a week, varies" ~ "Several times a week",
+      use_of_subway_frequency %in% c("Weekdays, Mon - Fri", "~5 days per week") ~ "5 days per week",
+      use_of_subway_frequency == "Once a week" ~ "Once a week",
+      use_of_subway_frequency == "Once a month" ~ "Once a month",
+      use_of_subway_frequency == "Almost never" ~ "Almost never",
+      use_of_subway_frequency == "Never" ~ "Never",
+      TRUE ~ NA_character_
+    ),
+    use_of_subway_frequency = 
+      factor(
+        use_of_subway_frequency,
+        levels = c("Never", 
+                   "Almost never", 
+                   "Once a month", 
+                   "Once a week",
+                   "Several times a week", 
+                   "5 days per week", 
+                   "Every day"),
+        ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(average_length_subway_ride = 
+           factor(average_length_subway_ride,
+                  levels = c("< 20 min", 
+                             "20 - 40 min", 
+                             "40 - 60 min",
+                             "60 - 90 min", 
+                             "90 min - 2 hours"),
+                  ordered = TRUE))
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    overall_satisfaction = 
+      recode(
+        overall_satisfaction,
+        "Not satisfied" = "Unsatisfied"),
+    overall_satisfaction = 
+      factor(
+        overall_satisfaction,
+        levels = c("Highly unsatisfied",
+                 "Unsatisfied",
+                 "Neutral",
+                 "Somewhat satisfied",
+                 "Very satisfied"),
+      ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c("Everyday",
+                 "A few times a week",
+                 "Rarely",
+                 "Almost never",
+                 "Never"),
+      ordered = TRUE)
+    )
+
+
+rider_data = 
+  rider_data |> 
+  mutate(
+    is_subway_affordable = if_else(
+      is_subway_affordable == "Yes", TRUE, FALSE),
+    zip_code = as.character(zip_code)
+    )
+
+
+rider_data =
+  rider_data |> 
+  mutate(
+    across(c(subway_line_used_most_often,
+             get_to_subway_via,
+             primary_use_of_subway,
+             alternative_transport), as.factor)
+  )
+
+rider_data = 
+  rider_data %>%
+  mutate(
+    top_three_complaints = 
+      str_remove_all(top_three_complaints, "\\[|\\]|'")
+  )
+
+zip_code_data = 
+  read_csv("data/nyc_zipcodes.csv") %>%
+  select(borough, zipcode)
+
+
+#Make sure character variables 
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode)) #make sure it's a character variable 
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+
+#Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+
+#Fill borough where missing
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#Remove invalid zip codes
+rider_data_full <- rider_data_full %>%
+  filter(survey_id != 2410) %>% 
+  filter(survey_id != 944) %>% 
+  filter(survey_id != 241) %>% 
+  filter(survey_id != 919) 
+
+# I added this ( adding the complaint variable)
+rider_data_full <- rider_data_full |>
+  mutate(
+    complaint = str_split(top_three_complaints, ",\\s*")
+  ) |>
+  tidyr::unnest(complaint)
+
+# Creating a complaint_data_time dataset (I added this)
+complaint_data_time <- rider_data_full |> 
+  mutate(
+    submitted_at = mdy_hm(submitted_at),
+    hour = hour(submitted_at),
+    time_of_day = case_when(
+      hour >= 6 & hour < 12 ~ "Morning",  #6 am to 11:59 am
+      hour >= 12 & hour < 17 ~ "Afternoon", #12 pm to 4:59 pm
+      hour >= 17 & hour < 21 ~ "Evening",  #5pm to 8:59 pm
+      TRUE ~ "Night" # 9pm to 5:59 am 
+    ),
+    time_of_day = factor(time_of_day, 
+                        levels = c("Morning", "Afternoon", "Evening", "Night"))
+  )
+
+
+
+```
+
+The Borough Analysis was conducted to examine how perceptions of the MTA and operational metrics vary across the five boroughs of New York City as well as regions outside of NYC. The goal of this borough analysis is to highlight meaningful differences in rider sentiment and system performance that may help us understand how influential borough is in how MTA and its different subway lines are perceived.
+<br><br>
+Explore how subway use patterns, average ride lengths, and the most commonly used lines differ across boroughs, along with borough-level views on affordability, satisfaction, and potential fare increases. Together, these comparisons help illustrate how rider attitudes and travel behaviors vary across the city.
+
+## Let's ....
+
+First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts.
+```{r, fig.cap=""}
+#Location distribution 
+borough_df <- rider_data_full %>% 
+  count(borough)
+
+plot_ly(
+  borough_df,
+  x = ~borough,
+  y = ~n,
+  type = "bar",
+  hovertemplate = "Borough: %{x}<br>Count: %{y}<extra></extra>"
+) %>%
+  layout(title = "Survey Respondents by Borough",
+         xaxis = list(title = "Borough"),
+         yaxis = list(title = "Count"))
+```
+
+
+# What do the boroughs think?
+
+## why are they taking the subway? 
+```{r}
+#Primary use of subway 
+primary_df <- rider_data_full %>%
+  count(borough, primary_use_of_subway) %>%
+  group_by(borough) %>%
+  mutate(prop = n / sum(n))
+
+plot_ly(
+  primary_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~primary_use_of_subway,
+  type = "bar",
+  hovertemplate = 
+    "Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra></extra>",
+  customdata = ~primary_use_of_subway
+) %>%
+  layout(
+    barmode = "stack",
+    title = "Primary Subway Use by Borough (Proportions)",
+    yaxis = list(tickformat = ".0%", title = "Proportion")
+  )
+```
+
+## How long do they stay on the train?
+
+```{r}
+#Average subway ride length 
+ride_df <- rider_data_full %>% count(average_length_subway_ride)
+
+plot_ly(
+  ride_df,
+  x = ~average_length_subway_ride,
+  y = ~n,
+  type = "bar",
+  hovertemplate = "%{x}<br>Count: %{y}<extra></extra>"
+) %>%
+  layout(title = "Ride Length Distribution",
+         xaxis = list(title = "Ride Length Category"),
+         yaxis = list(title = "Count"))
+
+```
+
+## Which subway line is the most used?
+
+```{r}
+
+#Most used line 
+line_df <- rider_data_full %>% 
+  count(subway_line_used_most_often)
+
+plot_ly() %>%
+  add_segments(
+    data = line_df,
+    x = 0,
+    xend = ~n,
+    y = ~reorder(subway_line_used_most_often, n),
+    yend = ~reorder(subway_line_used_most_often, n),
+    hoverinfo = "none"
+  ) %>%
+  add_markers(
+    data = line_df,
+    x = ~n,
+    y = ~reorder(subway_line_used_most_often, n),
+    hovertemplate = "Line: %{y}<br>Count: %{x}<extra></extra>"
+  ) %>%
+  layout(
+    title = "Most Used Subway Lines",
+    xaxis = list(title = "Count"),
+    yaxis = list(title = "Line")
+  )
+
+
+```
+
+## Do the boroughs think the subway is affordable?
+
+```{r}
+
+#Perception of affordability 
+afford_df <- rider_data_full %>%
+  count(borough, is_subway_affordable) %>%
+  group_by(borough) %>%
+  mutate(prop = n / sum(n))
+
+plot_ly(
+  afford_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~is_subway_affordable,
+  type = "bar",
+  hovertemplate = 
+    "Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra></extra>",
+  customdata = ~is_subway_affordable
+) %>%
+  layout(
+    barmode = "stack",
+    title = "Affordability Perception by Borough",
+    yaxis = list(tickformat = ".0%", title = "Proportion")
+  )
+
+```
+
+## Is it fair to increase fares?
+
+```{r}
+#Opinion on increased fair 
+satis_df <- rider_data_full %>%
+  count(borough, opinion_on_increased_fares) %>%
+  group_by(borough) %>%
+  mutate(
+    prop = n / sum(n),
+    percent_label = paste0(round(prop * 100, 1), "%")
+  ) %>%
+  ungroup()
+
+library(plotly)
+
+boroughs <- unique(satis_df$borough)
+plot <- plot_ly()
+
+for (i in seq_along(boroughs)) {
+  
+  b <- boroughs[i]
+  df_b <- filter(satis_df, borough == b)
+  
+  plot <- add_trace(
+    plot,
+    data = df_b,
+    labels = ~opinion_on_increased_fares,
+    values = ~prop,
+    type = "pie",
+    hole = 0.2 + (i - 1) * 0.15,
+    textinfo = "none",
+    hovertemplate = paste(
+      "<b>Borough:</b> ", b, "<br>",
+      "<b>Opinion:</b> %{label}<br>",
+      "<b>Percent:</b> %{customdata}<extra></extra>"
+    ),
+    customdata = ~percent_label,
+    showlegend = (i == 1)
+  )
+}
+
+plot <- layout(
+  plot,
+  title = "Opinion on Increased Fares (Multi-Ring Donut)",
+  margin = list(l=20, r=20, t=60, b=20)
+)
+
+plot
+```
+
+
+### Summary of top complaints by Borough
+
+```{r,fig.width=15, fig.height=8}
+#  Chart D - Summary of top complaints by Borough
+
+valid_boroughs <- c("Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island")
+
+# Create cleaned dataset
+rider_data_full_clean <- rider_data_full %>%
+  mutate(
+    borough = case_when(
+      borough %in% valid_boroughs ~ borough,
+      TRUE ~ NA_character_
+    )
+  )
+
+top_complaints_borough <- rider_data_full_clean |>
+  filter(!is.na(borough), !is.na(complaint)) |>
+  count(borough, complaint) |>
+  group_by(borough) |>
+  arrange(desc(n), .by_group = TRUE) |>
+  slice_head(n = 10) |>
+  ungroup()
+
+plot_top_borough <- top_complaints_borough |> 
+  plot_ly(
+    x = ~n,
+    y = ~fct_reorder(complaint, n),
+    color = ~borough,
+    type = "bar",
+    orientation = "h",
+    hovertemplate = paste(
+      "Borough: %{data.name}<br>",
+      "Complaint: %{y}<br>",
+      "Count: %{x}<br>",
+      "<extra></extra>"
+    ),
+    colors = viridis::viridis_pal()(length(unique(top_complaints_borough$borough)))
+  ) |> 
+  layout(
+    title = "Top Complaint Types by Borough",
+    xaxis = list(title = "Number of Complaints"),
+    yaxis = list(title = "Complaint Type"),
+    barmode = "group"
+  )
+
+plot_top_borough
+
+```
+
+**Figure:** This chart compares the most common subway complaints, broken up by the 5  New York City boroughs. As we can see, delays and overcrowded trains dominate in every borough, with Brooklyn and Manhattan reporting the highest volumes overall. Meanwhile, issues like crime/safety and old trains appear less frequently but still show notable variation across boroughs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

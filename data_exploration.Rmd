@@ -3,3 +3,311 @@ title: "Data Exploration"
 output: html_document
 ---
 
+```{r, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(lubridate)
+library(plotly)
+library(viridis)
+library(readxl)
+library(treemapify)
+library(dplyr)
+```
+
+```{r, include=FALSE}
+subway_rider_data = 
+  read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
+  janitor::clean_names()
+
+
+subway_drops =
+  subway_rider_data |> 
+  select(-survey_stop_borough, -survey_stop_location) |> 
+  drop_na() |> 
+  mutate(survey_id = row_number()) |> 
+  relocate(survey_id, .before = 1)
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    use_of_subway_frequency = case_when(
+      use_of_subway_frequency == "Everyday / Almost everyday" ~ "Every day",
+      use_of_subway_frequency == "More than once a week, varies" ~ "Several times a week",
+      use_of_subway_frequency %in% c("Weekdays, Mon - Fri", "~5 days per week") ~ "5 days per week",
+      use_of_subway_frequency == "Once a week" ~ "Once a week",
+      use_of_subway_frequency == "Once a month" ~ "Once a month",
+      use_of_subway_frequency == "Almost never" ~ "Almost never",
+      use_of_subway_frequency == "Never" ~ "Never",
+      TRUE ~ NA_character_
+    ),
+    use_of_subway_frequency = 
+      factor(
+        use_of_subway_frequency,
+        levels = c("Never", 
+                   "Almost never", 
+                   "Once a month", 
+                   "Once a week",
+                   "Several times a week", 
+                   "5 days per week", 
+                   "Every day"),
+        ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(average_length_subway_ride = 
+           factor(average_length_subway_ride,
+                  levels = c("< 20 min", 
+                             "20 - 40 min", 
+                             "40 - 60 min",
+                             "60 - 90 min", 
+                             "90 min - 2 hours"),
+                  ordered = TRUE))
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    overall_satisfaction = 
+      recode(
+        overall_satisfaction,
+        "Not satisfied" = "Unsatisfied"),
+    overall_satisfaction = 
+      factor(
+        overall_satisfaction,
+        levels = c("Highly unsatisfied",
+                 "Unsatisfied",
+                 "Neutral",
+                 "Somewhat satisfied",
+                 "Very satisfied"),
+      ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c("Everyday",
+                 "A few times a week",
+                 "Rarely",
+                 "Almost never",
+                 "Never"),
+      ordered = TRUE)
+    )
+
+
+rider_data = 
+  rider_data |> 
+  mutate(
+    is_subway_affordable = if_else(
+      is_subway_affordable == "Yes", TRUE, FALSE),
+    zip_code = as.character(zip_code)
+    )
+
+
+rider_data =
+  rider_data |> 
+  mutate(
+    across(c(subway_line_used_most_often,
+             get_to_subway_via,
+             primary_use_of_subway,
+             alternative_transport), as.factor)
+  )
+
+rider_data = 
+  rider_data %>%
+  mutate(
+    top_three_complaints = 
+      str_remove_all(top_three_complaints, "\\[|\\]|'")
+  )
+
+zip_code_data = 
+  read_csv("data/nyc_zipcodes.csv") %>%
+  select(borough, zipcode)
+
+
+#Make sure character variables 
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode)) #make sure it's a character variable 
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+
+#Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+
+#Fill borough where missing
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#Remove invalid zip codes
+rider_data_full <- rider_data_full %>%
+  filter(survey_id != 2410) %>% 
+  filter(survey_id != 944) %>% 
+  filter(survey_id != 241) %>% 
+  filter(survey_id != 919) 
+
+# I added this ( adding the complaint variable)
+rider_data_full <- rider_data_full |>
+  mutate(
+    complaint = str_split(top_three_complaints, ",\\s*")
+  ) |>
+  tidyr::unnest(complaint)
+
+# Creating a complaint_data_time dataset (I added this)
+complaint_data_time <- rider_data_full |> 
+  mutate(
+    submitted_at = mdy_hm(submitted_at),
+    hour = hour(submitted_at),
+    time_of_day = case_when(
+      hour >= 6 & hour < 12 ~ "Morning",  #6 am to 11:59 am
+      hour >= 12 & hour < 17 ~ "Afternoon", #12 pm to 4:59 pm
+      hour >= 17 & hour < 21 ~ "Evening",  #5pm to 8:59 pm
+      TRUE ~ "Night" # 9pm to 5:59 am 
+    ),
+    time_of_day = factor(time_of_day, 
+                        levels = c("Morning", "Afternoon", "Evening", "Night"))
+  )
+
+
+
+```
+
+
+# Let's ....
+
+```{r, include=FALSE}
+#Location distribution 
+borough_df <- rider_data_full %>% 
+  count(borough)
+
+plot_ly(
+  borough_df,
+  x = ~borough,
+  y = ~n,
+  type = "bar",
+  hovertemplate = "Borough: %{x}<br>Count: %{y}<extra></extra>"
+) %>%
+  layout(title = "Survey Respondents by Borough",
+         xaxis = list(title = "Borough"),
+         yaxis = list(title = "Count"))
+```
+
+
+```{r, fig.cap="This section summarizes overall rider satisfaction across all boroughs and regions. By aggregating responses on overall satisfaction, it provides a clear snapshot of how satisfied riders are with their subway experience at a high level.<br><br>The data show that a majority of riders (36.6%) are not satisfied with their experience using the MTA, while an additional 24.9% are highly unsatisfied. Together, this indicates that over 60% of respondents have a negative view of the subway system. Fewer riders reported being neutral or satisfied, highlighting significant room for improvement. These patterns will be further dissected through borough analysis, subway line analysis, and regression analysis. Understanding these differences can help identify targeted areas for service enhancements and better meet the needs of riders across the city."}
+#Satisfaction 
+satis_overall <- rider_data_full %>%
+  count(overall_satisfaction) %>%
+  mutate(prop = n / sum(n),
+         percent = paste0(round(prop*100,1), "%"))
+
+plot_ly(
+  satis_overall,
+  labels = ~overall_satisfaction,
+  values = ~prop,
+  type = "pie",
+  hole = .5,
+  textinfo = "label+percent",
+  hovertemplate = "%{label}<br>%{percent}<extra></extra>"
+) %>%
+  layout(title = "Overall Satisfaction Levels")
+```
+
+
+<br>
+
+### Summary of top complaints 
+
+```{r, fig.width=15, fig.height=8}
+
+#  Chart B - Summary of top complaints overall
+
+top_complaints <- complaint_data_time |> 
+  count(complaint) |> 
+  arrange(desc(n)) |> 
+  head(10)
+
+bar_plot <- top_complaints |> 
+  plot_ly(
+    x = ~n,
+    y = ~fct_reorder(complaint, n),
+    type = "bar",
+    orientation = "h",
+    text = ~n,  
+    textposition = "inside",  
+    hoverinfo = "x+y",
+    marker = list(color = viridis::viridis_pal()(10))
+  ) |> 
+  layout(
+    title = "Top 10 Complaint Types",
+    xaxis = list(title = "Number of Complaints"),
+    yaxis = list(title = "")
+  )
+
+bar_plot
+
+```
+
+**Figure:**  This graph shows the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs.
+
+## How do riders feel about their delays?
+
+```{r, include=FALSE}
+delay_reason =
+  rider_data |>
+  filter(
+    !is.na(most_common_reason_for_delay),
+    !is.na(overall_satisfaction)
+  ) |>
+  count(most_common_reason_for_delay, overall_satisfaction)
+```
+
+
+```{r}
+delay_reason_plot =
+  plot_ly(
+    delay_reason,
+    x = ~most_common_reason_for_delay,
+    y = ~n,
+    color = ~overall_satisfaction,
+    type = "bar",
+    colors = "viridis",
+    text = ~paste(
+      "Delay reason:", most_common_reason_for_delay,
+      "<br>Satisfaction:", overall_satisfaction,
+      "<br>Riders:", n
+    ),
+    hoverinfo = "text"
+  ) |>
+  layout(
+    barmode = "stack",
+    title = "Delay Reason by Overall Satisfaction",
+    xaxis = list(title = "Most Common Reason to Delay"),
+    yaxis = list(title = "Number of Riders")
+  )
+
+delay_reason_plot
+
+```
+
+This graph shows...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

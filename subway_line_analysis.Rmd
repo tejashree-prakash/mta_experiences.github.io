@@ -3,3 +3,664 @@ title: "Subway Line Analysis"
 output: html_document
 ---
 
+
+```{r, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(lubridate)
+library(plotly)
+library(viridis)
+library(readxl)
+library(treemapify)
+library(dplyr)
+library(gt)
+```
+
+```{r, include=FALSE}
+subway_rider_data = 
+  read_csv("data/2019_Subway_Rider_Survey_20251121.csv") |> 
+  janitor::clean_names()
+
+
+subway_drops =
+  subway_rider_data |> 
+  select(-survey_stop_borough, -survey_stop_location) |> 
+  drop_na() |> 
+  mutate(survey_id = row_number()) |> 
+  relocate(survey_id, .before = 1)
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    use_of_subway_frequency = case_when(
+      use_of_subway_frequency == "Everyday / Almost everyday" ~ "Every day",
+      use_of_subway_frequency == "More than once a week, varies" ~ "Several times a week",
+      use_of_subway_frequency %in% c("Weekdays, Mon - Fri", "~5 days per week") ~ "5 days per week",
+      use_of_subway_frequency == "Once a week" ~ "Once a week",
+      use_of_subway_frequency == "Once a month" ~ "Once a month",
+      use_of_subway_frequency == "Almost never" ~ "Almost never",
+      use_of_subway_frequency == "Never" ~ "Never",
+      TRUE ~ NA_character_
+    ),
+    use_of_subway_frequency = 
+      factor(
+        use_of_subway_frequency,
+        levels = c("Never", 
+                   "Almost never", 
+                   "Once a month", 
+                   "Once a week",
+                   "Several times a week", 
+                   "5 days per week", 
+                   "Every day"),
+        ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(average_length_subway_ride = 
+           factor(average_length_subway_ride,
+                  levels = c("< 20 min", 
+                             "20 - 40 min", 
+                             "40 - 60 min",
+                             "60 - 90 min", 
+                             "90 min - 2 hours"),
+                  ordered = TRUE))
+
+
+rider_data =
+  subway_drops |>
+  mutate(
+    overall_satisfaction = 
+      recode(
+        overall_satisfaction,
+        "Not satisfied" = "Unsatisfied"),
+    overall_satisfaction = 
+      factor(
+        overall_satisfaction,
+        levels = c("Highly unsatisfied",
+                 "Unsatisfied",
+                 "Neutral",
+                 "Somewhat satisfied",
+                 "Very satisfied"),
+      ordered = TRUE)
+    )
+
+
+rider_data =
+  subway_drops |> 
+  mutate(
+    frequency_of_delays = factor(
+      frequency_of_delays,
+      levels = c("Everyday",
+                 "A few times a week",
+                 "Rarely",
+                 "Almost never",
+                 "Never"),
+      ordered = TRUE)
+    )
+
+
+rider_data = 
+  rider_data |> 
+  mutate(
+    is_subway_affordable = if_else(
+      is_subway_affordable == "Yes", TRUE, FALSE),
+    zip_code = as.character(zip_code)
+    )
+
+
+rider_data =
+  rider_data |> 
+  mutate(
+    across(c(subway_line_used_most_often,
+             get_to_subway_via,
+             primary_use_of_subway,
+             alternative_transport), as.factor)
+  )
+
+rider_data = 
+  rider_data %>%
+  mutate(
+    top_three_complaints = 
+      str_remove_all(top_three_complaints, "\\[|\\]|'")
+  )
+
+zip_code_data = 
+  read_csv("data/nyc_zipcodes.csv") %>%
+  select(borough, zipcode)
+
+
+#Make sure character variables 
+zip_code_data <- zip_code_data %>%
+  mutate(zipcode = as.character(zipcode)) #make sure it's a character variable 
+rider_data <- rider_data %>%
+  mutate(zip_code = as.character(zip_code))
+
+#Join
+rider_data_full <- rider_data %>%
+  left_join(zip_code_data, by = c("zip_code" = "zipcode"))
+
+#Fill borough where missing
+rider_data_full <- rider_data_full %>%
+  mutate(borough = coalesce(borough, as.character(zip_code)))
+
+#Remove invalid zip codes
+rider_data_full <- rider_data_full %>%
+  filter(survey_id != 2410) %>% 
+  filter(survey_id != 944) %>% 
+  filter(survey_id != 241) %>% 
+  filter(survey_id != 919) 
+
+# I added this ( adding the complaint variable)
+rider_data_full <- rider_data_full |>
+  mutate(
+    complaint = str_split(top_three_complaints, ",\\s*")
+  ) |>
+  tidyr::unnest(complaint)
+
+# Creating a complaint_data_time dataset (I added this)
+complaint_data_time <- rider_data_full |> 
+  mutate(
+    submitted_at = mdy_hm(submitted_at),
+    hour = hour(submitted_at),
+    time_of_day = case_when(
+      hour >= 6 & hour < 12 ~ "Morning",  #6 am to 11:59 am
+      hour >= 12 & hour < 17 ~ "Afternoon", #12 pm to 4:59 pm
+      hour >= 17 & hour < 21 ~ "Evening",  #5pm to 8:59 pm
+      TRUE ~ "Night" # 9pm to 5:59 am 
+    ),
+    time_of_day = factor(time_of_day, 
+                        levels = c("Morning", "Afternoon", "Evening", "Night"))
+  )
+
+
+
+```
+
+
+```{r, include=FALSE}
+# Subway Line Directory Table Code:
+
+subway_directory_display <- tribble(
+  ~`Line Family`, ~Lines, ~Color,
+  "Red Line", "1, 2, 3", "#EE352E",
+  "Green Line", "4, 5, 6", "#00933C",
+  "Purple Line", "7", "#B933AD",
+  "Blue Line", "A, C, E", "#0039A6",
+  "Orange Line", "B, D, F, M", "#FF6319",
+  "Yellow Line", "N, Q, R, W", "#FCCC0A",
+  "Light Green Line", "G", "#6CBE45",
+  "Brown Line", "J, Z", "#996633",
+  "Gray Line", "L", "#A7A9AC",
+  "Shuttle", "S", "#808183"
+)
+
+subway_directory_display %>%
+  gt() %>%
+  tab_header(title = "NYC Subway Line Directory") %>%
+  text_transform(
+    locations = cells_body(columns = Color),
+    fn = function(x) {
+      # x = column vector of hex colors
+      mapply(function(col) {
+        html(
+          paste0(
+            "<div style='background-color:", col,
+            "; width: 60px; height: 20px; border-radius: 4px'></div>"
+          )
+        )
+      }, x)
+    }
+  ) %>%
+  cols_width(
+    `Line Family` ~ px(180),
+    Lines ~ px(180),
+    Color ~ px(100)
+  ) %>%
+  opt_table_outline()
+```
+
+
+```{r, include=FALSE}
+# Join-ready Subway Line Directory + Join to cleaned dataset
+subway_directory <- tribble(
+~subway_line, ~group_color, ~hex_color,
+"1","Red Line","#EE352E",
+"2","Red Line","#EE352E",
+"3","Red Line","#EE352E",
+"4","Green Line","#00933C",
+"5","Green Line","#00933C",
+"6","Green Line","#00933C",
+"7","Purple Line","#B933AD",
+"A","Blue Line","#0039A6",
+"C","Blue Line","#0039A6",
+"E","Blue Line","#0039A6",
+"B","Orange Line","#FF6319",
+"D","Orange Line","#FF6319",
+"F","Orange Line","#FF6319",
+"M","Orange Line","#FF6319",
+"N","Yellow Line","#FCCC0A",
+"Q","Yellow Line","#FCCC0A",
+"R","Yellow Line","#FCCC0A",
+"W","Yellow Line","#FCCC0A",
+"G","Light Green Line","#6CBE45",
+"J","Brown Line","#996633",
+"Z","Brown Line","#996633",
+"L","Gray Line","#A7A9AC",
+"S","Shuttle","#808183"
+)
+```
+
+
+```{r, include=FALSE}
+# Categories defining "long delays"
+long_categories <-  c(
+  "20 - 40 min", "40 - 60 min", "60 - 90 min",
+  "90 min - 2 hours", "> 60 min"
+)
+
+# Ordinal score for frequency of delays
+delay_freq_scores <- c(
+  "Never" = 1,
+  "Almost never" = 2,
+  "Rarely" = 3,
+  "A few times a week" = 4,
+  "Everyday" = 5
+)
+
+# Numeric midpoints for average delay length
+delay_length_scores <- c(
+  "< 20 min"        = 10,     # midpoint choice
+  "20 - 40 min"     = 30,
+  "40 - 60 min"     = 50,
+  "60 - 90 min"     = 75,
+  "90 min - 2 hours" = 105
+)
+
+# Satisfaction ordinal scale
+satisfaction_scores <- c(
+  "Highly unsatisfied" = 1,
+  "Unsatisfied"        = 2,
+  "Neutral"            = 3,
+  "Somewhat satisfied" = 4,
+  "Very satisfied"     = 5
+)
+```
+
+```{r, include=FALSE}
+scored_data <- rider_data_full |>
+  mutate(
+    subway_line = subway_line_used_most_often |>
+      str_replace_all("[^A-Za-z0-9]", "/") |>
+      str_split("/")
+  ) |>
+  unnest(subway_line) |>
+  mutate(
+    subway_line = str_trim(subway_line),
+    subway_line = str_to_upper(subway_line)
+  ) |>
+  filter(subway_line %in% subway_directory$subway_line) |>
+  left_join(subway_directory, by = "subway_line") |>
+  mutate(
+    long_delay       = average_length_subway_ride %in% long_categories,
+    delay_freq_num   = delay_freq_scores[frequency_of_delays],
+    delay_length_num = delay_length_scores[average_length_subway_ride],   # ← FIX
+    satisfaction_num = satisfaction_scores[overall_satisfaction]
+  )
+
+family_scores_raw <- scored_data |>
+  group_by(group_color) |>
+  summarise(
+    pct_long_delay   = mean(long_delay, na.rm = TRUE),
+    avg_delay_freq   = mean(delay_freq_num, na.rm = TRUE),
+    avg_delay_length = mean(delay_length_num, na.rm = TRUE),
+    avg_satisfaction = mean(satisfaction_num, na.rm = TRUE)
+  ) |>
+  ungroup()
+
+family_scores_norm <- family_scores_raw |>
+  mutate(
+    z_pct_long_delay   = scale(pct_long_delay)[,1]    * -1,
+    z_delay_freq       = scale(avg_delay_freq)[,1]    * -1,
+    z_delay_length     = scale(avg_delay_length)[,1]  * -1,
+    z_satisfaction     = scale(avg_satisfaction)[,1]
+  )
+
+family_composite <- family_scores_raw |>
+  mutate(
+    z_pct_long_delay = scale(-pct_long_delay)[,1],
+    z_delay_freq     = scale(-avg_delay_freq)[,1],
+    z_delay_length   = scale(-avg_delay_length)[,1],
+    z_satisfaction   = scale(avg_satisfaction)[,1]
+  ) |>
+
+  # Replace z-score NAs with 0 (neutral)
+  mutate(
+    across(starts_with("z_"), ~replace_na(.x, 0))
+  ) |>
+
+  mutate(
+    composite_score = z_pct_long_delay +
+                      z_delay_freq +
+                      z_delay_length +
+                      z_satisfaction
+  ) |>
+  arrange(desc(composite_score)) |>
+  mutate(rank = row_number())
+```
+
+```{r, include=FALSE}
+# Step 2: Remove extra columns & make all scores positive
+family_composite_clean <- family_composite |>
+  mutate(
+    composite_score = composite_score - min(composite_score, na.rm = TRUE)
+  ) |>
+  arrange(desc(composite_score)) |>
+  mutate(rank = row_number()) |>
+  select(group_color, composite_score, rank)
+
+subway_directory_display_final <- subway_directory_display |>
+  left_join(family_composite_clean, by = c("Line Family" = "group_color"))
+```
+
+
+```{r}
+subway_directory_display_final =
+  subway_directory_display_final %>%
+  arrange(rank) %>%
+  mutate(
+    rank = dplyr::case_when(
+      rank == 1 ~ "🥇 1",
+      rank == 2 ~ "🥈 2",
+      rank == 3 ~ "🥉 3",
+      TRUE      ~ as.character(rank)
+    )
+  ) %>%
+  gt() %>%
+  tab_header(title = "NYC Subway Line Directory with Composite Score") %>%
+  cols_move(
+    columns = c(composite_score, rank),
+    after = Color
+  ) %>%
+  cols_label(
+    composite_score = "Score",
+    rank            = "Rank"
+  ) %>%
+  fmt_number(
+    columns = composite_score,
+    decimals = 2
+  ) %>%
+  text_transform(
+    locations = cells_body(columns = Color),
+    fn = function(x) {
+      mapply(function(col) {
+        html(
+          paste0(
+            "<div style='background-color:", col,
+            "; width: 60px; height: 20px; border-radius: 4px'></div>"
+          )
+        )
+      }, x)
+    }
+  ) %>%
+  cols_width(
+    `Line Family`   ~ px(120),
+    Lines           ~ px(100),
+    Color           ~ px(70),
+    composite_score ~ px(80),
+    rank            ~ px(70)
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = rank
+  ) %>%
+  opt_table_outline()
+
+subway_directory_display_final
+
+```
+
+## How often are these trains delayed?
+
+
+```{r}
+#Plots! 
+
+# Distribution of Delay Frequency Responses 
+# Interactive Plotly Stacked Bar Chart 
+
+dist_delay <- scored_data |>
+  filter(!is.na(frequency_of_delays)) |>
+  count(subway_line, group_color, frequency_of_delays, name = "n") |>
+  group_by(subway_line, group_color) |>
+  mutate(prop = n / sum(n)) |>
+  ungroup() |>
+  mutate(
+    subway_line = factor(subway_line, levels = unique(subway_line))
+  )
+
+plot_ly(
+  data = dist_delay,
+  x = ~subway_line,
+  y = ~prop,
+  type = "bar",
+  color = ~frequency_of_delays,
+  colors = viridisLite::viridis(5),
+  customdata = ~group_color,
+  hovertemplate = paste(
+    "Subway Line: %{x}<br>",
+    "Line Group: %{customdata}<br>",
+    "Proportion of Riders: %{y:.1%}<br>",
+    "<extra></extra>"
+  )
+) |>
+  layout(
+    barmode = "stack",
+    title = list(
+      text = "Distribution of Delay Frequency Responses by Subway Line",
+      x = 0.5
+    ),
+    xaxis = list(title = "Subway Line"),
+    yaxis = list(title = "Proportion", tickformat = ".0%"),
+    showlegend = TRUE
+  )
+
+```
+
+
+```{r}
+
+# Ordinal frequency of delay responses
+# Interactive plotly heat map
+
+
+keep_delays <- c(
+  "Rarely",
+  "A few times a week",
+  "Everyday"
+)
+
+heat_data <- scored_data |>
+  filter(!is.na(frequency_of_delays)) |>
+  filter(frequency_of_delays %in% keep_delays) |>
+  count(subway_line, group_color, frequency_of_delays, name = "n") |>
+  complete(
+    subway_line = unique(subway_directory$subway_line),
+    frequency_of_delays = keep_delays,
+    fill = list(n = 0)
+  ) |>
+  group_by(subway_line) |>
+  mutate(prop = n / sum(n)) |>
+  ungroup() |>
+  left_join(subway_directory, by = "subway_line") |>
+  mutate(
+    subway_line = factor(subway_line, levels = unique(subway_line)),
+    frequency_of_delays = factor(frequency_of_delays, levels = keep_delays)
+  )
+
+plot_ly(
+  data = heat_data,
+  x = ~frequency_of_delays,
+  y = ~subway_line,
+  z = ~prop,
+  type = "heatmap",
+  colors = viridisLite::viridis(100),
+  customdata = ~n,
+  hovertemplate = paste(
+    "Line: %{y}<br>",
+    "Delay Frequency: %{x}<br>",
+    "Proportion: %{z:.1%}<br>",
+    "Count: %{customdata}<br>",
+    "<extra></extra>"
+  )
+) |>
+  layout(
+    title = "Delay Frequency Distribution by Subway Line",
+    xaxis = list(title = "Delay Frequency"),
+    yaxis = list(title = "Subway Line"),
+    margin = list(l = 90, r = 20, b = 80, t = 80)
+  )
+
+```
+
+
+
+This heatmap highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell.
+
+
+## Are Riders experiencing delays?
+
+
+```{r}
+
+# To establish proportion of Riders with Long Delays (≥20 min): Define long delay buckets.
+
+# Proportion of Riders with Long Delays (≥20 min)
+# Interactive plotly bar chart
+
+long_categories <- c(
+  "20 - 40 min", "40 - 60 min", "60 - 90 min",
+  "90 min - 2 hours", "> 60 min"
+)
+
+line_order <- subway_directory |>
+  arrange(group_color, subway_line) |>
+  pull(subway_line)
+
+long_delay_by_line <- scored_data |>
+  filter(!is.na(average_length_subway_ride)) |>
+  mutate(long_delay = average_length_subway_ride %in% long_categories) |>
+  count(subway_line, group_color, hex_color, long_delay, name = "n") |>
+  group_by(subway_line, group_color, hex_color) |>
+  mutate(prop = n / sum(n)) |>
+  filter(long_delay) |>
+  ungroup() |>
+  mutate(
+    subway_line = factor(subway_line, levels = line_order)
+  )
+
+plot_ly(
+  data = long_delay_by_line,
+  x = ~subway_line,
+  y = ~prop,
+  type = "bar",
+  marker = list(color = ~hex_color),
+  customdata = ~group_color,
+  hovertemplate = paste(
+    "<b>Subway Line:</b> %{x}<br>",
+    "<b>Long Delay Proportion:</b> %{y:.2f}<br>",
+    "<b>Line Group:</b> %{customdata}<br>",
+    "<extra></extra>"
+  )
+) |>
+  layout(
+    title = "Proportion of Riders Reporting Long Delays (≥20 min)",
+    xaxis = list(title = "Subway Line", categoryarray = line_order),
+    yaxis = list(title = "Proportion", tickformat = ".0%"),
+    bargap = 0.20
+  )
+
+```
+
+This bar chart shows the share of riders on each line who report experiencing long delays of 20 minutes or longer. While most lines cluster between 10-20%, the Z line stands out with the highest proportion, indicating substantially more severe delays among its riders. Interactive hover labels display each line’s exact proportion and color group for more detailed comparison.
+
+## Which trains are the worst with delays?
+
+```{r, include=FALSE}
+delay_counts =
+  rider_data |>
+  filter(frequency_of_delays %in% c("Everyday", "A few times a week")) |>
+  count(subway_line_used_most_often, sort = TRUE)
+```
+
+
+```{r}
+delay_counts_plot =
+  plot_ly(
+  delay_counts,
+  labels = ~subway_line_used_most_often,
+  values = ~n,
+  type = "pie"
+) |>
+  layout(
+    title = "Subway Lines with the Most Delays"
+  )
+
+delay_counts_plot
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

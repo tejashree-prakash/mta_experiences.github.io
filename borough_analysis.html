@@ -33,6 +33,14 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.11.0/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -297,7 +305,250 @@ $(document).ready(function () {
 </div>
 
 
+<p>The Borough Analysis was conducted to examine how perceptions of the
+MTA and operational metrics vary across the five boroughs of New York
+City as well as regions outside of NYC. The goal of this borough
+analysis is to highlight meaningful differences in rider sentiment and
+system performance that may help us understand how influential borough
+is in how MTA and its different subway lines are perceived. <br><br>
+Explore how subway use patterns, average ride lengths, and the most
+commonly used lines differ across boroughs, along with borough-level
+views on affordability, satisfaction, and potential fare increases.
+Together, these comparisons help illustrate how rider attitudes and
+travel behaviors vary across the city.</p>
+<div id="lets-." class="section level2">
+<h2>Let’s ….</h2>
+<p>First, we want to understand the survey respondents by borough.
+Brooklyn and Manhattan had the greatest number of survey respondents,
+then followed by Queens. This is important to consider as it potentially
+biases the results seen in this borough analysis, but we tried to
+compensate for this issue using proportion-based analyses rather than
+straight counts.</p>
+<pre class="r"><code>#Location distribution 
+borough_df &lt;- rider_data_full %&gt;% 
+  count(borough)
 
+plot_ly(
+  borough_df,
+  x = ~borough,
+  y = ~n,
+  type = &quot;bar&quot;,
+  hovertemplate = &quot;Borough: %{x}&lt;br&gt;Count: %{y}&lt;extra&gt;&lt;/extra&gt;&quot;
+) %&gt;%
+  layout(title = &quot;Survey Respondents by Borough&quot;,
+         xaxis = list(title = &quot;Borough&quot;),
+         yaxis = list(title = &quot;Count&quot;))</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-8f57fc98c5565763e30c" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-8f57fc98c5565763e30c">{"x":{"visdat":{"45471f06c53":["function () ","plotlyVisDat"]},"cur_data":"45471f06c53","attrs":{"45471f06c53":{"x":{},"y":{},"hovertemplate":"Borough: %{x}<br>Count: %{y}<extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Survey Respondents by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Borough","type":"category","categoryorder":"array","categoryarray":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count"},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[978,5886,31,5281,108,165,18,3007,323],"hovertemplate":["Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>","Borough: %{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="what-do-the-boroughs-think" class="section level1">
+<h1>What do the boroughs think?</h1>
+<div id="why-are-they-taking-the-subway" class="section level2">
+<h2>why are they taking the subway?</h2>
+<pre class="r"><code>#Primary use of subway 
+primary_df &lt;- rider_data_full %&gt;%
+  count(borough, primary_use_of_subway) %&gt;%
+  group_by(borough) %&gt;%
+  mutate(prop = n / sum(n))
+
+plot_ly(
+  primary_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~primary_use_of_subway,
+  type = &quot;bar&quot;,
+  hovertemplate = 
+    &quot;Borough: %{x}&lt;br&gt;Use: %{customdata}&lt;br&gt;Percent: %{y:.1%}&lt;extra&gt;&lt;/extra&gt;&quot;,
+  customdata = ~primary_use_of_subway
+) %&gt;%
+  layout(
+    barmode = &quot;stack&quot;,
+    title = &quot;Primary Subway Use by Borough (Proportions)&quot;,
+    yaxis = list(tickformat = &quot;.0%&quot;, title = &quot;Proportion&quot;)
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-a50e074dfeadd85c80b9" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-a50e074dfeadd85c80b9">{"x":{"visdat":{"4542aec14a4":["function () ","plotlyVisDat"]},"cur_data":"4542aec14a4","attrs":{"4542aec14a4":{"x":{},"y":{},"hovertemplate":"Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","customdata":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Primary Subway Use by Borough (Proportions)","yaxis":{"domain":[0,1],"automargin":true,"tickformat":".0%","title":"Proportion"},"xaxis":{"domain":[0,1],"automargin":true,"title":"borough","type":"category","categoryorder":"array","categoryarray":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Bronx","Brooklyn","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[0.17893660531697342,0.1325178389398573,0.30827494792652904,0.23148148148148148,0.16969696969696971,0.66666666666666663,0.17060192883272365,0.34674922600619196],"hovertemplate":["Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"customdata":["Other","Other","Other","Other","Other","Other","Other","Other"],"type":"bar","name":"Other","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Long Island","Manhattan","New York State","Queens","Staten Island"],"y":[0.053169734151329244,0.05181787291879035,0.19354838709677419,0.029729217951145616,0.072727272727272724,0.049551047555703359,0.024767801857585141],"hovertemplate":["Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"customdata":["School","School","School","School","School","School","School"],"type":"bar","name":"School","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[0.76789366053169739,0.81566428814135239,0.80645161290322576,0.66199583412232532,0.76851851851851849,0.75757575757575757,0.33333333333333331,0.77984702361157299,0.62848297213622295],"hovertemplate":["Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Use: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"customdata":["Work","Work","Work","Work","Work","Work","Work","Work","Work"],"type":"bar","name":"Work","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="how-long-do-they-stay-on-the-train" class="section level2">
+<h2>How long do they stay on the train?</h2>
+<pre class="r"><code>#Average subway ride length 
+ride_df &lt;- rider_data_full %&gt;% count(average_length_subway_ride)
+
+plot_ly(
+  ride_df,
+  x = ~average_length_subway_ride,
+  y = ~n,
+  type = &quot;bar&quot;,
+  hovertemplate = &quot;%{x}&lt;br&gt;Count: %{y}&lt;extra&gt;&lt;/extra&gt;&quot;
+) %&gt;%
+  layout(title = &quot;Ride Length Distribution&quot;,
+         xaxis = list(title = &quot;Ride Length Category&quot;),
+         yaxis = list(title = &quot;Count&quot;))</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-91f6cf374ab973de6100" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-91f6cf374ab973de6100">{"x":{"visdat":{"45456fc6976":["function () ","plotlyVisDat"]},"cur_data":"45456fc6976","attrs":{"45456fc6976":{"x":{},"y":{},"hovertemplate":"%{x}<br>Count: %{y}<extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Ride Length Distribution","xaxis":{"domain":[0,1],"automargin":true,"title":"Ride Length Category","type":"category","categoryorder":"array","categoryarray":["< 20 min","20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count"},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["20 - 40 min","40 - 60 min","60 - 90 min","90 min - 2 hours","< 20 min"],"y":[6774,4961,1548,277,2237],"hovertemplate":["%{x}<br>Count: %{y}<extra><\/extra>","%{x}<br>Count: %{y}<extra><\/extra>","%{x}<br>Count: %{y}<extra><\/extra>","%{x}<br>Count: %{y}<extra><\/extra>","%{x}<br>Count: %{y}<extra><\/extra>"],"type":"bar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="which-subway-line-is-the-most-used" class="section level2">
+<h2>Which subway line is the most used?</h2>
+<pre class="r"><code>#Most used line 
+line_df &lt;- rider_data_full %&gt;% 
+  count(subway_line_used_most_often)
+
+plot_ly() %&gt;%
+  add_segments(
+    data = line_df,
+    x = 0,
+    xend = ~n,
+    y = ~reorder(subway_line_used_most_often, n),
+    yend = ~reorder(subway_line_used_most_often, n),
+    hoverinfo = &quot;none&quot;
+  ) %&gt;%
+  add_markers(
+    data = line_df,
+    x = ~n,
+    y = ~reorder(subway_line_used_most_often, n),
+    hovertemplate = &quot;Line: %{y}&lt;br&gt;Count: %{x}&lt;extra&gt;&lt;/extra&gt;&quot;
+  ) %&gt;%
+  layout(
+    title = &quot;Most Used Subway Lines&quot;,
+    xaxis = list(title = &quot;Count&quot;),
+    yaxis = list(title = &quot;Line&quot;)
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-7ccbb42622777b284b26" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-7ccbb42622777b284b26">{"x":{"visdat":{"454b2b48fc":["function () ","plotlyVisDat"],"45447eb3ee8":["function () ","data"],"45467c64819":["function () ","data"]},"cur_data":"45467c64819","attrs":{"45447eb3ee8":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":0,"y":{},"xend":{},"yend":{},"type":"scatter","mode":"lines","hoverinfo":"none","inherit":true},"45467c64819":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":{},"y":{},"type":"scatter","mode":"markers","hovertemplate":"Line: %{y}<br>Count: %{x}<extra><\/extra>","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Most Used Subway Lines","xaxis":{"domain":[0,1],"automargin":true,"title":"Count"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Line","type":"category","categoryorder":"array","categoryarray":["Z","S","Staten Island Railway","W","J","B","5","M","G","3","D","4","C","6","N","E","Q","7","2","F","L","R","A","1"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0,3388,null,0,833,null,0,279,null,0,483,null,0,226,null,0,648,null,0,755,null,0,1383,null,0,219,null,0,524,null,0,441,null,0,694,null,0,1124,null,0,271,null,0,214,null,0,1202,null,0,266,null,0,652,null,0,719,null,0,1339,null,0,7,null,0,49,null,0,78,null,0,3],"y":["1","1",null,"2","2",null,"3","3",null,"4","4",null,"5","5",null,"6","6",null,"7","7",null,"A","A",null,"B","B",null,"C","C",null,"D","D",null,"E","E",null,"F","F",null,"G","G",null,"J","J",null,"L","L",null,"M","M",null,"N","N",null,"Q","Q",null,"R","R",null,"S","S",null,"Staten Island Railway","Staten Island Railway",null,"W","W",null,"Z","Z"],"type":"scatter","mode":"lines","hoverinfo":["none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none",null,"none","none"],"marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[3388,833,279,483,226,648,755,1383,219,524,441,694,1124,271,214,1202,266,652,719,1339,7,49,78,3],"y":["1","2","3","4","5","6","7","A","B","C","D","E","F","G","J","L","M","N","Q","R","S","Staten Island Railway","W","Z"],"type":"scatter","mode":"markers","hovertemplate":["Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>","Line: %{y}<br>Count: %{x}<extra><\/extra>"],"marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="do-the-boroughs-think-the-subway-is-affordable"
+class="section level2">
+<h2>Do the boroughs think the subway is affordable?</h2>
+<pre class="r"><code>#Perception of affordability 
+afford_df &lt;- rider_data_full %&gt;%
+  count(borough, is_subway_affordable) %&gt;%
+  group_by(borough) %&gt;%
+  mutate(prop = n / sum(n))
+
+plot_ly(
+  afford_df,
+  x = ~borough,
+  y = ~prop,
+  color = ~is_subway_affordable,
+  type = &quot;bar&quot;,
+  hovertemplate = 
+    &quot;Borough: %{x}&lt;br&gt;Affordability: %{customdata}&lt;br&gt;Percent: %{y:.1%}&lt;extra&gt;&lt;/extra&gt;&quot;,
+  customdata = ~is_subway_affordable
+) %&gt;%
+  layout(
+    barmode = &quot;stack&quot;,
+    title = &quot;Affordability Perception by Borough&quot;,
+    yaxis = list(tickformat = &quot;.0%&quot;, title = &quot;Proportion&quot;)
+  )</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-1e55d11815d2e5577210" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-1e55d11815d2e5577210">{"x":{"visdat":{"4547cb5318c":["function () ","plotlyVisDat"]},"cur_data":"4547cb5318c","attrs":{"4547cb5318c":{"x":{},"y":{},"hovertemplate":"Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","customdata":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Affordability Perception by Borough","yaxis":{"domain":[0,1],"automargin":true,"tickformat":".0%","title":"Proportion"},"xaxis":{"domain":[0,1],"automargin":true,"title":"borough","type":"category","categoryorder":"array","categoryarray":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"]},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Bronx","Brooklyn","Long Island","Manhattan","New Jersey","New York State","Outside NY","Queens","Staten Island"],"y":[1,1,1,1,1,1,1,1,1],"hovertemplate":["Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>","Borough: %{x}<br>Affordability: %{customdata}<br>Percent: %{y:.1%}<extra><\/extra>"],"customdata":[false,false,false,false,false,false,false,false,false],"type":"bar","name":"FALSE","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="is-it-fair-to-increase-fares" class="section level2">
+<h2>Is it fair to increase fares?</h2>
+<pre class="r"><code>#Opinion on increased fair 
+satis_df &lt;- rider_data_full %&gt;%
+  count(borough, opinion_on_increased_fares) %&gt;%
+  group_by(borough) %&gt;%
+  mutate(
+    prop = n / sum(n),
+    percent_label = paste0(round(prop * 100, 1), &quot;%&quot;)
+  ) %&gt;%
+  ungroup()
+
+library(plotly)
+
+boroughs &lt;- unique(satis_df$borough)
+plot &lt;- plot_ly()
+
+for (i in seq_along(boroughs)) {
+  
+  b &lt;- boroughs[i]
+  df_b &lt;- filter(satis_df, borough == b)
+  
+  plot &lt;- add_trace(
+    plot,
+    data = df_b,
+    labels = ~opinion_on_increased_fares,
+    values = ~prop,
+    type = &quot;pie&quot;,
+    hole = 0.2 + (i - 1) * 0.15,
+    textinfo = &quot;none&quot;,
+    hovertemplate = paste(
+      &quot;&lt;b&gt;Borough:&lt;/b&gt; &quot;, b, &quot;&lt;br&gt;&quot;,
+      &quot;&lt;b&gt;Opinion:&lt;/b&gt; %{label}&lt;br&gt;&quot;,
+      &quot;&lt;b&gt;Percent:&lt;/b&gt; %{customdata}&lt;extra&gt;&lt;/extra&gt;&quot;
+    ),
+    customdata = ~percent_label,
+    showlegend = (i == 1)
+  )
+}
+
+plot &lt;- layout(
+  plot,
+  title = &quot;Opinion on Increased Fares (Multi-Ring Donut)&quot;,
+  margin = list(l=20, r=20, t=60, b=20)
+)
+
+plot</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-74ab5ede3cead102dbaa" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-74ab5ede3cead102dbaa">{"x":{"visdat":{"454c00374b":["function () ","plotlyVisDat"],"45477905942":["function () ","data"],"45451de3f65":["function () ","data"],"4541f6d396f":["function () ","data"],"45461475b96":["function () ","data"],"4545cd6777b":["function () ","data"],"4543f925a8":["function () ","data"],"45465044c07":["function () ","data"],"45479e930f0":["function () ","data"],"4544d8467c0":["function () ","data"]},"cur_data":"4544d8467c0","attrs":{"45477905942":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"labels":{},"values":{},"type":"pie","hole":0.20000000000000001,"textinfo":"none","hovertemplate":"<b>Borough:<\/b>  Bronx <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","customdata":{},"showlegend":true,"inherit":true},"45451de3f65":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"labels":{},"values":{},"type":"pie","hole":0.34999999999999998,"textinfo":"none","hovertemplate":"<b>Borough:<\/b>  Brooklyn <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","customdata":{},"showlegend":false,"inherit":true},"4541f6d396f":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"labels":{},"values":{},"type":"pie","hole":0.5,"textinfo":"none","hovertemplate":"<b>Borough:<\/b>  Long Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","customdata":{},"showlegend":false,"inherit":true},"45461475b96":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"labels":{},"values":{},"type":"pie","hole":0.64999999999999991,"textinfo":"none","hovertemplate":"<b>Borough:<\/b>  Manhattan <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","customdata":{},"showlegend":false,"inherit":true},"4545cd6777b":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"labels":{},"values":{},"type":"pie","hole":0.80000000000000004,"textinfo":"none","hovertemplate":"<b>Borough:<\/b>  New Jersey <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","customdata":{},"showlegend":false,"inherit":true},"4543f925a8":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"labels":{},"values":{},"type":"pie","hole":0.94999999999999996,"textinfo":"none","hovertemplate":"<b>Borough:<\/b>  New York State <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","customdata":{},"showlegend":false,"inherit":true},"45465044c07":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"labels":{},"values":{},"type":"pie","hole":1.0999999999999999,"textinfo":"none","hovertemplate":"<b>Borough:<\/b>  Outside NY <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","customdata":{},"showlegend":false,"inherit":true},"45479e930f0":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"labels":{},"values":{},"type":"pie","hole":1.25,"textinfo":"none","hovertemplate":"<b>Borough:<\/b>  Queens <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","customdata":{},"showlegend":false,"inherit":true},"4544d8467c0":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"labels":{},"values":{},"type":"pie","hole":1.3999999999999999,"textinfo":"none","hovertemplate":"<b>Borough:<\/b>  Staten Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","customdata":{},"showlegend":false,"inherit":true}},"layout":{"margin":{"b":20,"l":20,"t":60,"r":20},"title":"Opinion on Increased Fares (Multi-Ring Donut)","hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["Negative","Neutral","Other / No thoughts","Positive","Unaware"],"values":[0.29447852760736198,0.080777096114519428,0.050102249488752554,0.52965235173824132,0.044989775051124746],"type":"pie","hole":0.20000000000000001,"textinfo":"none","hovertemplate":["<b>Borough:<\/b>  Bronx <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Bronx <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Bronx <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Bronx <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Bronx <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>"],"customdata":["29.4%","8.1%","5%","53%","4.5%"],"showlegend":true,"marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null},{"labels":["Negative","Neutral","Other / No thoughts","Positive","Unaware"],"values":[0.15341488277268095,0.13948352021746518,0.065069656812776072,0.58019028202514444,0.061841658171933399],"type":"pie","hole":0.34999999999999998,"textinfo":"none","hovertemplate":["<b>Borough:<\/b>  Brooklyn <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Brooklyn <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Brooklyn <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Brooklyn <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Brooklyn <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>"],"customdata":["15.3%","13.9%","6.5%","58%","6.2%"],"showlegend":false,"marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null},{"labels":["Negative","Neutral","Positive","Unaware"],"values":[0.25806451612903225,0.16129032258064516,0.29032258064516131,0.29032258064516131],"type":"pie","hole":0.5,"textinfo":"none","hovertemplate":["<b>Borough:<\/b>  Long Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Long Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Long Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Long Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>"],"customdata":["25.8%","16.1%","29%","29%"],"showlegend":false,"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null},{"labels":["Negative","Neutral","Other / No thoughts","Positive","Unaware"],"values":[0.13406551789433818,0.14296534747206968,0.080287824275705355,0.56220412800605946,0.080477182351827312],"type":"pie","hole":0.64999999999999991,"textinfo":"none","hovertemplate":["<b>Borough:<\/b>  Manhattan <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Manhattan <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Manhattan <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Manhattan <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Manhattan <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>"],"customdata":["13.4%","14.3%","8%","56.2%","8%"],"showlegend":false,"marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null},{"labels":["Negative","Neutral","Other / No thoughts","Positive","Unaware"],"values":[0.055555555555555552,0.10185185185185185,0.083333333333333329,0.68518518518518523,0.07407407407407407],"type":"pie","hole":0.80000000000000004,"textinfo":"none","hovertemplate":["<b>Borough:<\/b>  New Jersey <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  New Jersey <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  New Jersey <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  New Jersey <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  New Jersey <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>"],"customdata":["5.6%","10.2%","8.3%","68.5%","7.4%"],"showlegend":false,"marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null},{"labels":["Negative","Neutral","Other / No thoughts","Positive"],"values":[0.16969696969696971,0.13333333333333333,0.09696969696969697,0.59999999999999998],"type":"pie","hole":0.94999999999999996,"textinfo":"none","hovertemplate":["<b>Borough:<\/b>  New York State <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  New York State <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  New York State <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  New York State <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>"],"customdata":["17%","13.3%","9.7%","60%"],"showlegend":false,"marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null},{"labels":["Negative","Positive","Unaware"],"values":[0.5,0.33333333333333331,0.16666666666666666],"type":"pie","hole":1.0999999999999999,"textinfo":"none","hovertemplate":["<b>Borough:<\/b>  Outside NY <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Outside NY <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Outside NY <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>"],"customdata":["50%","33.3%","16.7%"],"showlegend":false,"marker":{"color":"rgba(227,119,194,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null},{"labels":["Negative","Neutral","Other / No thoughts","Positive","Unaware"],"values":[0.17525773195876287,0.10641835716661124,0.042234785500498834,0.63418689723977384,0.041902228134353174],"type":"pie","hole":1.25,"textinfo":"none","hovertemplate":["<b>Borough:<\/b>  Queens <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Queens <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Queens <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Queens <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Queens <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>"],"customdata":["17.5%","10.6%","4.2%","63.4%","4.2%"],"showlegend":false,"marker":{"color":"rgba(127,127,127,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null},{"labels":["Negative","Neutral","Other / No thoughts","Positive","Unaware"],"values":[0.21362229102167182,0.11764705882352941,0.034055727554179564,0.5851393188854489,0.049535603715170282],"type":"pie","hole":1.3999999999999999,"textinfo":"none","hovertemplate":["<b>Borough:<\/b>  Staten Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Staten Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Staten Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Staten Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>","<b>Borough:<\/b>  Staten Island <br> <b>Opinion:<\/b> %{label}<br> <b>Percent:<\/b> %{customdata}<extra><\/extra>"],"customdata":["21.4%","11.8%","3.4%","58.5%","5%"],"showlegend":false,"marker":{"color":"rgba(188,189,34,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="summary-of-top-complaints-by-borough" class="section level3">
+<h3>Summary of top complaints by Borough</h3>
+<pre class="r"><code>#  Chart D - Summary of top complaints by Borough
+
+valid_boroughs &lt;- c(&quot;Manhattan&quot;, &quot;Brooklyn&quot;, &quot;Queens&quot;, &quot;Bronx&quot;, &quot;Staten Island&quot;)
+
+# Create cleaned dataset
+rider_data_full_clean &lt;- rider_data_full %&gt;%
+  mutate(
+    borough = case_when(
+      borough %in% valid_boroughs ~ borough,
+      TRUE ~ NA_character_
+    )
+  )
+
+top_complaints_borough &lt;- rider_data_full_clean |&gt;
+  filter(!is.na(borough), !is.na(complaint)) |&gt;
+  count(borough, complaint) |&gt;
+  group_by(borough) |&gt;
+  arrange(desc(n), .by_group = TRUE) |&gt;
+  slice_head(n = 10) |&gt;
+  ungroup()
+
+plot_top_borough &lt;- top_complaints_borough |&gt; 
+  plot_ly(
+    x = ~n,
+    y = ~fct_reorder(complaint, n),
+    color = ~borough,
+    type = &quot;bar&quot;,
+    orientation = &quot;h&quot;,
+    hovertemplate = paste(
+      &quot;Borough: %{data.name}&lt;br&gt;&quot;,
+      &quot;Complaint: %{y}&lt;br&gt;&quot;,
+      &quot;Count: %{x}&lt;br&gt;&quot;,
+      &quot;&lt;extra&gt;&lt;/extra&gt;&quot;
+    ),
+    colors = viridis::viridis_pal()(length(unique(top_complaints_borough$borough)))
+  ) |&gt; 
+  layout(
+    title = &quot;Top Complaint Types by Borough&quot;,
+    xaxis = list(title = &quot;Number of Complaints&quot;),
+    yaxis = list(title = &quot;Complaint Type&quot;),
+    barmode = &quot;group&quot;
+  )
+
+plot_top_borough</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-b1cbeeddd34658ae7305" style="width:1440px;height:768px;"></div>
+<script type="application/json" data-for="htmlwidget-b1cbeeddd34658ae7305">{"x":{"visdat":{"45453253a23":["function () ","plotlyVisDat"]},"cur_data":"45453253a23","attrs":{"45453253a23":{"x":{},"y":{},"orientation":"h","hovertemplate":"Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","color":{},"colors":["#440154FF","#3B528BFF","#21908CFF","#5DC863FF","#FDE725FF"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Top Complaint Types by Borough","xaxis":{"domain":[0,1],"automargin":true,"title":"Number of Complaints"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Complaint Type","type":"category","categoryorder":"array","categoryarray":["Old trains","Crime / Safety","Lack of handicap access","Station infrastructure","Customer service","High fares","Frequent route changes","Overcrowded trains","Delays"]},"barmode":"group","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[246,191,146,115,77,71,59,48,25],"y":["Delays","Overcrowded trains","High fares","Frequent route changes","Crime / Safety","Customer service","Station infrastructure","Lack of handicap access","Old trains"],"orientation":"h","hovertemplate":["Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>"],"type":"bar","name":"Bronx","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1585,1174,779,640,545,418,416,182,147],"y":["Delays","Overcrowded trains","Frequent route changes","Station infrastructure","High fares","Customer service","Lack of handicap access","Crime / Safety","Old trains"],"orientation":"h","hovertemplate":["Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>"],"type":"bar","name":"Brooklyn","marker":{"color":"rgba(59,82,139,1)","line":{"color":"rgba(59,82,139,1)"}},"textfont":{"color":"rgba(59,82,139,1)"},"error_y":{"color":"rgba(59,82,139,1)"},"error_x":{"color":"rgba(59,82,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1142,1007,728,616,460,453,413,253,209],"y":["Delays","Overcrowded trains","Frequent route changes","Station infrastructure","Customer service","High fares","Lack of handicap access","Crime / Safety","Old trains"],"orientation":"h","hovertemplate":["Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>"],"type":"bar","name":"Manhattan","marker":{"color":"rgba(33,144,140,1)","line":{"color":"rgba(33,144,140,1)"}},"textfont":{"color":"rgba(33,144,140,1)"},"error_y":{"color":"rgba(33,144,140,1)"},"error_x":{"color":"rgba(33,144,140,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[831,592,400,298,263,237,178,144,64],"y":["Delays","Overcrowded trains","Frequent route changes","High fares","Customer service","Station infrastructure","Lack of handicap access","Crime / Safety","Old trains"],"orientation":"h","hovertemplate":["Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>"],"type":"bar","name":"Queens","marker":{"color":"rgba(93,200,99,1)","line":{"color":"rgba(93,200,99,1)"}},"textfont":{"color":"rgba(93,200,99,1)"},"error_y":{"color":"rgba(93,200,99,1)"},"error_x":{"color":"rgba(93,200,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[58,44,42,39,36,32,31,21,20],"y":["Delays","Overcrowded trains","Station infrastructure","Crime / Safety","High fares","Customer service","Frequent route changes","Old trains","Lack of handicap access"],"orientation":"h","hovertemplate":["Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>","Borough: %{data.name}<br> Complaint: %{y}<br> Count: %{x}<br> <extra><\/extra>"],"type":"bar","name":"Staten Island","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p><strong>Figure:</strong> This chart compares the most common subway
+complaints, broken up by the 5 New York City boroughs. As we can see,
+delays and overcrowded trains dominate in every borough, with Brooklyn
+and Manhattan reporting the highest volumes overall. Meanwhile, issues
+like crime/safety and old trains appear less frequently but still show
+notable variation across boroughs.</p>
+</div>
+</div>
+</div>
 
 
 
