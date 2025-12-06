@@ -226,7 +226,7 @@ plot_ly(regression_rider_data,
          marker = list(color = viridis_blue)) %>%
   layout(title = "Distribution of Overall Satisfication Levels",
          xaxis = list(title = "Satisfaction Level",
-                      tickvals = 0:5,      
+                      tickvals = 1:5,      
                       ticktext = c("Highly Unsatisfied", "Not Satisfied", "Neutral", "Somewhat Satisfied", "Very Satisfied")),
          yaxis = list(title = "Count"))
 
