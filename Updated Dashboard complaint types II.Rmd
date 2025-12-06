@@ -203,9 +203,8 @@ complaint_data_time <- rider_data_full |>
 
 
 
-## Subway Complaints {.tabset}
+## What are complaing about?
 
-### Complaint Percent by Line and Time
 
 **Figure:** This chart provides a detailed breakdown of subway complaints by both the specific transit line and the time of day (morning, afternoon, evening, night).The stacked bar graphs reveal how the distribution of primary complaints (such as delays, overcrowding, and crime) shifts significantly throughout the day, highlighting the distinct challenges during peak versus off-peak hours.The visualization allows for clear comparison across the system, showing which issues are most pressing for each line at different times.
 ```{r, fig.width=15, fig.height=8}
