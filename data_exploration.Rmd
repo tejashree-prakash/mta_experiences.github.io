@@ -3,6 +3,8 @@ title: "Data Exploration"
 output: html_document
 ---
 
+<br>
+This section gives a quick look at how riders feel about the subway overall, what their top complaints are, and how delays affect satisfaction. It sets the stage for digging deeper into what’s driving rider experiences through our next analyses!
 ```{r, include=FALSE}
 library(flexdashboard)
 library(tidyverse)
@@ -178,9 +180,8 @@ complaint_data_time <- rider_data_full |>
 ```
 
 <br>
-This section gives a quick look at how riders feel about the subway overall, what their top complaints are, and how delays affect satisfaction. It sets the stage for digging deeper into what’s driving rider experiences through our next analyses! 
-<br>
-```{r, fig.cap= "First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts."}
+First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. 
+```{r, fig.cap= "This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts."}
 #Location distribution 
 borough_df <- rider_data_full %>% 
   count(borough)
@@ -196,9 +197,11 @@ plot_ly(
          xaxis = list(title = "Borough"),
          yaxis = list(title = "Count"))
 ```
+<br>
 
-
-```{r, fig.cap="This section summarizes overall rider satisfaction across all boroughs and regions. By aggregating responses on overall satisfaction, it provides a clear snapshot of how satisfied riders are with their subway experience at a high level.<br><br>The data show that a majority of riders (36.6%) are not satisfied with their experience using the MTA, while an additional 24.9% are highly unsatisfied. Together, this indicates that over 60% of respondents have a negative view of the subway system. Fewer riders reported being neutral or satisfied, highlighting significant room for improvement. These patterns will be further dissected through borough analysis, subway line analysis, and regression analysis. Understanding these differences can help identify targeted areas for service enhancements and better meet the needs of riders across the city."}
+<h3>How do riders feel about their MTA experience?</h3>
+This section summarizes overall rider satisfaction across all boroughs and regions. By aggregating responses on overall satisfaction, it provides a clear snapshot of how satisfied riders are with their subway experience at a high level.
+```{r, fig.cap="The data show that a majority of riders (36.6%) are not satisfied with their experience using the MTA, while an additional 24.9% are highly unsatisfied. Together, this indicates that over 60% of respondents have a negative view of the subway system. Fewer riders reported being neutral or satisfied, highlighting significant room for improvement. These patterns will be further dissected through borough analysis, subway line analysis, and regression analysis. Understanding these differences can help identify targeted areas for service enhancements and better meet the needs of riders across the city."}
 #Satisfaction 
 satis_overall <- rider_data_full %>%
   count(overall_satisfaction) %>%
@@ -224,7 +227,7 @@ plot_ly(
 
 <br>
 
-### Summary of top complaints 
+<h3>What are rider's main complaints?</h3>
 
 ```{r, fig.cap= " Above we see the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs." }
 #  Chart B - Summary of top complaints overall
