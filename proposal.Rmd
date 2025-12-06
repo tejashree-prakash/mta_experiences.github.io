@@ -93,16 +93,15 @@ Our exploratory analysis focuses on understanding high-level patterns in complai
 
 #### Composite score: 
 
-see [home page](index.html) for ranking
-
 To compare subway line performance across the system, we constructed a composite score that aggregates four rider-reported service quality indicators in the dataset: frequency of delays, length of delays, percentage of riders experiencing long delays, and overall satisfaction. Each variable was converted into a numeric metric using either ordinal scoring systems (for frequency and satisfaction) or midpoint-based values (for delay length). These metrics were then averaged at the line-family level and standardized using z-scores. The sum of the four standardized values creates a composite performance score with the lowest score set to zero, so they are all positive values. Higher composite scores correspond to better rider experience on that train.
 
 Notably, the G Line shows the lowest composite score across all line families, which reflects consistently negative rider-reported metrics across indicators. G line riders reported extremely high rates of long delays (nearly 92% reporting a long delay), low satisfaction scores, and weaker delay-frequency ratings compared to other lines. These combined factors produce strongly negative z-scores across all service dimensions, which results in the G line anchoring the bottom of the ranking. The Yellow Line (N, Q, R, W) also falls near the bottom of the composite distribution because it has a relatively high percentage of long delays and below-average satisfaction ratings.
 
 The Green and Yellow lines’ scores illustrate the sensitivity of the composite score to rider perceptions because it relies on rider-reported data rather than operational metrics. In turn, the score should be interpreted as a representation of the subjective experience of surveyed riders rather than definitive performance outcomes for each route.
 
+See [home page](index.html) for ranking
+
 ### Regression 
-[see regression page](regression.html)
 
 We began our regression analysis using the borough variable and a set of categorical predictors with an outcome of overall satisfaction. Specifically, our model incorporated average subway ride length, frequency of service delays, approximate delay duration, and the frequency of rerouting events. We selected this model primarily due to feasibility constraints. Many of the other potentially informative variables, such as the type of complaint or the most common reason for delay, were too resource-intensive to compile within the scope of our project. As a result, we opted for a model built from data that were still representative of the key factors likely to influence transit performance and rider experience from our dataset.
 Beginning with a linear regression model, we chose to factor our predictors due to their ordinal nature and kept overall satisfaction continuous. To confirm the appropriateness of this method, we developed its residual plot and found strong heteroscedasticity, and therefore, we decided to continue with a logistic regression model.
@@ -113,6 +112,8 @@ Due to the nature of the clm model, linear, quadratic, and cubic polynomial scal
 The average length of subway ride and frequency of delays were significant only at the linear scale effect level. With our two linearly significant predictors and borough, we developed a heatmap that demonstrates the predictive probability each ordinal predictor with borough has on overall satisfaction. We were able to conclude that, overall, between average length of subway ride and frequency of delays, the shorter the ride or delay was, the greater the probability of experiencing higher overall satisfaction.
 
 Further analyses could explore the predictors that exhibited more complex, nonlinear effects, as well as additional variables not included in the present model that may also meaningfully influence overall satisfaction.
+
+See [regression page](regression.html)
 
 ## Discussion
 
