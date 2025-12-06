@@ -255,7 +255,6 @@ bar_plot
 
 ```
 
-<br>
 ## How do riders feel about their delays?
 
 ```{r, include=FALSE}
