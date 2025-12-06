@@ -75,7 +75,7 @@ Using RStudio/ RMarkdown, we utilized tidyverse and janitor packages to create o
 
 ##### Secondary Dataset: MTA Colors
 
-We created a polished appearance that matches the official MTA colors using the hex codes from this dataset and the gt package. (NY Open Data, MTA Colors, 2025).
+We created a polished appearance that matches the official MTA colors using the hex codes from the NY Open Data MTA colors dataset and the gt package (https://data.ny.gov/Transportation/MTA-Colors/3uhz-sej2/about_data).
 
 ##### Additional Dataset: NYU Spatial Data Repository 
 
