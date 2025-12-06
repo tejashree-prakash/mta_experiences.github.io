@@ -196,7 +196,7 @@ plot_ly(
 
 <h3>What are rider's main complaints?</h3>
 
-```{r, fig.cap= " Above we see the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs." }
+```{r, fig.cap= " Above we see the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs. *Note: Counts represent individual complaint selections rather than unique respondents. Because each participant could list up to three complaints, totals may exceed the number of respondents.*" }
 #  Chart B - Summary of top complaints overall
 
 complaint_data_time <- complaint_data_time |>
