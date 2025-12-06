@@ -431,7 +431,7 @@ subway_directory_display_final
 <br><br>
 
 <h3>How often are these trains delayed?</h3>
-```{r, fig.cap="Two different visualizations of delay frequency distribution by subway line: The Stacked bar chart reveals the phenomenon that riders on most lines report delays a few times a week, though the share of everyday delays varies widely. The delay frequency is on J and 7 lines. Use the interactive hover label to view exact proportions for clearer line-by-line comparisons. The heat map highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell."}
+```{r, warning=FALSE, fig.cap="Two different visualizations of delay frequency distribution by subway line: The Stacked bar chart reveals the phenomenon that riders on most lines report delays a few times a week, though the share of everyday delays varies widely. The delay frequency is on J and 7 lines. Use the interactive hover label to view exact proportions for clearer line-by-line comparisons. The heat map highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell."}
 #Plots! 
 
 # Distribution of Delay Frequency Responses 
