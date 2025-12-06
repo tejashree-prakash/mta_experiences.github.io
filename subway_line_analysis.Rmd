@@ -428,7 +428,7 @@ subway_directory_display_final
 
 ```
 
-
+<br><br>
 
 ## How often are these trains delayed?
 ```{r}
@@ -463,13 +463,19 @@ dist_delay_plot =
     "<extra></extra>"
   )
 ) |>
-  layout(
+   layout(
     barmode = "stack",
     title = list(
       text = "Distribution of Delay Frequency Responses by Subway Line",
       x = 0.5
     ),
-    xaxis = list(title = "Subway Line"),
+    xaxis = list(
+      title = "Subway Line",
+      tickangle = -45,
+      tickmode = "array",
+      tickvals = unique(dist_delay$subway_line),
+      ticktext = unique(dist_delay$subway_line)
+    ),
     yaxis = list(title = "Proportion", tickformat = ".0%"),
     showlegend = TRUE
   )
@@ -526,6 +532,7 @@ plot_ly(
     margin = list(l = 110, r = 20, b = 80, t = 80)
   )
 
+options(plotly.autosize = FALSE)
 
 subplot(
   dist_delay_plot,
@@ -534,8 +541,14 @@ subplot(
   shareY = FALSE,  
   titleX = TRUE,
   titleY = TRUE,
-  margin = 0.12
-)
+  margin = 0.12,
+  widths = c(0.55, 0.45) 
+) |>
+  layout(
+    autosize = FALSE, 
+    width = 1400, 
+    height = 600
+  )
 
 ```
 2 different visualizations of delay frequency distribution by subway line: 
@@ -545,7 +558,7 @@ The Stacked bar chart reveals the phenomenon that riders on most lines report de
 The heat map highlights system-wide patterns, showing consistently high weekly delay reports and notable everyday delays on lines like the 7. Hover details reveal the precise counts and proportions underlying each cell.
 
 
-
+<br><br>
 
 ## Are Riders experiencing delays?
 
@@ -602,7 +615,7 @@ plot_ly(
 
 This bar chart shows the share of riders on each line who report experiencing long delays of 20 minutes or longer. While most lines cluster between 10-20%, the Z line stands out with the highest proportion, indicating substantially more severe delays among its riders. Interactive hover labels display each line’s exact proportion and color group for more detailed comparison.
 
-
+<br><br>
 
 ## Which trains are the worst with delays?
 
@@ -647,6 +660,7 @@ delay_counts_plot
 
 ```
 
+<br><br>
 
 ## Subway Complaints {.tabset}
 
