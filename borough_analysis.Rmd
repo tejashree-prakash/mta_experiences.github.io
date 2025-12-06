@@ -489,6 +489,7 @@ plot_ly(
 ## What are the top complaints?
 
 ```{r,fig.width=9, fig.height=6, fig.cap="Delays and overcrowded trains dominate in every borough, with Brooklyn and Manhattan reporting the highest volumes overall. Meanwhile, issues like crime/safety and old trains appear less frequently but still show notable variation across boroughs."}
+
 #  Chart D - Summary of top complaints by Borough
 
 valid_boroughs <- c("Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island")
