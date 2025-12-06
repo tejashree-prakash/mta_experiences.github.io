@@ -226,8 +226,7 @@ plot_ly(
 
 ### Summary of top complaints 
 
-```{r, fig.width=9, fig.height=6}
-
+```{r, fig.cap= " Above we see the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs." }
 #  Chart B - Summary of top complaints overall
 
 top_complaints <- complaint_data_time |> 
@@ -256,8 +255,7 @@ bar_plot
 
 ```
 
-Above we see the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs.
-
+<br>
 ## How do riders feel about their delays?
 
 ```{r, include=FALSE}
@@ -271,7 +269,7 @@ delay_reason =
 ```
 
 
-```{r, fig.cap= " We can quickly notice that the top delay reason is train traffic. Within the train traffic bar, we can see that 1,526/2,608 people which is about 59% reported that they were unsatistfied with the train due to train traffic. It seems that the delay reason might have an impact on the overall satisfaction, but it may just be a piece to the puzzle." }
+```{r, fig.cap= " We can quickly notice that the top delay reason is train traffic. Within the train traffic bar, we can see that 1,526/2,608 people which is about 59% reported that they were unsatistfied with the train due to train traffic. It seems that the delay reason might have an impact on the overall satisfaction, but it may just be a piece to the puzzle.<br><br>Click through our other tabs to see our in-depth analyses we used to understand the effects of borough and subway line on rider experiences, what predictors significantly influence overall satisfaction, and how we made our composite ranking system!" }
 delay_reason_plot =
   plot_ly(
     delay_reason,
