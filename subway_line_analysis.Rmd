@@ -558,8 +558,37 @@ delay_counts_plot
 
 <h3>What are the subway complaints reported?</h3>
 
-```{r, fig.width=9, fig.height=6, fig.cap= " This chart provides a detailed breakdown of subway complaints by both the specific transit line and the time of day (morning, afternoon, evening, night).The stacked bar graphs reveal how the distribution of primary complaints (such as delays, overcrowding, and crime) shifts significantly throughout the day, highlighting the distinct challenges during peak versus off-peak hours.The visualization allows for clear comparison across the system, showing which issues are most pressing for each line at different times." }
 
+```{r}
+# I added this ( adding the complaint variable)
+rider_data_full <- rider_data_full |>
+  mutate(
+    complaint = str_split(top_three_complaints, ",\\s*")
+  ) |>
+  tidyr::unnest(complaint)
+```
+
+
+```{r}
+# Creating a complaint_data_time dataset (I added this)
+complaint_data_time <- rider_data_full |> 
+  mutate(
+    submitted_at = mdy_hm(submitted_at),
+    hour = hour(submitted_at),
+    time_of_day = case_when(
+      hour >= 6 & hour < 12 ~ "Morning",  #6 am to 11:59 am
+      hour >= 12 & hour < 17 ~ "Afternoon", #12 pm to 4:59 pm
+      hour >= 17 & hour < 21 ~ "Evening",  #5pm to 8:59 pm
+      TRUE ~ "Night" # 9pm to 5:59 am 
+    ),
+    time_of_day = factor(time_of_day, 
+                        levels = c("Morning", "Afternoon", "Evening", "Night"))
+  )
+```
+
+
+
+```{r, fig.width=9, fig.height=6, fig.cap= " This chart provides a detailed breakdown of subway complaints by both the specific transit line and the time of day (morning, afternoon, evening, night).The stacked bar graphs reveal how the distribution of primary complaints (such as delays, overcrowding, and crime) shifts significantly throughout the day, highlighting the distinct challenges during peak versus off-peak hours.The visualization allows for clear comparison across the system, showing which issues are most pressing for each line at different times." } 
 
 complaint_summary <- complaint_data_time |> 
   count(subway_line_used_most_often, time_of_day, complaint) |> 
@@ -652,32 +681,6 @@ plot |> layout(
 )
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
