@@ -87,7 +87,7 @@ This data was used to get zip code information to create our borough variable. A
 
 ## Exploratory Analysis
 
-Our exploratory analysis focuses on understanding high-level patterns in complaints and satisfaction across the whole sample. By identifying the most common issues riders report and the general sentiment trend, we have been able to establish context for the rest of the report. These initial insights help shape our expectations for the borough-level and line-level comparisons that follow, and they provide a meaningful starting point for the regression modeling conducted later. 
+Our exploratory analysis focuses on understanding high-level patterns in complaints and satisfaction across the whole sample. By identifying the most common issues riders report and the general sentiment trend, we have been able to establish context for the rest of the report. These initial insights help shape our expectations for the [borough-level](borough_analysis.html) and [subway line-level](subway_line_analysis.html) analyses that follow, and they provide a meaningful starting point for the regression modeling conducted later. 
 
 ## Additional analysis
 
