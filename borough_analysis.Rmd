@@ -151,34 +151,6 @@ The Borough Analysis was conducted to examine how perceptions of the MTA and ope
 Explore how subway use patterns, average ride lengths, and the most commonly used lines differ across boroughs, along with borough-level views on affordability, satisfaction, and potential fare increases. Together, these comparisons help illustrate how rider attitudes and travel behaviors vary across the city.
 
 <br>
-<h3>Who are the critics?</h3>
-
-```{r, fig.cap="First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts."}
-#Location distribution 
-borough_df <- rider_data_full %>% 
-  count(borough)
-
-#Pick blue from gradient 
-viridis_blue <- viridis(100)[40]
-
-#Produce plot
-plot_ly(
-  borough_df,
-  x = ~borough,
-  y = ~n,
-  type = "bar",
-  marker = list(color = viridis_blue),
-  hovertemplate = "Borough: %{x}<br>Count: %{y}<extra></extra>"
-) %>%
-  layout(
-    title = "Survey Respondents by Borough",
-    xaxis = list(title = "Borough"),
-    yaxis = list(title = "Count"),
-    autosize = TRUE
-  )
-```
-
-<br>
 
 <h3>Which subway line is the most used?</h3>
 

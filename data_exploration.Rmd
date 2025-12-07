@@ -145,7 +145,6 @@ complaint_data_time <- rider_data_full |>
 
 
 ```
-
 <br>
 First, we want to understand the survey respondents by borough. Brooklyn and Manhattan had the greatest number of survey respondents, then followed by Queens. 
 ```{r, fig.cap= "This is important to consider as it potentially biases the results seen in this borough analysis, but we tried to compensate for this issue using proportion-based analyses rather than straight counts."}
