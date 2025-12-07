@@ -69,9 +69,19 @@ City to see how your most-used line ranks among the rest!
 <br>
 <h2>Screen Cast</h2>
 
-Take a look at our website!
+<p style="font-size:18px;">
+Take a look at our website walk-through below!
+</p>
 
-(https://example.com/your-video-link) <!-- replace with real link -->
+<div style="text-align:center;">
+<iframe width="750" height="422"
+        src="https://www.youtube.com/embed/8NM_nqQd0UM"
+        title="Not All Trains Are Created Equal Screencast"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+</iframe>
+</div>
 
 <br>
 <h2>Creators</h2>
