@@ -19,10 +19,14 @@ subway_rider_data =
 
     ## Rows: 10704 Columns: 19
 <<<<<<< HEAD
+<<<<<<< HEAD
     ## ── Column specification ────────────────────────
 =======
     ## ── Column specification ─────────────────────────────────────────────────────────────────
 >>>>>>> 21afa0e7cbea1409e71d78e7594f2947ee5354f1
+=======
+    ## ── Column specification ─────────────────────────────────────────────────────────────────
+>>>>>>> 99dcdf9d1a3b01a91ebad71a452be0211661a2ea
     ## Delimiter: ","
     ## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
     ## lgl  (1): is_subway_affordable
@@ -160,10 +164,14 @@ zip_code_data =
 
     ## Rows: 343 Columns: 2
 <<<<<<< HEAD
+<<<<<<< HEAD
     ## ── Column specification ────────────────────────
 =======
     ## ── Column specification ─────────────────────────────────────────────────────────────────
 >>>>>>> 21afa0e7cbea1409e71d78e7594f2947ee5354f1
+=======
+    ## ── Column specification ─────────────────────────────────────────────────────────────────
+>>>>>>> 99dcdf9d1a3b01a91ebad71a452be0211661a2ea
     ## Delimiter: ","
     ## chr (2): borough, zipcode
     ## 

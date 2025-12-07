@@ -503,7 +503,7 @@ plot_ly(
 
 ```
 
-This bar chart shows the share of riders on each line who report experiencing long delays of 20 minutes or longer. While most lines cluster between 10-20%, the Z line stands out with the highest proportion, indicating substantially more severe delays among its riders. Interactive hover labels display each line’s exact proportion and color group for more detailed comparison.
+This bar chart shows the share of riders on each line who report experiencing long delays of 20 minutes or longer. While most lines cluster between 60-80%, and the Z line lacked enough data to note high delay proportions. Interactive hover labels display each line’s exact proportion and color group for more detailed comparison.
 
 <br><br>
 
