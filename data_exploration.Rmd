@@ -192,7 +192,6 @@ plot_ly(
 
 
 <br>
-
 <h3>What are rider's main complaints?</h3>
 
 ```{r, fig.cap= " Above we see the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs. *Note: Counts represent individual complaint selections rather than unique respondents. Because each participant could list up to three complaints, totals may exceed the number of respondents.*" }
@@ -211,7 +210,7 @@ top_complaints <- complaint_data_time |>
     # Clean each complaint - remove [, ], ', and trim whitespace
     complaint = str_remove_all(complaint, "\\[|\\]|'"),
     complaint = str_trim(complaint),
-    # Standardize complaint types (based on your screenshot)
+    # Standardize complaint types 
     complaint = case_when(
       str_detect(tolower(complaint), "crime|safety") ~ "Crime / Safety",
       str_detect(tolower(complaint), "delay") ~ "Delays",
@@ -230,8 +229,6 @@ top_complaints <- complaint_data_time |>
   arrange(desc(n)) |> 
   head(10)
 
-
-print(top_complaints)
 
 # Create the bar plot
 bar_plot <- top_complaints |> 
