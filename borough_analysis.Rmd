@@ -295,36 +295,67 @@ plot_ly(
 
 ```{r,fig.width=9, fig.height=6, fig.cap="Delays and overcrowded trains dominate in every borough, with Brooklyn and Manhattan reporting the highest volumes overall. Meanwhile, issues like crime/safety and old trains appear less frequently but still show notable variation across boroughs."}
 
-# I added this ( adding the complaint variable)
-rider_data_full <- rider_data_full |>
-  mutate(
-    complaint = str_split(top_three_complaints, ",\\s*")
-  ) |>
-  tidyr::unnest(complaint)
+# Load required libraries
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(forcats)
+library(plotly)
 
 valid_boroughs <- c("Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island")
 
-# Create cleaned dataset
+# Clean complaint data first
 rider_data_full_clean <- rider_data_full %>%
   mutate(
     borough = case_when(
       borough %in% valid_boroughs ~ borough,
       TRUE ~ NA_character_
     )
+  ) %>%
+  # Split and clean complaints
+  mutate(
+    complaint = str_split(top_three_complaints, ",\\s*")
+  ) %>%
+  tidyr::unnest(complaint) %>%
+  mutate(
+    complaint = str_trim(complaint),  # Clean whitespace
+    complaint = case_when(
+      # Standardize complaint names if needed
+      str_detect(tolower(complaint), "crime|safety") ~ "Crime / Safety",
+      str_detect(tolower(complaint), "delay") ~ "Delays",
+      str_detect(tolower(complaint), "overcrowd") ~ "Overcrowded trains",
+      str_detect(tolower(complaint), "route") ~ "Frequent route changes",
+      str_detect(tolower(complaint), "fare") ~ "High fares",
+      str_detect(tolower(complaint), "handicap|accessibility") ~ "Lack of handicap access",
+      str_detect(tolower(complaint), "old|train.*old") ~ "Old trains",
+      str_detect(tolower(complaint), "station|infrastructure") ~ "Station infrastructure",
+      str_detect(tolower(complaint), "service") ~ "Customer service",
+      TRUE ~ complaint
+    )
+  ) %>%
+  filter(!is.na(borough), !is.na(complaint), complaint != "")
+
+# Get top complaints across all boroughs
+all_top_complaints <- rider_data_full_clean %>%
+  count(complaint, sort = TRUE) %>%
+  slice_head(n = 8) %>%  # Get top 8 complaint types overall
+  pull(complaint)
+
+# Filter and prepare data for plotting
+top_complaints_borough <- rider_data_full_clean %>%
+  filter(complaint %in% all_top_complaints) %>%
+  count(borough, complaint) %>%
+  complete(borough, complaint, fill = list(n = 0)) %>%
+  # Reorder complaints by total frequency
+  mutate(
+    complaint = factor(complaint, levels = rev(all_top_complaints))
   )
 
-top_complaints_borough <- rider_data_full_clean |>
-  filter(!is.na(borough), !is.na(complaint)) |>
-  count(borough, complaint) |>
-  group_by(borough) |>
-  arrange(desc(n), .by_group = TRUE) |>
-  slice_head(n = 10) |>
-  ungroup()
-
+# Create the plot
 plot_top_borough <- top_complaints_borough |> 
   plot_ly(
     x = ~n,
-    y = ~fct_reorder(complaint, n),
+    y = ~complaint,
     color = ~borough,
     type = "bar",
     orientation = "h",
@@ -334,17 +365,17 @@ plot_top_borough <- top_complaints_borough |>
       "Count: %{x}<br>",
       "<extra></extra>"
     ),
-    colors = viridis::viridis_pal()(length(unique(top_complaints_borough$borough)))
+    colors = viridis::viridis_pal()(length(valid_boroughs))
   ) |> 
   layout(
     title = "Top Complaint Types by Borough",
     xaxis = list(title = "Number of Complaints"),
     yaxis = list(title = "Complaint Type"),
-    barmode = "group"
+    barmode = "group",
+    legend = list(title = list(text = "Borough"))
   )
 
 plot_top_borough
-
 
 
 ```

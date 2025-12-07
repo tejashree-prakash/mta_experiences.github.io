@@ -18,7 +18,15 @@ subway_rider_data =
 ```
 
     ## Rows: 10704 Columns: 19
+<<<<<<< HEAD
+<<<<<<< HEAD
+    ## ── Column specification ────────────────────────
+=======
     ## ── Column specification ─────────────────────────────────────────────────────────────────
+>>>>>>> 21afa0e7cbea1409e71d78e7594f2947ee5354f1
+=======
+    ## ── Column specification ─────────────────────────────────────────────────────────────────
+>>>>>>> 99dcdf9d1a3b01a91ebad71a452be0211661a2ea
     ## Delimiter: ","
     ## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
     ## lgl  (1): is_subway_affordable
@@ -155,7 +163,15 @@ zip_code_data =
 ```
 
     ## Rows: 343 Columns: 2
+<<<<<<< HEAD
+<<<<<<< HEAD
+    ## ── Column specification ────────────────────────
+=======
     ## ── Column specification ─────────────────────────────────────────────────────────────────
+>>>>>>> 21afa0e7cbea1409e71d78e7594f2947ee5354f1
+=======
+    ## ── Column specification ─────────────────────────────────────────────────────────────────
+>>>>>>> 99dcdf9d1a3b01a91ebad71a452be0211661a2ea
     ## Delimiter: ","
     ## chr (2): borough, zipcode
     ## 
@@ -174,10 +190,12 @@ rider_data_full <- rider_data %>%
   left_join(zip_code_data, by = c("zip_code" = "zipcode"))
 ```
 
-    ## Warning in left_join(., zip_code_data, by = c(zip_code = "zipcode")): Detected an unexpected many-to-many relationship between `x` and `y`.
+    ## Warning in left_join(., zip_code_data, by = c(zip_code = "zipcode")): Detected an unexpected many-to-many
+    ## relationship between `x` and `y`.
     ## ℹ Row 6 of `x` matches multiple rows in `y`.
     ## ℹ Row 109 of `y` matches multiple rows in `x`.
-    ## ℹ If a many-to-many relationship is expected, set `relationship = "many-to-many"` to
+    ## ℹ If a many-to-many relationship is expected,
+    ##   set `relationship = "many-to-many"` to
     ##   silence this warning.
 
 ``` r
