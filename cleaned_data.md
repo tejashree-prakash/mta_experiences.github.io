@@ -18,7 +18,7 @@ subway_rider_data =
 ```
 
     ## Rows: 10704 Columns: 19
-    ## ── Column specification ─────────────────────────────────────────────────────────────
+    ## ── Column specification ─────────────────────────────────────────────────────────────────
     ## Delimiter: ","
     ## chr (18): subway_line_used_most_often, use_of_subway_frequency, get_to_subwa...
     ## lgl  (1): is_subway_affordable
@@ -155,7 +155,7 @@ zip_code_data =
 ```
 
     ## Rows: 343 Columns: 2
-    ## ── Column specification ─────────────────────────────────────────────────────────────
+    ## ── Column specification ─────────────────────────────────────────────────────────────────
     ## Delimiter: ","
     ## chr (2): borough, zipcode
     ## 
