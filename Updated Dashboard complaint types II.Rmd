@@ -346,8 +346,6 @@ bar_plot
 **Figure:** This chart compares the most common subway complaints, broken up by the 5 New York City boroughs. As we can see, delays and overcrowded trains dominate in every borough, with Brooklyn and Manhattan reporting the highest volumes overall. Meanwhile, issues like crime/safety and old trains appear less frequently but still show notable variation across boroughs.
 
 ```{r, fig.width=15, fig.height=8}
-#  Chart D - Summary of top complaints by Borough
-
 valid_boroughs <- c("Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island")
 
 # Create cleaned dataset
