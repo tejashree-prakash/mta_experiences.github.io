@@ -199,17 +199,42 @@ plot_ly(
 ```{r, fig.cap= " Above we see the most common subway complaint types across the five New York City boroughs. Delays (3932) and overcrowded trains (3078) are the most frequently reported issues overall, and less frequent concerns like old trains or crime appear at much lower levels across all boroughs. *Note: Counts represent individual complaint selections rather than unique respondents. Because each participant could list up to three complaints, totals may exceed the number of respondents.*" }
 #  Chart B - Summary of top complaints overall
 
+# First, create the complaint column by splitting top_three_complaints
 complaint_data_time <- complaint_data_time |>
   mutate(
     complaint = str_split(top_three_complaints, ",\\s*")
   ) |>
-  tidyr::unnest(complaint) 
+  tidyr::unnest(complaint)
 
+# clean and count complaint types properly
 top_complaints <- complaint_data_time |> 
+  mutate(
+    # Clean each complaint - remove [, ], ', and trim whitespace
+    complaint = str_remove_all(complaint, "\\[|\\]|'"),
+    complaint = str_trim(complaint),
+    # Standardize complaint types (based on your screenshot)
+    complaint = case_when(
+      str_detect(tolower(complaint), "crime|safety") ~ "Crime / Safety",
+      str_detect(tolower(complaint), "delay") ~ "Delays",
+      str_detect(tolower(complaint), "overcrowd") ~ "Overcrowded trains",
+      str_detect(tolower(complaint), "route") ~ "Frequent route changes",
+      str_detect(tolower(complaint), "fare") ~ "High fares",
+      str_detect(tolower(complaint), "handicap|accessibility") ~ "Lack of handicap access",
+      str_detect(tolower(complaint), "old|train.*old") ~ "Old trains",
+      str_detect(tolower(complaint), "station|infrastructure") ~ "Station infrastructure",
+      str_detect(tolower(complaint), "service") ~ "Customer service",
+      TRUE ~ complaint
+    )
+  ) |> 
+  filter(complaint != "", !is.na(complaint)) |>  # Remove empty complaints
   count(complaint) |> 
   arrange(desc(n)) |> 
   head(10)
 
+
+print(top_complaints)
+
+# Create the bar plot
 bar_plot <- top_complaints |> 
   plot_ly(
     x = ~n,
@@ -217,14 +242,22 @@ bar_plot <- top_complaints |>
     type = "bar",
     orientation = "h",
     text = ~n,  
-    textposition = "inside",  
-    hoverinfo = "x+y",
-    marker = list(color = viridis::viridis_pal()(10))
+    textposition = "outside",  
+    textfont = list(color = "black", size = 12),
+    hoverinfo = "text",
+    hovertext = ~paste("Complaint:", complaint, "<br>Count:", n),
+    marker = list(color = viridis::viridis_pal()(10),
+                  line = list(color = "rgba(0,0,0,0.3)", width = 1))
   ) |> 
   layout(
-    title = "Top 10 Complaint Types",
-    xaxis = list(title = "Number of Complaints"),
-    yaxis = list(title = "")
+    title = list(text = "Top 10 Complaint Types", font = list(size = 16)),
+    xaxis = list(title = "Number of Complaints", 
+                 tickfont = list(size = 12)),
+    yaxis = list(title = "", 
+                 tickfont = list(size = 12),
+                 automargin = TRUE),
+    margin = list(l = 200, r = 50, t = 50, b = 50),
+    showlegend = FALSE
   )
 
 bar_plot
